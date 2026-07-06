@@ -1,0 +1,50 @@
+splits:
+  internal:
+    dataset: TCGA-STAD
+    strategy: stratified_kfold
+    n_folds: 5
+  external:
+    datasets:
+      - GSE62254
+      - GSE84437
+
+thresholding:
+  train_only_quantiles: true
+  save_thresholds: true
+  external_uses_saved_thresholds: true
+
+metrics:
+  classification:
+    - AUROC
+    - AUPRC
+    - MacroF1
+    - BalancedAccuracy
+    - MCC
+  regression:
+    - RMSE
+    - MAE
+    - Spearman
+    - Pearson
+  survival_if_available:
+    - C_index
+    - logrank_p
+    - hazard_ratio
+  target_ranking:
+    - Precision_at_10
+    - Precision_at_20
+    - enrichment_odds_ratio
+    - literature_support_rate
+    - druggability_support_rate
+
+ablation:
+  - full_model
+  - without_ligand_receptor_edges
+  - without_pathway_edges
+  - without_ppi_edges
+  - without_spatial_edges
+  - without_scrna_derived_labels
+  - without_trajectory_features
+  - without_candidate_prior_pool
+  - bulk_only
+  - graph_only
+  - random_edges

@@ -1,0 +1,86 @@
+node_types:
+  - gene
+  - nk_receptor
+  - ligand
+  - pathway
+  - cell_state
+  - sample
+  - spatial_niche
+  - malignant_program
+  - topology_state
+
+edge_types:
+  - ppi
+  - ligand_receptor
+  - pathway_membership
+  - tf_target
+  - coexpression
+  - cell_state_marker
+  - spatial_adjacency
+  - tumor_specific_expression
+  - scrna_state_gene
+  - dysfunction_correlation
+  - exclusion_correlation
+  - topology_association
+
+prior_networks:
+  required:
+    - PPI
+    - ligand_receptor
+    - pathway_membership
+    - TF_target
+    - NK_marker_receptor_list
+    - gastric_cancer_target_list
+
+candidate_gene_pool:
+  include:
+    - nk_receptors_ligands
+    - hypoxia_genes
+    - glycolysis_lactate_genes
+    - adenosine_pathway_genes
+    - tgfb_pathway_genes
+    - caf_ecm_genes
+    - immune_checkpoint_genes
+    - gastric_cancer_target_genes
+    - malignant_cell_de_genes
+    - nk_cytotoxicity_negative_correlated_genes
+    - nk_dysfunction_positive_correlated_genes
+    - spatial_colocalized_genes
+    - trajectory_driver_genes
+  max_size: 2000
+
+seed_genes:
+  metabolic_suppression:
+    - LDHA
+    - SLC16A3
+    - SLC16A1
+    - CA9
+  adenosine_pathway:
+    - NT5E
+    - ENTPD1
+    - ADORA2A
+  nk_inhibitory_ligand:
+    - PVR
+    - NECTIN2
+    - HLA-E
+  stress_ligand_shedding:
+    - MICA
+    - MICB
+    - ULBP1
+    - ULBP2
+    - ULBP3
+    - ADAM10
+    - ADAM17
+  tgfb_ecm_exclusion:
+    - TGFB1
+    - TGFBR1
+    - TGFBR2
+    - COL1A1
+    - COL1A2
+    - FN1
+    - FAP
+  gastric_targets:
+    - CLDN18
+    - ERBB2
+    - FGFR2
+    - MET

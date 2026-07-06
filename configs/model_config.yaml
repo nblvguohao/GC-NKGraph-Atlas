@@ -1,0 +1,43 @@
+model_name: GC-NKGraph-Atlas
+task_type: multi_task
+
+inputs:
+  sample_features: true
+  gene_features: true
+  graph_edges: true
+  edge_types: true
+  scrna_state_features: true
+  spatial_features_if_available: true
+  topology_features_gated: true
+
+outputs:
+  nk_state_classification: true
+  nk_dysfunction_regression: true
+  nk_exclusion_regression: true
+  candidate_target_score: true
+  edge_importance: true
+  state_gene_importance: true
+
+architecture:
+  preferred:
+    - heterograph_transformer
+    - edge_type_attention
+  fallback:
+    - HGT
+    - HAN
+    - GAT
+    - GraphSAGE
+
+training:
+  seeds: [1234, 2345, 3456, 4567, 5678]
+  epochs: 200
+  patience: 20
+  batch_size: 64
+  learning_rate: 0.001
+  weight_decay: 0.0001
+
+loss:
+  classification: focal_loss
+  regression: huber
+  ranking: pairwise_margin
+  graph_regularization: edge_type_l2

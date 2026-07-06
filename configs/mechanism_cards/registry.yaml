@@ -1,0 +1,6 @@
+active_mechanism_card: zheng_nk_sm_topology
+cards_dir: configs/mechanism_cards
+rules:
+  - transcriptional_proxy != physical_ground_truth != metabolite_flux
+  - crosstalk directions are calibrated on the positive-control cohort
+  - physical ground-truth layer stays GATED unless real data are provided

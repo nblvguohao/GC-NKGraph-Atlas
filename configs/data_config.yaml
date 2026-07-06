@@ -1,0 +1,51 @@
+project_name: GC-NKGraph-Atlas
+primary_cancer: gastric_cancer
+primary_bulk_dataset: TCGA-STAD
+seed: 0
+
+bulk_datasets:
+  - name: TCGA-STAD
+    role: train_primary
+    expression_path: data/processed/bulk/tcga_stad_expression.tsv
+    clinical_path: data/processed/bulk/tcga_stad_clinical.tsv
+  - name: GSE62254
+    role: external_validation
+    expression_path: data/processed/bulk/gse62254_expression.tsv
+    clinical_path: data/processed/bulk/gse62254_clinical.tsv
+  - name: GSE84437
+    role: external_validation
+    expression_path: data/processed/bulk/gse84437_expression.tsv
+    clinical_path: data/processed/bulk/gse84437_clinical.tsv
+
+optional_bulk_datasets:
+  - GSE15459
+  - GSE26942
+
+# Liver positive-control arm (Arm A). Independent public transcriptomes only.
+positive_control_bulk_datasets:
+  - name: TCGA-LIHC
+    role: positive_control_liver
+    cancer: liver_hcc
+    purpose: recover_serine_SM_topology_axis_where_proven
+    expression_path: data/processed/bulk/tcga_lihc_expression.tsv
+    clinical_path: data/processed/bulk/tcga_lihc_clinical.tsv
+
+# scRNA datasets. Verify contents/QC before use; log failures.
+scrna_datasets:
+  - name: GSE246662
+    role: candidate_gastric_and_liver_bridge
+    status: VERIFY_REQUIRED
+    note: "gastric cancer liver metastasis scRNA with impaired NK function"
+
+normalization:
+  bulk_expression: log2_tpm_plus_1_or_platform_specific
+  external_validation: normalize_independently
+  batch_correction: false_by_default
+
+gene_id:
+  preferred: HGNC_symbol
+  duplicate_strategy: keep_highest_mean_expression
+
+logging:
+  log_file: results/logs/LOG.md
+  failed_dataset_table: results/tables/dataset_status.tsv

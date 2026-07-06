@@ -1,0 +1,53 @@
+scrna_project:
+  primary_cancer: gastric_cancer
+  required_min_datasets: 1
+  preferred_platforms:
+    - 10x
+    - snRNA-seq
+  required_metadata_fields:
+    - patient_id
+    - tissue
+    - dataset
+    - platform
+    - condition
+
+qc:
+  use_mad_filtering: true
+  remove_doublets: true
+  doublet_method: scrublet
+  min_genes: null
+  max_mito_percent: null
+
+integration:
+  default_method: scvi
+  fallback_method: harmony
+  batch_keys:
+    - dataset
+    - patient_id
+
+annotation:
+  celltypist: true
+  marker_validation: true
+  needs_review_log: true
+
+nk_ilc_markers:
+  keep:
+    - NCAM1
+    - KLRD1
+    - NKG7
+    - GNLY
+    - KLRF1
+    - EOMES
+  exclude_t:
+    - CD3D
+    - CD3E
+    - CD3G
+    - TRAC
+  tissue_resident_ilc1_like:
+    - CXCR6
+    - ITGA1
+    - ITGAE
+    - ZNF683
+  circulating_nk:
+    - S1PR5
+    - FCGR3A

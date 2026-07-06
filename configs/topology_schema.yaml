@@ -1,0 +1,31 @@
+status: GATED
+description: >
+  This schema is for future paired transcriptome-to-membrane-topology data.
+  No real topology values are currently available. Do not use mock values for
+  scientific claims.
+
+sample_fields:
+  - sample_id
+  - cell_id
+  - patient_id
+  - cancer_type
+  - tissue
+  - assay_type
+
+transcriptome_fields:
+  - expression_matrix_path
+  - gene_id_type
+  - normalization_method
+
+topology_targets:
+  - membrane_protrusion_density
+  - microvilli_density
+  - membrane_roughness
+  - immune_synapse_contact_area
+  - topology_state_label
+
+rules:
+  allow_mock_for_code_test_only: true
+  mock_file_pattern: "*_MOCK_*"
+  real_training_requires_topology_targets: true
+  missing_real_data_behavior: raise_clear_error

@@ -1,0 +1,96 @@
+sst_axis:
+  status: ACTIVE
+  anchor_papers:
+    - title: "Tumors evade immune cytotoxicity by altering the surface topology of NK cells"
+      journal: "Nat Immunol"
+      year: 2023
+      doi: "10.1038/s41590-023-01462-9"
+      pmid: "36959292"
+    - title: "Sphingomyelin is a prospective metabolic immune checkpoint for natural killer cells"
+      journal: "Clin Transl Med"
+      year: 2023
+      doi: "10.1002/ctm2.1395"
+
+  modules:
+
+    tumor_serine_capacity:
+      role: tumor_side
+      cell_type_attribution: malignant
+      genes: [PHGDH, PSAT1, PSPH, SHMT1, SHMT2, MTHFD1, MTHFD2, MTHFD1L, SLC1A4, SLC1A5]
+      expected_direction: NEEDS_REVIEW
+
+    nk_sm_synthesis:
+      role: immune_side
+      cell_type_attribution: nk
+      genes: [SGMS1, SGMS2]
+      expected_direction: higher_is_more_topology_permissive
+
+    nk_sm_catabolism:
+      role: immune_side
+      cell_type_attribution: nk
+      genes: [SMPD1, SMPD2, SMPD3, SMPD4]
+      expected_direction: higher_is_less_topology_permissive
+
+    nk_denovo_sphingolipid:
+      role: immune_side
+      cell_type_attribution: nk
+      genes: [SPTLC1, SPTLC2, SPTLC3, SPTSSA, CERS2, CERS4, CERS5, CERS6, DEGS1]
+      expected_direction: context_dependent
+
+    nk_protrusion_machinery:
+      role: immune_side
+      cell_type_attribution: nk
+      genes: [EZR, MSN, RDX,
+              ACTR2, ACTR3, ARPC1B, ARPC2, ARPC3, ARPC4, ARPC5,
+              WAS, WASL, WASF1, WASF2, WASF3, WIPF1,
+              CDC42, RAC1, RHOA,
+              DIAPH1, DIAPH3, FMNL1,
+              BAIAP2, PACSIN2]
+      expected_direction: higher_is_more_topology_permissive
+
+    nk_synapse_cytotoxicity_outcome:
+      role: outcome_anchor
+      cell_type_attribution: nk
+      genes: [NKG7, GNLY, GZMB, PRF1, IFNG,
+              LCP2, LAT, VAV1, TLN1, ITGAL, ITGB2]
+      expected_direction: axis_positive_correlate
+
+    checkpoint_link:
+      role: therapeutic_hook
+      cell_type_attribution: nk
+      genes: [HAVCR2]
+      expected_direction: higher_is_less_topology_permissive
+
+  derived_scores:
+    tumor_serine_capacity_score: mean_zscore(tumor_serine_capacity, cells=malignant)
+    nk_sm_balance_score: "mean_zscore(nk_sm_synthesis) - mean_zscore(nk_sm_catabolism)"
+    nk_protrusion_machinery_score: mean_zscore(nk_protrusion_machinery, cells=nk)
+    nk_topology_permissive_score: >
+      composite(nk_sm_balance_score, nk_protrusion_machinery_score)
+    sst_axis_score: >
+      integrated(tumor_serine_capacity_score, nk_topology_permissive_score,
+                 nk_synapse_cytotoxicity_outcome)
+
+  attribution:
+    require_celltype_resolution_before_axis_claim: true
+    method: scrna_anchored
+    bulk_deconvolution_fallback: [CIBERSORTx_or_local, quanTIseq_or_local]
+
+  graph:
+    new_node_types:
+      - tumor_serine_program
+      - nk_topology_state
+    new_edge_types:
+      - metabolic_crosstalk
+      - sm_topology_axis
+    rules:
+      - metabolic_crosstalk edges require cell-type-resolved endpoints
+      - crosstalk edge sign is CALIBRATED, never assumed; log as NEEDS_REVIEW until 14R.5 passes
+      - no crosstalk edge derived from external-validation labels
+
+  positive_control:
+    cohort: TCGA-LIHC
+    scrna_intratumoral_vs_peritumoral_nk_dataset: SEARCH_REQUIRED
+
+  extension:
+    cohort_group: gastric_cancer
