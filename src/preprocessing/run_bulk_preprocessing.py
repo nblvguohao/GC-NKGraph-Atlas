@@ -16,6 +16,7 @@ import sys
 import argparse
 from pathlib import Path
 
+import gzip
 import pandas as pd
 import numpy as np
 
@@ -104,12 +105,31 @@ def resolve_duplicates(expression_df: pd.DataFrame, strategy: str = "highest_mea
         raise ValueError(f"Unknown duplicate strategy: {strategy}")
 
 
+def _open_maybe_gzip(path: str, mode: str = "rt"):
+    """Open a file, transparently handling gzip if needed."""
+    if path.endswith(".gz") or path.endswith(".gzip"):
+        return gzip.open(path, mode)
+    # Check magic bytes for gzip
+    with open(path, "rb") as f:
+        magic = f.read(2)
+    if magic == b"\x1f\x8b":
+        return gzip.open(path, mode)
+    return open(path, mode)
+
+
 def load_xena_expression(path: str) -> pd.DataFrame:
     """Load TCGA expression from UCSC Xena HiSeqV2 format.
 
     Xena HiSeqV2 format: first column 'sample' with gene symbols, rest are samples.
+    Files may be gzipped even without .gz extension.
     """
-    df = pd.read_csv(path, sep="\t", index_col=0, compression="infer")
+    # Try reading with inferred compression; if file is gzipped without
+    # .gz extension, compression="infer" won't detect it, so try gzip as fallback
+    try:
+        df = pd.read_csv(path, sep="\t", index_col=0, compression="infer")
+    except (UnicodeDecodeError, ValueError):
+        with gzip.open(path, "rt") as f:
+            df = pd.read_csv(f, sep="\t", index_col=0)
     df.index.name = "gene"
     return df
 
@@ -125,7 +145,7 @@ def load_geo_expression(path: str) -> pd.DataFrame:
 
     GEO series matrix format: expression values start after '!series_matrix_table_begin'
     """
-    with open(path, "r") as f:
+    with _open_maybe_gzip(path, "rt") as f:
         lines = f.readlines()
 
     # Find table boundaries
