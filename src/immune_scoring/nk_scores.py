@@ -251,6 +251,8 @@ def main():
 
     if all_labels:
         merged_labels = pd.concat(all_labels)
+        # Reset index so sample_id becomes a column
+        merged_labels = merged_labels.reset_index().rename(columns={"index": "sample_id"})
         save_table(
             merged_labels,
             os.path.join(args.output_dir, "nk_state_labels.tsv"),

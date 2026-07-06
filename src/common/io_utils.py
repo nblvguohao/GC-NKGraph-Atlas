@@ -51,11 +51,16 @@ def save_table(
     df.to_csv(path, sep="\t", index=index, mode="a")
 
 
-def load_table(path: str, skip_provenance: bool = True) -> pd.DataFrame:
+def load_table(path: str, skip_provenance: bool = True, index_col: int = 0) -> pd.DataFrame:
     """Load a TSV, optionally skipping provenance comment lines."""
     if skip_provenance:
-        return pd.read_csv(path, sep="\t", comment="#")
-    return pd.read_csv(path, sep="\t")
+        df = pd.read_csv(path, sep="\t", comment="#", index_col=index_col)
+    else:
+        df = pd.read_csv(path, sep="\t", index_col=index_col)
+    df.columns = [str(c).replace("Unnamed: 0", "sample_id") for c in df.columns]
+    if "sample_id" in df.columns and df.index.name != "sample_id":
+        df = df.set_index("sample_id") if "sample_id" in df.columns else df
+    return df
 
 
 def ensure_dir(path: str) -> Path:
