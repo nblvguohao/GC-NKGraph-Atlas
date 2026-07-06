@@ -1,0 +1,273 @@
+# ==============================================================================
+# mechanism_card.template.yaml
+#
+# A "mechanism card" encodes ONE published wet-lab mechanism as a machine-readable
+# recipe for a scalable, transcriptome-based computational target-discovery run.
+#
+# This is the reusable intellectual core of the framework. To apply the framework
+# to a new mechanism, copy the schema below, fill it in, drop it under
+#   configs/mechanism_cards/<mechanism_id>.yaml
+# and the pipeline (Phase 14R-style axis module + graph + validation) consumes it.
+#
+# Two documents follow:
+#   [1] SCHEMA        — commented skeleton; the contract every card must satisfy.
+#   [2] EXAMPLE       — a fully populated card for the Zheng 2023 NK SM-topology
+#                       mechanism, used as the reference instance.
+#
+# Design principle: separate what is COMPUTABLE (transcriptional proxy) from what
+# is GATED (physical / metabolite ground truth). Never let the second masquerade
+# as the first. Directions that depend on cross-cell-type metabolite crosstalk are
+# CALIBRATED on a positive-control cohort, never hard-coded.
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# [1] SCHEMA
+# ------------------------------------------------------------------------------
+mechanism_card:
+  id:                    # short slug, e.g. zheng_nk_sm_topology
+  version:               # semver, e.g. 0.1.0
+  status:                # DRAFT | ACTIVE | GATED
+  one_line:              # one-sentence statement of the mechanism
+
+  origin:                # provenance of the wet-lab finding (NEVER fabricate)
+    paper_title:
+    authors:
+    journal:
+    year:
+    doi:
+    pmid:
+    lab:
+    notes:               # e.g. "co-corresponding author is the target PI"
+
+  biology:
+    phenotype:           # the observable phenotype (e.g. loss of membrane protrusions)
+    cell_type_affected:  # which cell the phenotype is IN (e.g. intratumoral NK)
+    tissue_context:      # origin tissue (e.g. liver / HCC)
+    mechanistic_chain:   # ordered list of causal steps, source -> ... -> outcome
+      - step:
+        actor_cell_type: # tumor | nk | stroma | ...
+        molecular_event:
+
+  # ---- The COMPUTABLE layer: what transcriptomes CAN measure ----
+  transcriptional_proxy:
+    status: ACTIVE
+    claim_boundary:      # the ONLY permitted claim wording for outputs from this card
+    modules:
+      - name:
+        role:            # tumor_side | immune_side | stroma_side | outcome_anchor | therapeutic_hook
+        cell_type_attribution:   # which cell type to score this module on (mandatory)
+        genes: []        # STARTING set; must pass marker_validation; log curation NEEDS_REVIEW
+        expected_direction:      # or NEEDS_REVIEW if it is a crosstalk term to be calibrated
+    derived_scores: {}   # deterministic formulas over modules
+    attribution:
+      require_celltype_resolution_before_claim: true
+      method:            # scrna_anchored | deconvolution
+      unresolved_flag:   # label used when attribution is unavailable (e.g. MIXED_UNRESOLVED)
+    caveats:             # explicit list; MUST include "proxy != physical != flux" where relevant
+
+  # ---- The GATED layer: physical / metabolite ground truth ----
+  physical_ground_truth:
+    status: GATED
+    data_modality: []    # e.g. SEM imaging, single-cell mass spectrometry
+    targets: []          # e.g. membrane_protrusion_density, membrane_SM_content
+    availability:        # UNAVAILABLE | PARTIAL | AVAILABLE(accession)
+    mock_policy:
+      allow_mock_for_code_test_only: true
+      mock_file_pattern: "*_MOCK_*"
+      real_loader_missing_data_behavior: raise_clear_error
+      mock_excluded_from_claims: true
+
+  graph_integration:
+    new_node_types: []
+    new_edge_types: []
+    rules: []            # e.g. crosstalk edges require cell-type-resolved endpoints
+
+  validation:
+    positive_control:
+      purpose:           # recover the published mechanism where it was proven
+      cohort:            # e.g. TCGA-LIHC
+      scrna_dataset:     # accession or SEARCH_REQUIRED or DATA_UNAVAILABLE
+      prereg_hypotheses: []   # each with expected direction; PASS/FAIL reported
+      recovery_definition:
+    extension:
+      purpose:           # apply to a NEW system = the novel contribution
+      cohort_group:
+    gold_standard_genes: []   # known-mechanism genes the ranking should recover
+
+  therapeutic_hook:
+    intervention:
+    combination:
+    patient_stratification_readout:
+    validation_assays: []     # the actual wet-lab assays of the origin lab
+
+  provenance:
+    created_by:
+    created_date:
+    calibration_status:  # PENDING | CALIBRATED_ON(cohort) | NEEDS_REVIEW
+    change_log: []
+
+---
+
+# ------------------------------------------------------------------------------
+# [2] EXAMPLE — reference instance
+# ------------------------------------------------------------------------------
+mechanism_card:
+  id: zheng_nk_sm_topology
+  version: 0.1.0
+  status: ACTIVE
+  one_line: >
+    Tumor serine-metabolism dysregulation lowers sphingomyelin in NK-cell
+    membranes, collapsing membrane protrusions and lytic synapse formation and
+    abolishing NK cytotoxicity; rescued by blocking SM catabolism, synergistic
+    with Tim3 blockade.
+
+  origin:
+    paper_title: "Tumors evade immune cytotoxicity by altering the surface topology of NK cells"
+    authors: "Zheng X, Hou Z, Qian Y, ... Tian Z, Huang G, Wei H"
+    journal: "Nature Immunology"
+    year: 2023
+    doi: "10.1038/s41590-023-01462-9"
+    pmid: "36959292"
+    lab: "Wei Haiming / Zheng Xiaohu / Tian Zhigang, USTC"
+    notes: >
+      Follow-up framing "Sphingomyelin is a prospective metabolic immune
+      checkpoint for NK cells" (Clin Transl Med 2023, DOI 10.1002/ctm2.1395)
+      states the mechanism extends beyond liver to lung, colon and ovarian
+      cancers. Gastric cancer is a natural, not-yet-claimed digestive-tract
+      extension.
+
+  biology:
+    phenotype: "Loss / shortening of NK-cell membrane protrusions (microvilli); smooth, rounded NK surface"
+    cell_type_affected: "intratumoral NK cells"
+    tissue_context: "liver / hepatocellular carcinoma (HCC)"
+    mechanistic_chain:
+      - step: 1
+        actor_cell_type: tumor
+        molecular_event: "dysregulated tumor serine metabolism reduces serine available for NK sphingolipid synthesis"
+      - step: 2
+        actor_cell_type: nk
+        molecular_event: "reduced sphingomyelin (SM) content in NK membrane (SGMS1-dependent synthesis vs SMPD catabolism)"
+      - step: 3
+        actor_cell_type: nk
+        molecular_event: "loss of membrane protrusions / microvilli (cortical actin / ERM / Arp2-3 machinery)"
+      - step: 4
+        actor_cell_type: nk
+        molecular_event: "failure to recognize tumor and to form lytic immunological synapse"
+      - step: 5
+        actor_cell_type: nk
+        molecular_event: "loss of cytotoxicity; Tim3 (HAVCR2) upregulated"
+
+  transcriptional_proxy:
+    status: ACTIVE
+    claim_boundary: >
+      Outputs describe a transcriptional program PERMISSIVE-OF / ASSOCIATED-WITH
+      the topology phenotype. Never claim prediction of physical membrane
+      topology or of SM metabolite content from transcriptome.
+    modules:
+      - name: tumor_serine_capacity
+        role: tumor_side
+        cell_type_attribution: malignant
+        genes: [PHGDH, PSAT1, PSPH, SHMT1, SHMT2, MTHFD1, MTHFD2, MTHFD1L, SLC1A4, SLC1A5]
+        expected_direction: NEEDS_REVIEW    # crosstalk term; calibrate on positive control
+      - name: nk_sm_synthesis
+        role: immune_side
+        cell_type_attribution: nk
+        genes: [SGMS1, SGMS2]
+        expected_direction: higher_is_more_topology_permissive
+      - name: nk_sm_catabolism
+        role: immune_side
+        cell_type_attribution: nk
+        genes: [SMPD1, SMPD2, SMPD3, SMPD4]
+        expected_direction: higher_is_less_topology_permissive
+      - name: nk_denovo_sphingolipid
+        role: immune_side
+        cell_type_attribution: nk
+        genes: [SPTLC1, SPTLC2, SPTLC3, SPTSSA, CERS2, CERS4, CERS5, CERS6, DEGS1]
+        expected_direction: context_dependent
+      - name: nk_protrusion_machinery
+        role: immune_side
+        cell_type_attribution: nk
+        genes: [EZR, MSN, RDX, ACTR2, ACTR3, ARPC1B, ARPC2, ARPC3, ARPC4, ARPC5,
+                WAS, WASL, WASF1, WASF2, WASF3, WIPF1, CDC42, RAC1, RHOA,
+                DIAPH1, DIAPH3, FMNL1, BAIAP2, PACSIN2]
+        expected_direction: higher_is_more_topology_permissive
+      - name: nk_synapse_cytotoxicity_outcome
+        role: outcome_anchor
+        cell_type_attribution: nk
+        genes: [NKG7, GNLY, GZMB, PRF1, IFNG, LCP2, LAT, VAV1, TLN1, ITGAL, ITGB2]
+        expected_direction: axis_positive_correlate
+      - name: checkpoint_link
+        role: therapeutic_hook
+        cell_type_attribution: nk
+        genes: [HAVCR2]
+        expected_direction: higher_is_less_topology_permissive
+    derived_scores:
+      tumor_serine_capacity_score: "mean_zscore(tumor_serine_capacity | malignant)"
+      nk_sm_balance_score: "mean_zscore(nk_sm_synthesis) - mean_zscore(nk_sm_catabolism)"
+      nk_protrusion_machinery_score: "mean_zscore(nk_protrusion_machinery | nk)"
+      nk_topology_permissive_score: "composite(nk_sm_balance_score, nk_protrusion_machinery_score)"
+      sst_axis_score: "integrated(tumor_serine_capacity_score[calibrated sign], nk_topology_permissive_score, outcome)"
+    attribution:
+      require_celltype_resolution_before_claim: true
+      method: scrna_anchored
+      unresolved_flag: MIXED_UNRESOLVED
+    caveats:
+      - "Transcriptional proxy != physical topology != metabolite flux."
+      - "Serine/SM crosstalk is a metabolite-level effect; transcription captures machinery/capacity only."
+      - "SM/serine/actin genes are broadly expressed; cell-type attribution is mandatory before any tumor-vs-NK claim."
+      - "Tumor-serine direction w.r.t. NK SM availability MUST be calibrated, not assumed."
+
+  physical_ground_truth:
+    status: GATED
+    data_modality: ["SEM / super-resolution imaging", "single-immunocyte mass spectrometry"]
+    targets: [membrane_protrusion_density, microvilli_density, membrane_roughness,
+              immune_synapse_contact_area, membrane_SM_content]
+    availability: UNAVAILABLE
+    mock_policy:
+      allow_mock_for_code_test_only: true
+      mock_file_pattern: "*_MOCK_*"
+      real_loader_missing_data_behavior: raise_clear_error
+      mock_excluded_from_claims: true
+
+  graph_integration:
+    new_node_types: [tumor_serine_program, nk_topology_state]
+    new_edge_types: [metabolic_crosstalk, sm_topology_axis]
+    rules:
+      - "metabolic_crosstalk edges require cell-type-resolved endpoints"
+      - "crosstalk edge sign is calibrated on the positive-control cohort, not assumed"
+      - "no edge derived from external-validation labels"
+
+  validation:
+    positive_control:
+      purpose: "recover the published serine->SM->topology->cytotoxicity axis where it was proven"
+      cohort: TCGA-LIHC
+      scrna_dataset: SEARCH_REQUIRED   # check DOI 10.1038/s41590-023-01462-9 Data Availability; never fabricate
+      prereg_hypotheses:
+        - "H1 tumor_serine_capacity ⟂ nk_sm_balance (direction calibrated, reported)"
+        - "H2 nk_sm_balance (+) nk_protrusion_machinery"
+        - "H3 nk_protrusion_machinery (+) cytotoxicity anchors"
+        - "H4 nk_topology_permissive (−) HAVCR2 / dysfunction"
+        - "H5 intratumoral NK < peritumoral/peripheral NK in sm_balance & protrusion machinery (scRNA)"
+      recovery_definition: "H2-H5 pass in pre-registered direction in liver"
+    extension:
+      purpose: "test the same axis in a new, unclaimed cancer = the novel result"
+      cohort_group: gastric_cancer
+    gold_standard_genes: [SGMS1, SMPD1, SMPD3, PHGDH, PSAT1, HAVCR2, ADAM10, ADAM17, TIGIT, MICA, MICB]
+
+  therapeutic_hook:
+    intervention: "restore NK sphingomyelin (inhibit SM catabolism: ASM/SMPD1, NSMASE1-3/SMPD2-4)"
+    combination: "sphingomyelinase inhibition + Tim3 (HAVCR2) checkpoint blockade"
+    patient_stratification_readout: "in-silico SM-restoration benefit ranking (Phase 14R.8)"
+    validation_assays:
+      - "NK-tumor co-culture cytotoxicity assay"
+      - "SEM / super-resolution membrane-protrusion imaging"
+      - "single-immunocyte mass spectrometry (membrane SM)"
+      - "lytic immune-synapse formation assay"
+      - "sphingomyelinase-inhibitor rescue +/- Tim3 blockade"
+
+  provenance:
+    created_by: ""            # fill in
+    created_date: ""          # fill in
+    calibration_status: PENDING   # -> CALIBRATED_ON(TCGA-LIHC) after Phase 14R.5
+    change_log:
+      - "0.1.0 initial card from Nat Immunol 2023 + Clin Transl Med 2023 framing"
