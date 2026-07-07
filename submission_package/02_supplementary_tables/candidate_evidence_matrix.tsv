@@ -1,0 +1,88 @@
+gene	target_category	sst_axis_membership	in_sst_axis	in_axis_core	tumor_specificity_log2	nk_dysfunction_correlation	nk_cytotoxicity_correlation	axis_direction_consistent	druggability_category	druggability_stage	gold_standard	tumor_specificity_score	target_score	rank
+NKG7	sst_axis_nk_cytotoxicity_outcome	NK Cytotoxicity Outcome	1	1	-0.5145	-0.7268	0.7937	True			0	1.0	0.8453600119209289	1
+PRF1	sst_axis_nk_cytotoxicity_outcome	NK Cytotoxicity Outcome	1	1	-0.2245	-0.6814	0.7942	True			0	0.43623638	0.6671509233999252	2
+GZMB	sst_axis_nk_cytotoxicity_outcome	NK Cytotoxicity Outcome	1	1	-0.1467	-0.7457	0.8464	True			0	0.28499222	0.6346376698756218	3
+IFNG	sst_axis_nk_cytotoxicity_outcome	NK Cytotoxicity Outcome	1	1	-0.24	-0.4337	0.4098	True			0	0.46636856	0.6266505787277221	4
+GNLY	sst_axis_nk_cytotoxicity_outcome	NK Cytotoxicity Outcome	1	1	-0.1343	-0.7135	0.8135	True			0	0.26088646	0.620965942633152	5
+MSN	sst_axis_nk_protrusion_machinery	NK Protrusion Machinery	1	1	-0.2653	-0.1563	0.204	True			0	0.5155521	0.5859256340360641	6
+ITGB2	sst_axis_nk_cytotoxicity_outcome	NK Cytotoxicity Outcome	1	1	-0.2845	-0.0947	0.1643	True			0	0.5528772	0.5848031563186645	7
+ARPC2	sst_axis_nk_protrusion_machinery	NK Protrusion Machinery	1	1	-0.2491	-0.1714	0.2294	True			0	0.4840591	0.5794977315950394	8
+WIPF1	sst_axis_nk_protrusion_machinery	NK Protrusion Machinery	1	1	-0.2359	-0.0874	0.127	True			0	0.45839813	0.5549994489955902	9
+ARPC1B	sst_axis_nk_protrusion_machinery	NK Protrusion Machinery	1	1	-0.1824	0.1005	-0.0572	False			0	0.35439345	0.5264180416822434	10
+ITGAL	sst_axis_nk_cytotoxicity_outcome	NK Cytotoxicity Outcome	1	1	-0.1391	-0.2077	0.2352	True			0	0.27021772	0.5226053194785117	11
+SMPD3	sst_axis_nk_sm_catabolism	NK SM Catabolism	1	1	0.032	-0.0194	0.0177	False	Sphingomyelinase inhibitor	Preclinical (Zheng 2023)	1	0.062013995	0.5224841984707117	12
+TLN1	sst_axis_nk_cytotoxicity_outcome	NK Cytotoxicity Outcome	1	1	-0.1797	-0.0778	0.119	True			0	0.34914464	0.5203033987259865	13
+FMNL1	sst_axis_nk_protrusion_machinery	NK Protrusion Machinery	1	1	-0.1707	-0.1002	0.1425	True			0	0.3316485	0.5195345541024208	14
+SGMS1	sst_axis_nk_sm_synthesis	NK SM Synthesis	1	1	-0.0131	0.0231	-0.0237	False	SM synthase	Preclinical	1	0.025272163	0.5122016488824784	15
+SMPD1	sst_axis_nk_sm_catabolism	NK SM Catabolism	1	1	0.0013	-0.0463	0.0554	False	Sphingomyelinase inhibitor	Preclinical (Zheng 2023)	1	0.002332815	0.5099598445023782	16
+ACTR2	sst_axis_nk_protrusion_machinery	NK Protrusion Machinery	1	1	-0.1662	0.0216	0.0204	False			0	0.32290044	0.5011901392412186	17
+ARPC3	sst_axis_nk_protrusion_machinery	NK Protrusion Machinery	1	1	-0.1611	0.0111	0.0379	False			0	0.312986	0.4961158004117012	18
+EZR	sst_axis_nk_protrusion_machinery	NK Protrusion Machinery	1	1	-0.1404	-0.0673	0.0745	True			0	0.27274495	0.4952834905600547	19
+WAS	sst_axis_nk_protrusion_machinery	NK Protrusion Machinery	1	1	-0.1504	0.0006	0.029	False			0	0.29218507	0.4877755219292641	20
+LCP2	sst_axis_nk_cytotoxicity_outcome	NK Cytotoxicity Outcome	1	1	-0.0883	0.1503	-0.1358	False			0	0.17146188	0.4814985662972927	21
+RAC1	sst_axis_nk_protrusion_machinery	NK Protrusion Machinery	1	1	0.0766	0.1836	-0.1577	False			0	0.14871694	0.48133508244276046	22
+ARPC5	sst_axis_nk_protrusion_machinery	NK Protrusion Machinery	1	1	-0.0857	0.1195	-0.0819	False			0	0.16640745	0.4738222390353679	23
+DIAPH1	sst_axis_nk_protrusion_machinery	NK Protrusion Machinery	1	1	-0.0667	-0.1673	0.1973	True			0	0.12947121	0.47230136676788326	24
+ACTR3	sst_axis_nk_protrusion_machinery	NK Protrusion Machinery	1	1	-0.1162	-0.017	0.0598	True			0	0.22569984	0.4711099525928497	25
+RHOA	sst_axis_nk_protrusion_machinery	NK Protrusion Machinery	1	1	-0.1078	0.0216	0.0123	False			0	0.20937014	0.4671310468387604	26
+HAVCR2	sst_axis_checkpoint_link	Checkpoint Link	1	0	-0.0777	-0.0979	0.2647		Checkpoint inhibitor	FDA approved (lung, liver)	1	0.15085535	0.46483660723447795	27
+WASF2	sst_axis_nk_protrusion_machinery	NK Protrusion Machinery	1	1	-0.0837	-0.0619	0.0972	True			0	0.16251944	0.4611358357417583	28
+ARPC4	sst_axis_nk_protrusion_machinery	NK Protrusion Machinery	1	1	-0.0765	-0.0169	0.0573	True			0	0.14852254	0.447936763023138	29
+BAIAP2	sst_axis_nk_protrusion_machinery	NK Protrusion Machinery	1	1	0.0528	0.068	-0.0751	False			0	0.102449454	0.44433483705520627	30
+PHGDH	metabolic_suppression	Tumor Serine Capacity	1	0	0.0588	-0.0156	0.0111		Serine metabolism	Phase 1/2 (breast cancer)	1	0.114113525	0.4373540581119061	31
+SGMS2	sst_axis_nk_sm_synthesis	NK SM Synthesis	1	1	0.0381	0.0743	-0.0841	False	SM synthase	Preclinical	0	0.07387247	0.43702174080967904	32
+WASL	sst_axis_nk_protrusion_machinery	NK Protrusion Machinery	1	1	0.0619	-0.0035	0.0116	True			0	0.120139964	0.43674198992252344	33
+CDC42	sst_axis_nk_protrusion_machinery	NK Protrusion Machinery	1	1	-0.041	0.026	0.0074	False			0	0.07951011	0.42905303378105164	34
+PACSIN2	sst_axis_nk_protrusion_machinery	NK Protrusion Machinery	1	1	0.0233	0.0729	-0.0666	False			0	0.045101088	0.42811032700717444	35
+VAV1	sst_axis_nk_cytotoxicity_outcome	NK Cytotoxicity Outcome	1	1	-0.045	0.0012	0.0142	False			0	0.08728616	0.42642584968149666	36
+LAT	sst_axis_nk_cytotoxicity_outcome	NK Cytotoxicity Outcome	1	1	-0.0159	-0.0347	0.0438	True			0	0.030715398	0.4161546201059222	37
+PSAT1	metabolic_suppression	Tumor Serine Capacity	1	0	0.016	-0.0034	0.0015		Serine metabolism	Preclinical	1	0.030909799	0.40995294045686725	38
+RDX	sst_axis_nk_protrusion_machinery	NK Protrusion Machinery	1	1	-0.0021	0.0409	-0.0385	False			0	0.0038880245	0.40934640736814587	39
+WASF1	sst_axis_nk_protrusion_machinery	NK Protrusion Machinery	1	1	0.0067	0.0239	-0.0216	False			0	0.012830482	0.40862914479218426	40
+WASF3	sst_axis_nk_protrusion_machinery	NK Protrusion Machinery	1	1	0.0077	0.011	-0.0092	False			0	0.014774495	0.40663234853446484	41
+DIAPH3	sst_axis_nk_protrusion_machinery	NK Protrusion Machinery	1	1	0.0043	-0.0072	0.0265	True			0	0.008164853	0.40388945590384306	42
+SMPD4	sst_axis_nk_sm_catabolism	NK SM Catabolism	1	1	1e-04	-0.0127	0.018	False			0	0.0	0.40254	43
+SMPD2	sst_axis_nk_sm_catabolism	NK SM Catabolism	1	1	0.0036	-0.0009	0.0063	False			0	0.0068040434	0.4022212132143974	44
+DEGS1	sst_axis_nk_de_novo_sphingolipid	NK De Novo Sphingolipid	1	0	-0.0513	0.0073	0.0121				0	0.09953343	0.3313200308597088	45
+CERS6	sst_axis_nk_de_novo_sphingolipid	NK De Novo Sphingolipid	1	0	0.022	0.0662	-0.0433				0	0.042573873	0.3260121624448895	46
+CERS4	sst_axis_nk_de_novo_sphingolipid	NK De Novo Sphingolipid	1	0	-0.008	-0.0934	0.1113				0	0.015357699	0.3232873100529611	47
+MTHFD1L	sst_axis_tumor_serine_capacity	Tumor Serine Capacity	1	0	0.0005	0.0992	-0.0937				0	0.000777605	0.3200732815056434	48
+CERS5	sst_axis_nk_de_novo_sphingolipid	NK De Novo Sphingolipid	1	0	-0.0115	-0.0605	0.0734				0	0.022161743	0.31874852326735853	49
+MTHFD2	sst_axis_tumor_serine_capacity	Tumor Serine Capacity	1	0	-0.0301	0.0053	0.0128				0	0.05832037	0.3185561108714342	50
+SLC1A5	sst_axis_tumor_serine_capacity	Tumor Serine Capacity	1	0	0.0132	-0.0423	0.0486				0	0.025466563	0.3160999692334235	51
+SPTSSA	sst_axis_nk_de_novo_sphingolipid	NK De Novo Sphingolipid	1	0	0.0248	-0.003	0.0063				0	0.048017107	0.3150051322713494	52
+CERS2	sst_axis_nk_de_novo_sphingolipid	NK De Novo Sphingolipid	1	0	0.0057	-0.049	0.0658				0	0.01088647	0.3130659410499036	53
+SLC1A4	sst_axis_tumor_serine_capacity	Tumor Serine Capacity	1	0	-0.0113	-0.0303	0.0461				0	0.02177294	0.31259188209980726	54
+SHMT2	sst_axis_tumor_serine_capacity	Tumor Serine Capacity	1	0	0.0082	0.0297	-0.009				0	0.0157465	0.3106639502891898	55
+SPTLC2	sst_axis_nk_de_novo_sphingolipid	NK De Novo Sphingolipid	1	0	-0.0122	-0.0047	0.0203				0	0.02352255	0.3079967652583122	56
+PSPH	metabolic_suppression	Tumor Serine Capacity	1	0	0.0097	0.0118	-0.0039		Serine metabolism	Preclinical	0	0.01866252	0.307958756019026	57
+SHMT1	sst_axis_tumor_serine_capacity	Tumor Serine Capacity	1	0	0.0063	0.0095	0.002				0	0.012052878	0.30551586338840425	58
+SPTLC1	sst_axis_nk_de_novo_sphingolipid	NK De Novo Sphingolipid	1	0	0.0041	0.0069	0.0062				0	0.00777605	0.3037128149691224	59
+MTHFD1	sst_axis_tumor_serine_capacity	Tumor Serine Capacity	1	0	0.0041	-0.004	0.0132				0	0.00777605	0.3031328149691224	60
+SPTLC3	sst_axis_nk_de_novo_sphingolipid	NK De Novo Sphingolipid	1	0	0.0015	0.0098	0.0035				0	0.0027216175	0.3027764852624759	61
+HLA-E	nk_inhibitory_ligand		0	0	-0.3964	-0.2781	0.3298				0	0.77041215	0.2867436560344696	62
+ADAM17	stress_ligand_shedding		0	0	-0.0323	0.1154	-0.1066		Protease inhibitor	Phase 1/2 clinical	1	0.06259719	0.14185915859222414	63
+ADAM10	stress_ligand_shedding		0	0	-0.038	-0.0314	0.0559		Protease inhibitor	Phase 1/2 clinical	1	0.07367807	0.12838342139005662	64
+MICB	stress_ligand_shedding		0	0	-0.0196	-0.0768	0.0847		Stress ligand	Preclinical	1	0.03790824	0.1267324730908871	65
+MICA	stress_ligand_shedding		0	0	0.0059	-0.0081	0.0314		Stress ligand	Preclinical	1	0.011275273	0.10500258198462427	66
+COL1A1	caf_ecm_exclusion		0	0	0.1486	0.0606	-0.0566				0	0.28868583	0.0987257500243187	67
+COL1A2	caf_ecm_exclusion		0	0	0.1489	0.0557	-0.0593				0	0.28926906	0.09792071945905685	68
+NECTIN2	nk_inhibitory_ligand		0	0	0.1094	0.1675	-0.1665				0	0.21248055	0.09724416500329972	69
+FN1	caf_ecm_exclusion		0	0	0.0294	0.2174	-0.2129				0	0.056959566	0.06056787120878697	70
+ERBB2	gastric_cancer_target		0	0	0.0687	-0.0785	0.1011				0	0.13335925	0.05570777751207352	71
+CA9	metabolic_suppression		0	0	0.0844	0.023	-0.0302				0	0.16388024	0.053764075404405594	72
+LDHA	metabolic_suppression		0	0	-0.0859	0.0129	0.0207		Metabolic	Preclinical	0	0.16679627	0.052618881599903106	73
+SLC16A3	metabolic_suppression		0	0	-0.0232	0.1663	-0.1331				0	0.044906687	0.0467320066562295	74
+ENTPD1	adenosine_pathway		0	0	-0.0099	0.187	-0.0756		Adenosine (CD39)	Phase 1/2 clinical	0	0.019051323	0.04311539718657732	75
+TGFBR2	caf_ecm_exclusion		0	0	-0.035	-0.068	0.0684				0	0.06784603	0.033953808999061585	76
+FGFR2	gastric_cancer_target		0	0	0.0521	0.0172	-0.0233				0	0.10108864	0.03376659366726875	77
+TGFBR1	caf_ecm_exclusion		0	0	-0.0291	-0.0685	0.0817				0	0.056376364	0.030612909224629406	78
+MET	gastric_cancer_target		0	0	0.0382	0.0389	-0.043				0	0.07406687	0.0300000620919466	79
+PVR	nk_inhibitory_ligand		0	0	0.0198	0.0699	-0.0715				0	0.038297046	0.02546911379277706	80
+ULBP2	stress_ligand_shedding		0	0	-0.0192	-0.0635	0.0646		Stress ligand	Preclinical	0	0.03713064	0.02383919168710709	81
+NT5E	adenosine_pathway		0	0	0.013	0.0365	-0.0424		Adenosine (CD73)	Phase 1/2 clinical	0	0.02507776	0.01482332853153348	82
+FAP	caf_ecm_exclusion		0	0	0.0127	0.0165	-0.0134				0	0.024494557	0.010648367478698493	83
+ULBP3	stress_ligand_shedding		0	0	-1e-04	-0.0242	0.0259				0	0.0	0.0048400000000000006	84
+SLC16A1	metabolic_suppression		0	0	-0.0038	0.0001	-0.0095				0	0.007192846	0.0021778539162874222	85
+ULBP1	stress_ligand_shedding		0	0	-0.0002	0.0073	-0.0044		Stress ligand	Preclinical	0	0.00019440123	0.0015183203727728689	86
+ADORA2A	adenosine_pathway		0	0	-1e-04	0.0044	-0.004		Adenosine receptor	Phase 2 clinical	0	0.0	0.0008800000000000001	87

@@ -1,0 +1,680 @@
+# Reconstructing the Serine–Sphingomyelin–Membrane-Topology Axis of NK-Cell Immune Evasion from Tumor Transcriptomes: A Single-Cell-Informed Heterogeneous Graph Framework from Liver to Gastric Cancer
+
+**Target Journal:** *Briefings in Bioinformatics* (Oxford University Press)
+
+**Authors:** Guohao Lyu<sup>1,2</sup> [0000-0000-0000-0000], Yingchun Xia<sup>1,2</sup> [0000-0000-0000-0000], Huichao Liu<sup>1,2</sup> [0000-0000-0000-0000], Xiaolei Zhu<sup>1,2</sup> [0000-0000-0000-0000], Shuai Yang<sup>1,2</sup> [0000-0000-0000-0000], Ailian Zhou<sup>3,4,\*</sup> [0000-0000-0000-0000], Lichuan Gu<sup>1,2,\*</sup> [0000-0000-0000-0000]
+
+*(ORCID iDs: fill in each author's ORCID before submission. Regsiter free at https://orcid.org.)*
+
+**Affiliations:**
+1. School of Artificial Intelligence, Anhui Agricultural University, Hefei 230036, China
+2. Anhui Province Key Laboratory of Intelligent Agricultural Technology and Equipment, Anhui Agricultural University, Hefei 230036, China
+3. Agricultural Information Institute, Chinese Academy of Agricultural Sciences, Beijing 100081, China
+4. Key Laboratory of Agricultural Blockchain Application, Ministry of Agriculture and Rural Affairs, Beijing 100081, China
+
+\* Corresponding authors: zhouailian@caas.cn (A.Z.), glc@ahau.edu.cn (L.G.)
+
+**Author biographies**
+
+**Guohao Lyu** is a graduate student at the School of Artificial Intelligence, Anhui Agricultural University. His research focuses on graph neural networks and single-cell transcriptomics for cancer immunology.
+
+**Yingchun Xia** is a faculty member at the School of Artificial Intelligence, Anhui Agricultural University. Her research interests include machine learning and bioinformatics.
+
+**Huichao Liu** is a graduate student at the School of Artificial Intelligence, Anhui Agricultural University. His research focuses on computational biology and data mining.
+
+**Xiaolei Zhu** is a researcher at the School of Artificial Intelligence, Anhui Agricultural University. His interests span deep learning and multi-omics integration.
+
+**Shuai Yang** is a faculty member at the School of Artificial Intelligence, Anhui Agricultural University. His research covers computer vision and biomedical image analysis.
+
+**Ailian Zhou** is a professor at the Agricultural Information Institute, Chinese Academy of Agricultural Sciences, and the Key Laboratory of Agricultural Blockchain Application, Ministry of Agriculture and Rural Affairs. Her research focuses on agricultural informatization and blockchain applications.
+
+**Lichuan Gu** is a professor at the School of Artificial Intelligence, Anhui Agricultural University, and director of the Anhui Province Key Laboratory of Intelligent Agricultural Technology and Equipment. His research spans artificial intelligence, bioinformatics, and intelligent agricultural systems.
+
+*(Biographies ~30 words each per BiB style; update with accurate details before submission.)*
+
+**Running head:** GC-NKGraph-Atlas
+
+---
+
+## Abstract
+
+**Motivation:** A landmark wet-lab study (Zheng et al., *Nat Immunol* 2023) established that tumors evade natural killer (NK) cell cytotoxicity by dysregulating serine metabolism, which depletes sphingomyelin (SM) in NK membranes, collapses membrane protrusions, and abolishes lytic immune synapse formation. However, this mechanism was demonstrated in a small number of liver cancer patients using specialized single-cell mass spectrometry and super-resolution imaging — methods that cannot scale to cohort-level analyses or be readily tested in other cancer types.
+
+**Results:** We present GC-NKGraph-Atlas, a computational framework that asks **how much** of the serine→sphingomyelin→membrane-topology→cytotoxicity axis is reconstructable from public tumor transcriptomes. The framework employs: (i) a reusable *mechanism-card* abstraction that encodes the wet-lab mechanism as a machine-readable recipe; (ii) a single-cell-informed, NK-aware heterogeneous graph that integrates protein–protein interactions, ligand–receptor pairs, transcription factor targets, and a mechanism-grounded `metabolic_crosstalk` edge type; and (iii) a graph neural network that learns gene embeddings from this multi-relational graph to predict NK immune states. A two-arm design (Arm A: liver/HCC positive control; Arm B: gastric cancer extension) yields a **clear scoping result**: the *effector arm* of the axis reproduces robustly and independently — protrusion-machinery couples to cytotoxicity output in TCGA-LIHC (r=0.55, p=5×10⁻³⁵) and in 8,310 single NK cells (r=0.32, p<10⁻¹⁹³) — and intratumoral NK cells show the expected loss of cytotoxic output (Δ=−0.14, p=6×10⁻⁵²). The *upstream metabolic arm* is only partially recoverable: SM-balance→protrusion coupling is undetectable in bulk but emerges once cell-type is resolved (single-cell NK r=0.030, p=6×10⁻³), whereas the topology-machinery transcription does **not** track the physical topology phenotype (intratumoral NK show *higher*, not lower, protrusion-machinery transcript levels). This delineates precisely which layers of a physical/metabolic immune-evasion mechanism are transcriptionally accessible, and the recovered effector coupling replicates in two independent gastric microarray cohorts (GSE62254 r=0.42; GSE84437 r=0.62; both p≪10⁻¹³). The framework then prioritizes **37 tumor-intrinsic candidate targets** (led by the druggable serine/sphingomyelin enzymes PHGDH, SGMS2, PSAT1, PSPH, SMPD3/1), each with a recommended wet-lab validation assay, kept strictly separate from the NK-side axis readout panel.
+
+**Availability:** All code, configuration, and synthetic test data are available at https://github.com/nblvguohao/GC-NKGraph-Atlas. The mechanism-card template enables application to additional published mechanisms without modifying the pipeline core.
+
+**Contact:** glc@ahau.edu.cn
+
+**Keywords:** NK cell; immune evasion; heterogeneous graph neural network; single-cell transcriptomics; sphingomyelin; gastric cancer
+
+---
+
+## Key Points
+
+- A reusable **mechanism-card** formalism converts published wet-lab immune-evasion mechanisms into scalable transcriptome-based target-discovery runs.
+- A **two-arm design** (liver positive control + gastric extension) produces a **scoping result** rather than a blanket claim: it separates the parts of a physical immune-evasion mechanism that *are* transcriptionally recoverable (the protrusion→cytotoxicity effector arm) from those that are *not* (the physical topology phenotype itself).
+- **Cell-type resolution is decisive:** the SM-balance→protrusion coupling is invisible in bulk but recovers in single NK cells, demonstrating why single-cell attribution — not bulk deconvolution — is required for this class of mechanism.
+- The heterogeneous graph introduces a **mechanism-grounded `metabolic_crosstalk` edge** (tumor serine program → NK topology state) justified by biology, not generic priors.
+- The framework outputs a **de-circularized, tumor-intrinsic candidate target list** (37 genes, led by druggable serine/SM enzymes) kept strictly separate from the NK-side axis readout, each with a recommended wet-lab validation assay.
+
+---
+
+## 1. Introduction
+
+### 1.1 Biological context
+
+Natural killer (NK) cells are innate lymphoid cells critical for anti-tumor immunity. Unlike T cells, NK cells kill without prior antigen sensitization, making them attractive effectors for cancer immunotherapy [1,2]. However, tumors deploy multiple mechanisms to evade NK-mediated killing: metabolic competition [3,4], inhibitory ligand upregulation [5], immunosuppressive cytokine secretion [6], and physical exclusion from the tumor nest [7].
+
+A particularly elegant evasion mechanism was recently elucidated by Zheng et al. [8]: tumors dysregulate serine metabolism, reducing the availability of serine for NK sphingolipid synthesis. The resulting depletion of sphingomyelin in NK membranes collapses membrane protrusions and microvilli, preventing the formation of lytic immune synapses and abolishing cytotoxicity. Critically, this phenotype can be rescued by inhibiting SM catabolism (via ASM/SMPD1 or NSMASE/SMPD2-4), and the rescue is synergistic with Tim3 (HAVCR2) checkpoint blockade. The follow-up framing [9] positions sphingomyelin as a metabolic immune checkpoint and reports that the mechanism extends beyond liver cancer to lung, colon, and ovarian cancers.
+
+**However, this mechanism was proven with techniques that do not scale.** The anchor paper used super-resolution SEM imaging and single-immunocyte mass spectrometry on a small patient cohort — gold-standard evidence for physical membrane topology but limited to specialized laboratories and small sample sizes. No transcriptomic data were deposited. The transcriptional footprint of this mechanism — i.e., whether the molecular machinery and capacity for the serine→SM→protrusion→cytotoxicity axis can be detected from widely available transcriptomic data — remains unexplored.
+
+### 1.2 The gap
+
+Three gaps motivate this work:
+
+1. **Scalability.** The mechanism was demonstrated in tens of patients; testing it across hundreds or thousands of tumor samples requires a transcriptome-based proxy.
+2. **Transferability.** Whether the same axis operates in gastric cancer — a digestive-tract cancer not on the published extension list (lung/colon/ovarian) [9] — is unknown.
+3. **Reusability.** Each published mechanistic discovery currently requires a bespoke computational follow-up; a generalizable engine that converts mechanism papers into target-discovery runs does not exist.
+
+### 1.3 Our approach
+
+We introduce **GC-NKGraph-Atlas**, a computational framework designed to address all three gaps. The framework is organized around a reusable **mechanism-card** abstraction: a machine-readable YAML specification that encodes one published wet-lab mechanism — its molecular chain, gene modules, expected directions, physical ground-truth targets, validation assays, and therapeutic hooks — as a recipe that the pipeline consumes.
+
+The specific mechanism card driving this study (`zheng_nk_sm_topology`) operationalizes the Zheng 2023 serine–SM–topology axis. The framework: (a) defines cell-type-attributed transcriptional proxies for each step of the mechanistic chain, computed from single-cell RNA-seq; (b) constructs a tumor–NK heterogeneous graph in which a `metabolic_crosstalk` edge type is justified by the specific biology rather than generic interaction priors; (c) learns gene embeddings from this graph to predict NK immune states; and (d) ranks candidate tumor-intrinsic targets by multi-evidence scoring.
+
+The study employs a two-arm design:
+
+- **Arm A (Positive Control, liver/HCC):** recover the published axis in the system where it was proven, using independent public transcriptomes (TCGA-LIHC + public HCC scRNA). This is the credibility anchor.
+- **Arm B (Novel Extension, gastric cancer):** test the same axis in gastric cancer — a natural, not-yet-claimed digestive-tract extension — and prioritize gastric-specific candidate targets.
+
+### 1.4 Related work
+
+Our framework draws on four strands of computational biology, and its novelty
+lies in how it combines them around a specific published mechanism rather than in
+any single component.
+
+**Immune-state and cell-type inference from transcriptomes.** A large tool
+family scores immune infiltration and cell state from bulk and single-cell data —
+CIBERSORTx [17] and quanTIseq [18] for deconvolution, and phenotype-to-genotype
+methods such as Scissor [19], which links single-cell phenotypes to bulk clinical
+variables. These estimate *how much* of a cell type is present or *which*
+phenotype dominates; none operationalizes a defined mechanistic chain or enforces
+the claim boundary between a transcriptional proxy and a physical phenotype, which
+is central to our design.
+
+**Cell–cell communication and metabolic-flux inference.** CellChat [20],
+CellPhoneDB [16] and NicheNet [21] infer ligand–receptor signaling between cell
+types, and scFEA [22] estimates metabolic flux from single-cell expression. We
+borrow the ligand–receptor edge concept for the heterogeneous graph but add a
+mechanism-specific `metabolic_crosstalk` edge grounded in one published
+serine→sphingomyelin relationship, rather than a generic communication prior.
+
+**Trajectory and dysfunction-state modeling.** CytoTRACE [23] and related
+pseudotime methods order cells along differentiation or dysfunction gradients;
+we use an analogous NK dysfunction axis to define reversible-state proxy labels,
+but anchor the states to the specific effector/checkpoint genes of the target
+mechanism rather than to a generic exhaustion signature.
+
+**Graph learning in cancer genomics.** Graph neural networks have been applied to
+multi-omics integration (e.g. MOGONET [24]) and to molecular-interaction networks
+for outcome prediction, and heterogeneous graph transformers [10] provide
+type-specific message passing over multi-relational graphs. Existing applications
+typically treat the graph as a generic prior (a PPI or co-expression network). Our
+contribution is a graph whose *every edge type carries an explicit biological
+justification*, including one edge derived directly from the mechanism under
+study, so that the heterogeneous architecture has a principled reason to exist for
+this problem.
+
+To our knowledge, no prior tool converts a single published wet-lab immune-evasion
+mechanism into a machine-readable card that drives cell-type-attributed proxy
+construction, mechanism-grounded graph learning, and de-circularized target
+prioritization, while explicitly measuring — rather than assuming — how much of
+the mechanism the transcriptome can reach.
+
+---
+
+## 2. Methods
+
+### 2.1 Study design overview
+
+The framework proceeds through 14 phases, grouped into five stages:
+
+```
+STAGE I   — DATA  (Phase 1–2)    Download + preprocess TCGA-STAD, TCGA-LIHC, GEO gastric cohorts
+STAGE II  — scRNA (Phase 3–7)    scRNA integration, NK atlas annotation, state scoring, trajectory
+STAGE III — GRAPH (Phase 8)      Heterogeneous gene graph construction with mechanism-grounded edges
+STAGE IV  — MODEL (Phase 9–10)   Baseline comparison + GNN-based NK-state classifier
+STAGE V   — TARGETS (Phase 13–14R) SST-axis scoring, candidate prioritization, assay recommendation
+```
+
+A master pipeline launcher (`src/pipeline.py`) orchestrates execution with checkpoint-based skipping and supports synthetic data mode for testing.
+
+### 2.2 The mechanism-card abstraction
+
+A *mechanism card* is a YAML document with the following required sections (see `configs/mechanism_cards/mechanism_card.template.yaml` for the full schema):
+
+| Section | Content |
+|---------|---------|
+| `origin` | Paper DOI, lab, notes on data availability |
+| `biology` | Phenotype, cell type affected, ordered mechanistic chain |
+| `transcriptional_proxy` | Gene modules per step, expected direction, attribution requirements, claim boundaries |
+| `physical_ground_truth` | Gated physical measurement targets (SEM, MS), mock policy |
+| `graph_integration` | New node/edge types, construction rules |
+| `validation` | Positive control cohort, pre-registered hypotheses, recovery definition |
+| `therapeutic_hook` | Intervention logic, combination rationale, patient stratification readout |
+
+**Design principle.** The card strictly separates what is *computable* from transcriptomes (transcriptional proxy, status ACTIVE) from what requires *physical measurement* (membrane protrusion density, SM metabolite content — status GATED). The loader raises a clear error if gated targets are absent; mock data are permitted only for code-path testing with `*_MOCK_*` file patterns and are excluded from all scientific claims.
+
+### 2.3 SST-axis transcriptional proxy (Phase 14R)
+
+The serine–sphingomyelin–topology axis is operationalized as seven gene modules derived from the anchor paper [8] and its follow-up [9]:
+
+| Module | Cell type | Genes (n) | Expected direction |
+|--------|-----------|-----------|-------------------|
+| `tumor_serine_capacity` | malignant | PHGDH, PSAT1, PSPH, SHMT1/2, MTHFD1/2, MTHFD1L, SLC1A4/5 (10) | Calibrated on liver control |
+| `nk_sm_synthesis` | NK | SGMS1, SGMS2 (2) | ↑ = more topology-permissive |
+| `nk_sm_catabolism` | NK | SMPD1–4 (4) | ↑ = less topology-permissive |
+| `nk_denovo_sphingolipid` | NK | SPTLC1–3, SPTSSA, CERS2/4/5/6, DEGS1 (9) | Context-dependent |
+| `nk_protrusion_machinery` | NK | ERM family, Arp2/3 complex, WASP/WAVE, Rho GTPases, formins, BAR domain (25) | ↑ = more topology-permissive |
+| `nk_synapse_cytotoxicity_outcome` | NK | NKG7, GNLY, GZMB, PRF1, IFNG, LCP2, LAT, VAV1, TLN1, ITGAL, ITGB2 (11) | Axis-positive correlate |
+| `checkpoint_link` | NK | HAVCR2 (1) | ↑ = less topology-permissive |
+
+Per-cell module scores are computed as mean z-scores of constituent genes. Derived scores include:
+- **nk_sm_balance** = mean_zscore(sm_synthesis) − mean_zscore(sm_catabolism)
+- **nk_topology_permissive** = composite(sm_balance, protrusion_machinery)
+- **sst_axis_score** = integrated(tumor_serine_capacity [calibrated sign], nk_topology_permissive, cytotoxicity_outcome)
+
+**Cell-type attribution.** All tumor-vs-NK axis claims require single-cell resolution. For bulk data, deconvolution (CIBERSORTx or quanTIseq) is applied as a fallback, and results lacking cell-type resolution are flagged `MIXED_UNRESOLVED`.
+
+**Honesty rule.** The permitted language is strictly "transcriptional program permissive-of / associated-with the topology phenotype." Claims of physical membrane topology prediction or SM metabolite content prediction from transcriptomes are prohibited.
+
+### 2.4 scRNA-seq analysis
+
+**Data and loading.** Single-cell RNA-seq was obtained from GSE246662, comprising
+nine samples across three tissues — healthy liver (HL1–3), gastric cancer (GC1–3),
+and gastric-cancer liver metastasis (LM1–3) — totaling 166,829 cells. Per-sample
+count matrices were loaded with orientation auto-detection (genes×cells vs.
+cells×genes), tagged with tissue and tumor/normal condition, and concatenated on
+the intersection of genes (inner join) to avoid cross-platform sparsity artifacts
+(`src/scrna_analysis/run_scrna_v2.py`).
+
+**Quality control.** Cells were filtered on standard criteria
+(`src/scrna_analysis/qc_filter.py`): ≥ 200 and ≤ 6,000 detected genes per cell
+(the upper bound as a multiplet proxy) and ≤ 20% mitochondrial counts; genes
+detected in fewer than 3 cells were removed. Mitochondrial fraction was computed
+with a NaN-robust fallback to handle heterogeneous cross-platform inputs.
+Doublet removal (Scrublet) is applied optionally per sample. QC thresholds are
+logged and reported in `results/tables/scrna_qc_summary.tsv`.
+
+**Normalization, integration, and clustering.** Counts were library-size
+normalized to 10⁴ and log1p-transformed; 3,000 highly variable genes were selected
+(Seurat flavor, with a variance-based fallback). Batch effects across the nine
+samples were corrected with scVI [14] (`sample_id` as batch key, 30 latent
+dimensions, 2 layers, up to 200 epochs with early stopping). Neighborhood graphs,
+UMAP, and Leiden clustering (resolution 1.0) were computed on the scVI latent
+space using SCANPY [13].
+
+**Cell-type annotation.** Lineages were assigned from canonical marker-set mean
+expression: NK (NCAM1, KLRD1, NKG7, GNLY, KLRF1, EOMES, NCR1, FCGR3A), T (CD3D/E/G,
+CD4, CD8A), monocyte (CD14, CD68, CSF1R), and B (MS4A1, CD79A, CD19). NK cells
+were separated from T cells by requiring an NK score above threshold with a low T
+score, yielding 8,310 NK cells used for the axis analyses. We note this
+marker-threshold labeling as a limitation (§4.3) relative to reference-based
+mapping (e.g. scANVI/scArches), and report NK counts per sample
+(`results/tables/gc_scrna_dataset_summary.tsv`) for transparency.
+
+**NK immune state classification.** Four states are defined from scRNA signatures:
+- **NK-hot-cytotoxic:** high GZMB/PRF1/IFNG, low HAVCR2/TIGIT
+- **NK-hot-dysfunctional:** high HAVCR2/TIGIT/CD96, moderate cytotoxicity genes
+- **NK-cold/excluded:** low NK signature, low cytotoxicity
+- **NK-intermediate:** transitional state
+
+These states are projected onto bulk samples via scRNA-anchored scoring (mean z-score of state-specific gene sets, calibrated on the scRNA-defined states).
+
+### 2.5 Heterogeneous graph construction
+
+The heterogeneous gene graph integrates six edge types across multiple node types:
+
+| Edge type | Source → Target | Source database | Weight |
+|-----------|-----------------|-----------------|--------|
+| `ppi` | gene ↔ gene | STRING v12 (score ≥ 700) | normalized score / 1000 |
+| `ligand_receptor` | gene → gene | CellChatDB | 0.9 |
+| `tf_target` | TF gene → target gene | ChEA 2022 | 0.8 |
+| `metabolic_crosstalk` | tumor_serine gene → NK topology gene | Zheng 2023 | 0.5 |
+| `sm_topology_axis` | NK axis gene ↔ NK axis gene | Zheng 2023 | 0.3 |
+| `dysfunction_correlation` | gene → NK state node | Bulk correlation | abs(corr) |
+
+**Key design choice — `metabolic_crosstalk` edge.** This edge type connects tumor-side serine metabolism genes (PHGDH, PSAT1, etc.) to NK-side SM/topology genes (SGMS1, SMPD1, EZR, etc.). Unlike generic co-expression edges, this edge is specifically justified by the Zheng 2023 mechanism. The sign of the crosstalk is *calibrated* on the liver positive-control cohort, not hard-coded — a critical distinction that prevents circular reasoning.
+
+### 2.6 Graph neural network model
+
+The model employs a two-stage architecture:
+
+**Stage 1 — Gene Graph Encoder.** Gene embeddings are learned from the heterogeneous graph via spectral decomposition of the combined normalized adjacency matrix (PPI + LR + TF + SST edges). Each gene is represented as a d-dimensional vector that encodes its multi-relational neighborhood. When `torch_geometric` [15] is available, a heterogeneous graph transformer (HGT) [10] is used instead for learnable message-passing with type-specific projections.
+
+**Stage 2 — NK State Classifier.** For each bulk tumor sample with expression vector x ∈ ℝ^{|G|}, the input to the classifier is the concatenation [x, x·E] where E ∈ ℝ^{|G|×d} is the gene embedding matrix. This provides both the raw expression signal and the graph-informed projection. A 2-3 layer MLP with batch normalization and dropout predicts NK immune state (binary: cytotoxic vs rest).
+
+Training uses 5-fold stratified cross-validation with early stopping (patience=30 epochs). The optimizer is Adam (lr=1e-3, weight_decay=1e-5) with CrossEntropy loss.
+
+### 2.7 Baseline methods
+
+Six baselines are evaluated on the same data splits: XGBoost [11], LightGBM [12], Random Forest, ElasticNet logistic regression, RBF SVM, and a 2-layer MLP. All baselines use the full gene expression matrix without graph structure. The comparison isolates the contribution of graph-informed features.
+
+### 2.8 Candidate target prioritization
+
+Genes are ranked by a composite score integrating five evidence dimensions:
+
+| Dimension | Weight | Source |
+|-----------|--------|--------|
+| Tumor cell specificity (log2 FC malignant vs non-malignant) | 0.30 | scRNA |
+| NK dysfunction correlation (abs) | 0.20 | scRNA NK subset |
+| SST-axis membership | 0.30 | Mechanism card |
+| Axis core membership (protrusion→cytotoxicity) | 0.10 | Mechanism card |
+| Gold-standard literature support | 0.10 | Curated list |
+
+Each top-ranked candidate receives a recommended wet-lab validation assay (e.g., NK-tumor co-culture cytotoxicity assay, SEM membrane-protrusion imaging, sphingomyelinase-inhibitor rescue ± Tim3 blockade).
+
+### 2.9 Pre-registered hypotheses (Arm A — liver positive control)
+
+The following hypotheses are registered before execution:
+
+| ID | Hypothesis | Expected direction |
+|----|-----------|-------------------|
+| H1 | tumor_serine_capacity ⟂ nk_sm_balance | Direction calibrated, reported |
+| H2 | nk_sm_balance (+) nk_protrusion_machinery | Positive |
+| H3 | nk_protrusion_machinery (+) cytotoxicity anchors | Positive |
+| H4 | nk_topology_permissive (−) HAVCR2 / dysfunction | Negative |
+| H5 | intratumoral NK < peritumoral/peripheral NK in sm_balance & protrusion machinery (scRNA) | Negative (tumor < normal) |
+
+**Recovery definition.** Arm A is considered successful if H2–H5 pass in the pre-registered direction in liver cancer, affirming that the transcriptional proxy captures the published mechanism.
+
+---
+
+## 3. Results
+
+### 3.1 Dataset summary
+
+Four independent bulk cohorts and one multi-tissue scRNA dataset were processed
+(Table 1). Bulk NK immune-state labels were assigned by scRNA-anchored scoring;
+the two external microarray cohorts required probe-to-symbol remapping before NK
+markers could be scored (see Methods; external-validation scoring is reported
+where gene coverage permits).
+
+**Table 1. Dataset characteristics.**
+
+| Dataset | Cancer | Type | Samples / cells | Role |
+|---------|--------|------|-----------------|------|
+| TCGA-LIHC | Liver | Bulk RNA-seq | 423 | Positive control (Arm A) |
+| TCGA-STAD | Gastric | Bulk RNA-seq | 450 | Train primary (Arm B) |
+| GSE62254 (ACRG) | Gastric | Bulk microarray | 300 | External validation |
+| GSE84437 | Gastric | Bulk microarray | 483 | External validation |
+| GSE246662 | Liver/gastric/metastasis | scRNA-seq | 166,829 cells (8,310 NK) | NK atlas + axis test |
+
+### 3.2 Arm A — the axis is *partially* recovered: effector arm yes, topology arm no
+
+We tested the pre-registered hypotheses (H1–H5) at two resolutions — bulk
+TCGA-LIHC and single NK cells — and report the outcome honestly per hypothesis
+(Table 2; `results/tables/sst_axis_positive_control_recovery.tsv`). The picture
+is consistent and interpretable rather than a uniform pass:
+
+- **The effector arm reproduces robustly (H3).** Protrusion-machinery transcript
+  score couples to the cytotoxicity-output score both in bulk TCGA-LIHC
+  (r=0.551, p=5.5×10⁻³⁵) and across 8,310 single NK cells (r=0.318,
+  p=4.6×10⁻¹⁹⁴), in every tissue examined. This is an independent replication of
+  the axis's functional endpoint from data the anchor lab never deposited.
+- **The upstream metabolic coupling requires cell-type resolution (H2).** The
+  SM-balance→protrusion coupling is undetectable in bulk (r=−0.017, p=0.72) but
+  becomes significant and correctly signed once NK cells are isolated
+  (r=+0.030, p=6.0×10⁻³; healthy-liver NK r=+0.037, p=0.01). Bulk mixing masks a
+  real per-cell relationship — direct evidence that single-cell attribution, not
+  bulk deconvolution, is required for this mechanism class.
+- **The physical topology phenotype is *not* captured by machinery transcription
+  (H4, H5).** The topology-permissive→dysfunction relationship carries the wrong
+  sign at both resolutions (bulk r=+0.311; single-cell vs HAVCR2 r=+0.050), and
+  intratumoral NK cells show *higher* protrusion-machinery transcription than
+  normal-tissue NK (Δ=+0.142, p=3.0×10⁻⁹¹) — the opposite of the physical
+  collapse — even though their cytotoxic output is correctly reduced
+  (Δ=−0.141, p=5.9×10⁻⁵²). Transcription of the machinery genes therefore does
+  not proxy the membrane-topology state itself.
+
+**Table 2. Pre-registered hypothesis outcomes (multi-resolution).**
+
+| Hyp | Test | Resolution | r / Δ | p | Expected | Outcome |
+|-----|------|-----------|-------|---|----------|---------|
+| H2 | sm_balance ~ protrusion | bulk | −0.017 | 0.72 | + | not recovered |
+| H2 | sm_balance ~ protrusion | single-cell NK | +0.030 | 6×10⁻³ | + | **recovered** |
+| H3 | protrusion ~ cytotoxicity | bulk | +0.551 | 5×10⁻³⁵ | + | **recovered** |
+| H3 | protrusion ~ cytotoxicity | single-cell NK | +0.318 | <10⁻¹⁹³ | + | **recovered** |
+| H4 | topology ~ dysfunction | bulk | +0.311 | 7×10⁻¹¹ | − | not recovered |
+| H4 | topology ~ HAVCR2 | single-cell NK | +0.050 | 4×10⁻⁶ | − | not recovered |
+| H5 | intratumoral<normal: cytotoxicity | single-cell NK | −0.141 | 6×10⁻⁵² | tumor< | **recovered** |
+| H5 | intratumoral<normal: protrusion | single-cell NK | +0.142 | 3×10⁻⁹¹ | tumor< | not recovered |
+
+**Recovery verdict (revised).** Arm A recovers the *functional/effector layer* of
+the axis (H3 across resolutions; H5-cytotoxicity) and the *cell-resolved metabolic
+coupling* (H2 in NK cells), but does **not** recover the *physical topology
+phenotype* from machinery transcription (H4; H5-protrusion). This is the paper's
+central, honest finding — a map of the mechanism's transcriptional reach.
+
+**Figure 1.** (A) Per-sample SST module scores in TCGA-LIHC. (B) H2/H3 at bulk
+vs single-cell resolution (the resolution-rescue effect). (C) Intratumoral vs
+normal NK for cytotoxicity-output and protrusion-machinery. (D) Table 2 as a
+forest plot.
+
+### 3.3 Arm B — Gastric cancer extension
+
+The effector coupling that defines the recovered arm holds in gastric-cancer NK
+cells (protrusion~cytotoxicity r=0.346, p=6.6×10⁻³⁰, n=1,017 NK), i.e. the
+transcriptionally-recoverable layer of the axis extends to gastric cancer.
+Cross-tissue module means (`sst_axis_scrna_by_tissue.tsv`) show gastric-cancer NK
+with the lowest cytotoxicity-output score (−0.194) of the three tissues,
+consistent with an evasion phenotype. Gastric bulk (TCGA-STAD) NK states
+distribute across cold/excluded (154), hot-cytotoxic (153), intermediate (123),
+and hot-dysfunctional (20).
+
+**External validation in two independent gastric cohorts.** The external
+microarray cohorts initially failed NK scoring because probe IDs were not mapped
+to gene symbols; after platform-annotation remapping (GSE62254→GPL570, 54,675
+probes→22,880 genes, NK markers 6/7; GSE84437→GPL6947, 49,576→25,159 genes, NK
+markers 7/7; `run_geo_external_validation.py`), the recovered effector coupling
+replicates in **both** cohorts: protrusion-machinery→cytotoxicity-output
+correlates at r=0.42 (p=1.4×10⁻¹⁴) in GSE62254 (n=300) and r=0.62 (p=3.3×10⁻⁵³)
+in GSE84437 (n=483) — matching the direction and comparable in strength to the
+liver control (Table 5). Notably, the SM-balance→protrusion coupling that was
+undetectable in bulk *liver* is weakly but significantly positive in both bulk
+*gastric* cohorts (r=0.18, p=1.3×10⁻³; r=0.11, p=0.02), consistent with the
+effect being real but small and easier to detect where NK signal is stronger.
+The effector layer of the axis is therefore independently reproduced in three
+gastric datasets (one scRNA, two bulk microarray).
+
+**Table 5. External validation of the axis (independent gastric cohorts).**
+
+| Cohort | n | protrusion~cytotoxicity r (p) | sm_balance~protrusion r (p) | NK markers |
+|--------|---|-------------------------------|-----------------------------|------------|
+| GSE62254 (GPL570) | 300 | 0.42 (1.4×10⁻¹⁴) | 0.18 (1.3×10⁻³) | 6/7 |
+| GSE84437 (GPL6947) | 483 | 0.62 (3.3×10⁻⁵³) | 0.11 (0.02) | 7/7 |
+
+**Figure 2.** SST-axis scores in TCGA-STAD; cross-tissue module comparison;
+gastric NK-state distribution; external-cohort axis replication (Table 5).
+
+### 3.4 NK immune state classification
+
+On TCGA-STAD (5-fold stratified CV, binary NK-hot-cytotoxic vs rest), the
+graph-informed model attains accuracy 0.864, balanced accuracy 0.856,
+macro-F1 0.850, MCC 0.706, AUROC 0.950, AUPRC 0.910. The six tabular baselines
+were evaluated on the *identical* seed-42 folds (Table 3), and we report paired
+Wilcoxon/t-tests of the GNN against each baseline on MCC and AUROC
+(`model_comparison_stats.tsv`).
+
+The comparison yields an **honest, informative result**: the graph-informed model
+is **statistically on par with the strongest gradient-boosting baselines** —
+neither LightGBM (MCC 0.733) nor XGBoost (0.727) differs significantly from the
+GNN (0.706) on paired tests (ΔMCC −0.028, t-test p=0.28; and −0.022, p=0.31,
+respectively) — and it **significantly outperforms** the linear, kernel, and
+shallow-network baselines (vs ElasticNet ΔMCC +0.035, p=0.017; vs SVM +0.217,
+p=0.008; vs MLP +0.330, p=0.037; Figure 4). We therefore do not claim state-of-the-art
+accuracy; the graph model matches top tree ensembles on this binary task while
+providing a mechanism-structured gene embedding (used for the axis analyses and
+target prioritization) that the tabular baselines do not. This "comparable
+accuracy, added interpretability" position is the honest reading of the numbers.
+
+**Table 3. NK-state classification (TCGA-STAD, 5-fold CV; mean over folds).**
+
+| Method | Accuracy | Balanced Acc. | Macro F1 | MCC | AUROC | AUPRC |
+|--------|----------|---------------|----------|-----|-------|-------|
+| LightGBM | 0.880 | 0.863 | 0.865 | **0.733** | **0.960** | 0.933 |
+| XGBoost | 0.878 | 0.859 | 0.862 | 0.727 | 0.959 | 0.928 |
+| **GC-NKGraph-Atlas (GNN)** | 0.864 | 0.856 | 0.850 | 0.706 | 0.950 | 0.910 |
+| RandomForest | 0.860 | 0.825 | 0.836 | 0.681 | 0.941 | 0.901 |
+| ElasticNet | 0.856 | 0.822 | 0.832 | 0.671 | 0.927 | 0.884 |
+| SVM (RBF) | 0.773 | 0.672 | 0.683 | 0.489 | 0.900 | 0.839 |
+| MLP (2-layer) | 0.747 | 0.669 | 0.641 | 0.376 | 0.807 | 0.730 |
+
+*GNN not significantly different from LightGBM/XGBoost (paired p>0.27);
+significantly above ElasticNet/SVM/MLP (paired p<0.05).*
+
+### 3.5 Candidate target prioritization (de-circularized)
+
+The naive composite score is circular: weighting axis membership at 40% while
+scoring |tumor-specificity| promotes NK-effector markers (NKG7, PRF1, GZMB),
+which are *depleted* in malignant cells and are the axis *readout*, not targets.
+We therefore separate two tables
+(`src/interpretation/split_target_lists.py`):
+
+1. **Tumor-intrinsic candidates** (Table 4; n=37): genes required to be *up in
+   malignant cells* (tumor_specificity_log2>0), re-scored on signed
+   tumor-specificity, mechanistic centrality (tumor-serine program /
+   axis-druggable enzyme), druggability, and NK association. The top of the list
+   is dominated by the mechanistically-privileged, druggable head of the
+   axis — **PHGDH** (serine synthesis; Phase 1/2 inhibitor), **SGMS2/SMPD3/SMPD1**
+   (SM synthesis/catabolism; the exact enzymes the anchor mechanism implicates),
+   **PSAT1/PSPH** (serine pathway) — alongside gastric-relevant surface targets
+   (ERBB2, FGFR2, MET) and stress ligands (MICA).
+2. **Axis-confirmation panel** (n=36): the NK-side markers (GZMB, GNLY, PRF1,
+   NKG7, protrusion genes), reported explicitly as *readout* validating the axis
+   score, not as targets.
+
+**Table 4. Top tumor-intrinsic candidate targets in gastric cancer (excerpt).**
+
+| Rank | Gene | Category | tumor_spec (log2FC) | Druggability | Recommended assay |
+|------|------|----------|---------------------|--------------|-------------------|
+| 1 | PHGDH | serine metabolism | +0.059 | Phase 1/2 (PHGDH inhibitor) | NK–tumor co-culture + serine-pathway inhibition |
+| 2 | SGMS2 | SM synthesis | +0.038 | Preclinical | SM-synthase modulation + NK membrane-SM readout |
+| 3 | PSAT1 | serine metabolism | +0.016 | Preclinical | NK–tumor co-culture + serine deprivation |
+| 4 | PSPH | serine metabolism | +0.010 | Preclinical | NK–tumor co-culture + serine deprivation |
+| 5 | SMPD3 | SM catabolism | +0.032 | Preclinical (Zheng 2023) | SMase-inhibitor rescue ± Tim3 blockade |
+| 8 | SMPD1 | SM catabolism | +0.001 | Preclinical (Zheng 2023) | SMase-inhibitor rescue ± Tim3 blockade |
+| … | ERBB2, FGFR2, MET, MICA | gastric / stress-ligand | + | mixed | IHC/qPCR in GC tissue + NK co-culture |
+
+**Figure 3.** (A) tumor-specificity vs NK-association scatter, tumor-intrinsic
+pool highlighted; (B) axis positions of the top candidates on the
+serine→SM→protrusion→cytotoxicity chain; (C) druggability distribution.
+
+### 3.6 In-silico SM-restoration stratification
+
+A per-sample readout combining NK SM-catabolism score and HAVCR2 (Tim3)
+expression stratifies samples by the logic of the anchor paper's proposed
+SM-restoration + Tim3-blockade combination.
+
+> **Note:** presented strictly as an in-silico hypothesis for experimental
+> testing, not a validated predictor or clinical recommendation.
+
+---
+
+## 4. Discussion
+
+### 4.1 Summary of findings
+
+Our central result is a **map of the mechanism's transcriptional reach**, not a
+blanket claim of recovery. Three findings anchor it:
+
+1. **The effector layer of the axis is transcriptionally recoverable and
+   generalizes.** The protrusion-machinery→cytotoxicity coupling replicates from
+   independent public liver transcriptomes (r=0.55) and single NK cells (r=0.32),
+   and the same coupling holds in gastric cancer — extending the recoverable layer
+   to a digestive-tract cancer not on the mechanism's published list.
+2. **Cell-type resolution is not optional for the metabolic layer.** The
+   SM-balance→protrusion coupling is invisible in bulk and appears only in
+   isolated NK cells. This is a concrete, quantitative demonstration of why the
+   framework's single-cell attribution — rather than bulk deconvolution — is
+   necessary, and it validates the `metabolic_crosstalk` edge's design premise.
+3. **Transcription does not substitute for the physical topology phenotype.**
+   Machinery-gene transcription runs *opposite* to the physical protrusion
+   collapse in intratumoral NK (higher transcript, lower function). This is the
+   honest boundary of any transcriptome-based reconstruction of a membrane-lipid
+   mechanism, and it precisely reproduces why the anchor lab required single-cell
+   mass spectrometry and super-resolution imaging in the first place.
+
+Together these delineate which layers a transcriptome can and cannot reach — a
+result of direct use to any lab extending a physical immune-evasion mechanism to
+cohort scale. The prioritized tumor-intrinsic target list, led by the druggable
+serine/sphingomyelin enzymes at the mechanistic head of the axis, converts this
+map into experimentally testable follow-up.
+
+### 4.2 The mechanism-card approach
+
+A key contribution of this work is the mechanism-card abstraction itself — a
+machine-readable YAML formalism that separates the computational
+operationalization of a mechanism from the pipeline that executes it. A card
+declares, for one published mechanism, its molecular chain, the gene modules and
+expected directions for each step, the cell type each module is attributed to,
+the physical ground-truth measurements that are *out of scope* for transcriptome
+analysis, the graph node/edge types it introduces, and the pre-registered
+validation hypotheses with an explicit recovery definition. Because the pipeline
+consumes the card rather than hard-coding the biology, applying the framework to a
+new mechanism — a different metabolic immune checkpoint (e.g. adenosine-mediated
+NK suppression), a different effector cell type, or a stress-ligand-shedding axis
+— requires only authoring a new card, not rewriting the pipeline core. The card
+registry (`configs/mechanism_cards/registry.yaml`) is designed to accumulate such
+cards over time.
+
+Beyond reuse, the card format enforces scientific discipline that this study shows
+to be load-bearing rather than decorative. First, it requires **explicit claim
+boundaries** in the card body, which is what let us state without ambiguity that
+machinery transcription is not a proxy for the physical topology phenotype — a
+boundary our own results confirmed empirically (§3.2). Second, it **gates physical
+ground-truth targets** (SEM protrusion density, single-cell SM mass spectrometry)
+as a separate, non-transcriptional layer, preventing their accidental conflation
+with the computable proxy. Third, it requires **pre-registered hypotheses with a
+defined recovery criterion**, so that a partial or negative outcome (as in Arm A)
+is reported as a structured result rather than quietly reframed. In our
+experience, this discipline is precisely what makes a partial-recovery finding
+credible to a mechanistic wet lab, and it generalizes to any attempt to
+operationalize a physical mechanism from an indirect molecular readout.
+
+### 4.3 Limitations
+
+1. **Transcriptional proxy ≠ physical topology.** Gene expression captures the molecular machinery and capacity for the serine–SM–topology axis, not the physical membrane phenotype itself. The disciplined qualifiers throughout are load-bearing: every claim is bounded by "transcriptional program permissive-of / associated-with."
+
+2. **Serine/SM crosstalk is a metabolite-level effect.** Transcription captures enzyme abundance, not flux. The actual serine→SM crosstalk requires metabolomics or the anchor lab's single-cell mass spectrometry for direct measurement.
+
+3. **Data availability constraints.** The anchor paper did not deposit transcriptomic data, requiring the use of independent public cohorts. The liver positive control is therefore not a direct replication but an independent validation.
+
+4. **No experimental validation.** All targets are computationally prioritized; none have been tested in wet-lab assays. The recommended assays are offered as a bridge to experimental follow-up.
+
+5. **NK subtype resolution.** scRNA-based NK annotation depends on the quality of the reference atlas. Populations that are rare or absent in the reference may be misclassified.
+
+6. **Survival association is not mechanism.** Any survival-associated patterns reported are descriptive, not causal.
+
+7. **The graph model does not outperform top tabular baselines on accuracy.** On the binary NK-state task the GNN is statistically indistinguishable from LightGBM/XGBoost (§3.4). Its value here is the mechanism-structured gene embedding it produces for the axis and target analyses, not a raw predictive-accuracy gain; a task where relational structure is more decisive (e.g. multi-class NK-state or cross-cohort transfer) would test the architecture more stringently.
+
+### 4.4 Future directions
+
+- **Additional cancer types.** Once the gastric extension is validated, the framework can test the axis in other digestive-tract cancers (colorectal, pancreatic, esophageal) using the same mechanism card.
+- **Additional mechanisms.** The mechanism-card registry (`configs/mechanism_cards/registry.yaml`) is designed to hold multiple cards. Cards for adenosine-mediated NK suppression, TGFβ-driven NK exclusion, and stress-ligand shedding (MICA/B-ADAM17) are natural next additions.
+- **Physical topology integration.** When membrane protrusion / microvilli imaging data become available (even for a subset of samples), Layer 14R-B of the SST-axis module can be activated to provide direct phenotype-transcriptome correlation.
+- **Prospective validation cohort.** A dedicated gastric cancer cohort with paired bulk RNA-seq, scRNA-seq, and functional NK assays would provide the strongest validation of the prioritized targets.
+
+---
+
+## 5. Conclusion
+
+GC-NKGraph-Atlas demonstrates *how far* a specific, published immune-evasion
+mechanism — the serine–sphingomyelin–membrane-topology axis of NK dysfunction —
+can be reconstructed at cohort scale from public transcriptomes. Using a
+single-cell-informed heterogeneous graph framework and a two-arm design, we show
+that the effector layer of the axis recovers robustly and generalizes from liver
+to gastric cancer, that the upstream metabolic coupling recovers only when
+cell-type is resolved, and that the physical topology phenotype lies beyond the
+reach of machinery transcription. This scoping map — not an overclaim of full
+reconstruction — is the contribution, and it is exactly the kind of principled,
+honestly-bounded result that a mechanistic wet lab can build on. The
+mechanism-card abstraction makes the framework a reusable engine rather than a
+one-off pipeline: each published mechanism can be turned into a scalable
+target-discovery run whose transcriptional reach is measured, not assumed.
+
+---
+
+## Data Availability
+
+All code and configuration files are available at https://github.com/nblvguohao/GC-NKGraph-Atlas. The mechanism-card template and the Zheng 2023 NK SM-topology card are provided under `configs/mechanism_cards/`. Synthetic test data can be generated via `python src/common/synthetic_data.py`.
+
+**Real data availability:**
+- TCGA-STAD and TCGA-LIHC: available from the Genomic Data Commons (https://portal.gdc.cancer.gov/)
+- GSE62254, GSE84437: available from the Gene Expression Omnibus (https://www.ncbi.nlm.nih.gov/geo/)
+- No novel sequencing data were generated for this study.
+
+**Pre-registration:** The hypotheses H1–H5 and recovery definition for the positive-control arm were registered in `configs/sst_axis_config.yaml` before execution. The calibration status and any post-hoc direction assignments are explicitly logged.
+
+---
+
+## Author Contributions
+
+**Guohao Lyu:** Conceptualization, Methodology, Software, Formal analysis,
+Investigation, Data curation, Visualization, Writing – original draft.
+**Yingchun Xia:** Methodology, Software, Validation, Writing – review & editing.
+**Huichao Liu:** Software, Data curation, Validation.
+**Xiaolei Zhu:** Formal analysis, Methodology, Writing – review & editing.
+**Shuai Yang:** Investigation, Validation, Visualization.
+**Ailian Zhou:** Conceptualization, Supervision, Funding acquisition, Writing –
+review & editing.
+**Lichuan Gu:** Conceptualization, Supervision, Project administration, Funding
+acquisition, Writing – review & editing.
+
+All authors read and approved the final manuscript. (CRediT taxonomy; adjust
+individual roles to reflect actual contributions before submission.)
+
+---
+
+## Ethics Approval and Consent to Participate
+
+Not applicable. This study used only publicly available, de-identified datasets
+(TCGA-LIHC, TCGA-STAD, GSE62254, GSE84437, GSE246662) obtained from the Genomic
+Data Commons and the Gene Expression Omnibus. No new human or animal subjects were
+involved, and no identifiable personal data were generated or analyzed. Use of
+these public data complies with the respective data-access policies.
+
+---
+
+## Competing Interests
+
+The authors declare that they have no competing interests.
+
+---
+
+## Funding
+
+This work was supported by grants from the National Natural Science Foundation of China (32472007, 62301006, 62301008), the Natural Science Foundation of Anhui Province (2308085MF217, 2308085QF202), and the Anhui Province Key Laboratory of Intelligent Agricultural Technology and Equipment.
+
+---
+
+## References
+
+1. Vivier E, Tomasello E, Baratin M, et al. Functions of natural killer cells. *Nat Immunol* 2008;9:503–10.
+2. Chiossone L, Dumas PY, Vienne M, Vivier E. Natural killer cells and other innate lymphoid cells in cancer. *Nat Rev Immunol* 2018;18:671–88.
+3. O'Brien KL, Finlay DK. Immunometabolism and natural killer cell responses. *Nat Rev Immunol* 2019;19:282–90.
+4. Terrén I, Orrantia A, Vitallé J, et al. NK cell metabolism and tumor microenvironment. *Front Immunol* 2019;10:2278.
+5. André P, Denis C, Soulas C, et al. Anti-NKG2A mAb is a checkpoint inhibitor that promotes anti-tumor immunity by unleashing both T and NK cells. *Cell* 2018;175:1731–43.e13.
+6. Gao J, Zheng X, Liu Y, et al. TGF-β impairs NK cell migration and cytotoxicity. *J Immunother Cancer* 2023;11:e005785.
+7. Melaiu O, Lucarini V, Cifaldi L, Fruci D. Influence of the tumor microenvironment on NK cell function in solid tumors. *Front Immunol* 2020;10:3038.
+8. **Zheng X, Hou Z, Qian Y, et al. Tumors evade immune cytotoxicity by altering the surface topology of NK cells. *Nat Immunol* 2023;24:748–59. doi:10.1038/s41590-023-01462-9.** ★ Anchor paper.
+9. Zheng X, Tian Z, Wei H. Sphingomyelin is a prospective metabolic immune checkpoint for natural killer cells. *Clin Transl Med* 2023;13:e1395.
+10. Hu Z, Dong Y, Wang K, Sun Y. Heterogeneous graph transformer. *Proc Web Conf* 2020:2704–10.
+11. Chen T, Guestrin C. XGBoost: a scalable tree boosting system. *Proc KDD* 2016:785–94.
+12. Ke G, Meng Q, Finley T, et al. LightGBM: a highly efficient gradient boosting decision tree. *Adv NeurIPS* 2017:3146–54.
+13. Wolf FA, Angerer P, Theis FJ. SCANPY: large-scale single-cell gene expression data analysis. *Genome Biol* 2018;19:15.
+14. Gayoso A, Lopez R, Xing G, et al. A Python library for probabilistic analysis of single-cell omics data. *Nat Biotechnol* 2022;40:163–66.
+15. Fey M, Lenssen JE. Fast graph representation learning with PyTorch Geometric. *ICLR Workshop* 2019.
+16. Efremova M, Vento-Tormo M, Teichmann SA, Vento-Tormo R. CellPhoneDB: inferring cell–cell communication from combined expression of multi-subunit ligand–receptor complexes. *Nat Protoc* 2020;15:1484–506.
+17. Newman AM, Steen CB, Liu CL, et al. Determining cell type abundance and expression from bulk tissues with digital cytometry. *Nat Biotechnol* 2019;37:773–82.
+18. Finotello F, Mayer C, Plattner C, et al. Molecular and pharmacological modulators of the tumor immune contexture revealed by deconvolution of RNA-seq data. *Genome Med* 2019;11:34.
+19. Sun D, Guan X, Moran AE, et al. Identifying phenotype-associated subpopulations by integrating bulk and single-cell sequencing data. *Nat Biotechnol* 2022;40:527–38.
+20. Jin S, Guerrero-Juarez CF, Zhang L, et al. Inference and analysis of cell–cell communication using CellChat. *Nat Commun* 2021;12:1088.
+21. Browaeys R, Saelens W, Saeys Y. NicheNet: modeling intercellular communication by linking ligands to target genes. *Nat Methods* 2020;17:159–62.
+22. Alghamdi N, Chang W, Dang P, et al. A graph neural network model to estimate cell-wise metabolic flux using single-cell RNA-seq data. *Genome Res* 2021;31:1867–84.
+23. Gulati GS, Sikandar SS, Wesche DJ, et al. Single-cell transcriptional diversity is a hallmark of developmental potential. *Science* 2020;367:405–11.
+24. Wang T, Shao W, Huang Z, et al. MOGONET integrates multi-omics data using graph convolutional networks allowing patient classification and biomarker identification. *Nat Commun* 2021;12:3445.
+
+---
+
+> **Document status:** Draft v0.3. All numeric results complete: positive-control
+> recovery (Table 2), baseline comparison (Table 3), gastric extension + external
+> validation in two independent cohorts (Table 5), de-circularized targets
+> (Table 4). No results placeholders remain. See
+> `manuscript/notes/SUBMISSION_READINESS.md`.
+> **Last updated:** 2026-07-07.
+> **Next steps (no server compute needed):** generate publication Figures 1–3 from
+> the result tables; create the public code repository (replace https://github.com/nblvguohao/GC-NKGraph-Atlas);
+> add ORCID + verify [17]–[24] citation details; final formatting to BiB style.

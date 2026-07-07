@@ -1,0 +1,7 @@
+dataset	test	r	p	n_genes	expected	outcome
+gse62254	protrusion~cytotoxicity	0.4248	1.41e-14		+	RECOVERED
+gse62254	sm_balance~protrusion	0.1844	1.34e-03		+	RECOVERED
+gse62254	NK_marker_coverage	6/7		22880		['NKG7', 'GNLY', 'GZMB', 'PRF1', 'KLRD1', 'NCAM1']
+gse84437	protrusion~cytotoxicity	0.6227	3.33e-53		+	RECOVERED
+gse84437	sm_balance~protrusion	0.1056	2.03e-02		+	RECOVERED
+gse84437	NK_marker_coverage	7/7		25159		['NKG7', 'GNLY', 'GZMB', 'PRF1', 'KLRD1', 'NCAM1', 'KLRK1']

@@ -1,0 +1,50 @@
+# GC-NKGraph-Atlas — pip requirements (cross-platform, CPU).
+# For the full GPU/conda environment (PyTorch-CUDA, PyG, scVI) use environment.yml.
+# Recommended: `conda env create -f environment.yml`.
+# Minimal pip route: `pip install -r requirements.txt` then install torch/PyG per
+# https://pytorch.org and https://pyg.org for your platform/CUDA.
+
+# --- Core scientific stack ---
+numpy<2
+pandas>=2.0
+scipy
+scikit-learn
+pyarrow
+
+# --- Config / I/O / graph ---
+pyyaml
+networkx
+
+# --- Single-cell analysis ---
+scanpy>=1.10
+anndata>=0.10
+leidenalg
+python-igraph
+scvi-tools>=1.2
+harmonypy
+scrublet
+celltypist>=1.6
+
+# --- Bulk / GEO ---
+GEOparse>=2.0          # external-cohort probe->gene mapping (Arm B validation)
+
+# --- ML baselines ---
+xgboost>=2.0
+lightgbm>=4.5
+shap
+
+# --- Visualization ---
+matplotlib>=3.7
+seaborn>=0.13
+
+# --- Testing ---
+pytest>=7.0
+pytest-cov
+
+# --- Deep learning (install separately, platform-specific) ---
+# torch>=2.0                 # https://pytorch.org/get-started/
+# torch_geometric            # https://pytorch-geometric.readthedocs.io/
+# torch_scatter torch_sparse torch_cluster
+#
+# Optional (trajectory / reference mapping / spatial):
+# cellrank  scarches  squidpy

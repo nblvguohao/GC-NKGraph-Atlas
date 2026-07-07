@@ -1,0 +1,38 @@
+rank	gene	target_category	target_score_v2	tumor_specificity_log2	mechanistic_bonus	druggability_stage	gold_standard	nk_dysfunction_correlation	recommended_assay
+1	PHGDH	metabolic_suppression	0.618	0.0588	1.0	Phase 1/2 (breast cancer)	1	-0.0156	NK-tumor co-culture + serine-pathway inhibition (PHGDH inhibitor)
+2	SGMS2	sst_axis_nk_sm_synthesis	0.528	0.0381	0.7	Preclinical	0	0.0743	SM-synthase modulation + NK membrane-SM readout
+3	PSAT1	metabolic_suppression	0.4945	0.016	1.0	Preclinical	1	-0.0034	NK-tumor co-culture + serine-pathway inhibition (PHGDH inhibitor)
+4	PSPH	metabolic_suppression	0.4834	0.0097	1.0	Preclinical	0	0.0118	NK-tumor co-culture + serine-pathway inhibition (PHGDH inhibitor)
+5	SMPD3	sst_axis_nk_sm_catabolism	0.4736	0.032	0.7	Preclinical (Zheng 2023)	1	-0.0194	Sphingomyelinase-inhibitor rescue +/- Tim3 (HAVCR2) blockade
+6	COL1A1	caf_ecm_exclusion	0.4406	0.1486	0.0		0	0.0606	TGF-beta blockade + NK infiltration/cytotoxicity
+7	COL1A2	caf_ecm_exclusion	0.438	0.1489	0.0		0	0.0557	TGF-beta blockade + NK infiltration/cytotoxicity
+8	SMPD1	sst_axis_nk_sm_catabolism	0.4097	0.0013	0.7	Preclinical (Zheng 2023)	1	-0.0463	Sphingomyelinase-inhibitor rescue +/- Tim3 (HAVCR2) blockade
+9	NECTIN2	nk_inhibitory_ligand	0.4092	0.1094	0.0		0	0.1675	IHC/qPCR in GC tissue + NK co-culture cytotoxicity
+10	RAC1	sst_axis_nk_protrusion_machinery	0.3322	0.0766	0.0		0	0.1836	IHC/qPCR in GC tissue + NK co-culture cytotoxicity
+11	MTHFD1L	sst_axis_tumor_serine_capacity	0.3192	0.0005	1.0		0	0.0992	NK-tumor co-culture + serine deprivation
+12	SLC1A5	sst_axis_tumor_serine_capacity	0.3139	0.0132	1.0		0	-0.0423	NK-tumor co-culture + serine deprivation
+13	SHMT2	sst_axis_tumor_serine_capacity	0.2917	0.0082	1.0		0	0.0297	NK-tumor co-culture + serine deprivation
+14	SHMT1	sst_axis_tumor_serine_capacity	0.2726	0.0063	1.0		0	0.0095	NK-tumor co-culture + serine deprivation
+15	MTHFD1	sst_axis_tumor_serine_capacity	0.2629	0.0041	1.0		0	-0.004	NK-tumor co-culture + serine deprivation
+16	NT5E	adenosine_pathway	0.2593	0.013	0.0	Phase 1/2 clinical	0	0.0365	Co-culture with CD73/A2AR inhibitor + NK cytotoxicity
+17	CA9	metabolic_suppression	0.2419	0.0844	0.0		0	0.023	NK-tumor co-culture + serine-pathway inhibition (PHGDH inhibitor)
+18	ERBB2	gastric_cancer_target	0.2382	0.0687	0.0		0	-0.0785	IHC/qPCR in GC tissue + NK co-culture cytotoxicity
+19	FN1	caf_ecm_exclusion	0.2288	0.0294	0.0		0	0.2174	TGF-beta blockade + NK infiltration/cytotoxicity
+20	MICA	stress_ligand_shedding	0.2206	0.0059	0.0	Preclinical	1	-0.0081	ADAM protease-activity assay + NK cytotoxicity
+21	BAIAP2	sst_axis_nk_protrusion_machinery	0.1882	0.0528	0.0		0	0.068	IHC/qPCR in GC tissue + NK co-culture cytotoxicity
+22	SMPD2	sst_axis_nk_sm_catabolism	0.1844	0.0036	0.7		0	-0.0009	Sphingomyelinase-inhibitor rescue +/- Tim3 (HAVCR2) blockade
+23	SMPD4	sst_axis_nk_sm_catabolism	0.1832	0.0001	0.7		0	-0.0127	Sphingomyelinase-inhibitor rescue +/- Tim3 (HAVCR2) blockade
+24	WASL	sst_axis_nk_protrusion_machinery	0.1679	0.0619	0.0		0	-0.0035	IHC/qPCR in GC tissue + NK co-culture cytotoxicity
+25	FGFR2	gastric_cancer_target	0.1511	0.0521	0.0		0	0.0172	IHC/qPCR in GC tissue + NK co-culture cytotoxicity
+26	MET	gastric_cancer_target	0.1287	0.0382	0.0		0	0.0389	IHC/qPCR in GC tissue + NK co-culture cytotoxicity
+27	PACSIN2	sst_axis_nk_protrusion_machinery	0.1123	0.0233	0.0		0	0.0729	IHC/qPCR in GC tissue + NK co-culture cytotoxicity
+28	CERS6	sst_axis_nk_de_novo_sphingolipid	0.1041	0.022	0.0		0	0.0662	IHC/qPCR in GC tissue + NK co-culture cytotoxicity
+29	PVR	nk_inhibitory_ligand	0.1008	0.0198	0.0		0	0.0699	IHC/qPCR in GC tissue + NK co-culture cytotoxicity
+30	SPTSSA	sst_axis_nk_de_novo_sphingolipid	0.0679	0.0248	0.0		0	-0.003	IHC/qPCR in GC tissue + NK co-culture cytotoxicity
+31	CERS2	sst_axis_nk_de_novo_sphingolipid	0.0484	0.0057	0.0		0	-0.049	IHC/qPCR in GC tissue + NK co-culture cytotoxicity
+32	FAP	caf_ecm_exclusion	0.0447	0.0127	0.0		0	0.0165	TGF-beta blockade + NK infiltration/cytotoxicity
+33	WASF1	sst_axis_nk_protrusion_machinery	0.0337	0.0067	0.0		0	0.0239	IHC/qPCR in GC tissue + NK co-culture cytotoxicity
+34	WASF3	sst_axis_nk_protrusion_machinery	0.0274	0.0077	0.0		0	0.011	IHC/qPCR in GC tissue + NK co-culture cytotoxicity
+35	DIAPH3	sst_axis_nk_protrusion_machinery	0.0157	0.0043	0.0		0	-0.0072	IHC/qPCR in GC tissue + NK co-culture cytotoxicity
+36	SPTLC1	sst_axis_nk_de_novo_sphingolipid	0.0149	0.0041	0.0		0	0.0069	IHC/qPCR in GC tissue + NK co-culture cytotoxicity
+37	SPTLC3	sst_axis_nk_de_novo_sphingolipid	0.0099	0.0015	0.0		0	0.0098	IHC/qPCR in GC tissue + NK co-culture cytotoxicity

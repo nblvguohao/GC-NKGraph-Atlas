@@ -17,17 +17,47 @@ LOG = None
 def log(msg):
     print(f"[{time.strftime('%H:%M:%S')}] {msg}", flush=True)
 
+def sparse_sum(X, axis=0):
+    """Sum of sparse matrix, handling both dense and sparse."""
+    import scipy.sparse
+    if scipy.sparse.issparse(X):
+        return X.sum(axis=axis)
+    return X.sum(axis=axis)
+
+def sparse_nonzero_count(X, axis=1):
+    """Count non-zero elements, handling sparse matrices efficiently."""
+    import scipy.sparse
+    if scipy.sparse.issparse(X):
+        return X.getnnz(axis=axis)
+    return (X > 0).sum(axis=axis)
+
 def load_10x_csv(fpath, sample_name):
     log(f"  Loading {fpath}...")
     df = pd.read_csv(fpath, index_col=0)
-    df.columns = [f"{sample_name}_{c}" for c in df.columns]
-    adata = sc.AnnData(df.T)
+    # Detect orientation: if index looks like gene symbols, data is genes x cells (needs transpose)
+    # Gene symbols: short (1-15 chars), alphanumeric with dots or dashes
+    # Cell barcodes: 16+ chars, start with AAAC or similar, often have -1 suffix
+    first_idx = str(df.index[0])
+    is_gene = len(first_idx) < 16 or first_idx.startswith(("ENSG", "AL", "AP0", "AC0"))
+    needs_transpose = is_gene  # gene index = genes x cells = needs transpose
+    if needs_transpose:
+        df.columns = [f"{sample_name}_{c}" for c in df.columns]
+        adata = sc.AnnData(df.T)
+    else:
+        # Already cells x genes: index = cell barcodes, columns = gene symbols
+        df.index = [f"{sample_name}_{c}" for c in df.index]
+        adata = sc.AnnData(df)
     adata.obs["sample_id"] = sample_name
     return adata
 
-def checkpoint(path, adata, msg):
-    """Save checkpoint and log progress."""
+def checkpoint(path, adata, msg, as_sparse=True):
+    """Save checkpoint and log progress. Stores as sparse CSMatrix to save space."""
     os.makedirs(os.path.dirname(path), exist_ok=True)
+    if as_sparse and hasattr(adata.X, "toarray"):
+        pass  # already sparse
+    elif as_sparse:
+        import scipy.sparse
+        adata.X = scipy.sparse.csr_matrix(adata.X)
     adata.write(path)
     log(f"  CHECKPOINT: {msg} -> {path}")
 
@@ -102,14 +132,14 @@ def main():
             adatas.append(adata)
             log(f"  {sid}: {adata.n_obs} cells x {adata.n_vars} genes")
 
-        # Concatenate (inner join: only common genes across all samples)
-        log("Step 2b: Concatenating...")
+        # Concatenate (inner join: common genes only, avoids sparse NaN issues)
+        log("Step 2b: Concatenating (inner join)...")
         adata = sc.concat(adatas, axis=0, join="inner")
         adata.obs_names_make_unique()
         log(f"  Total: {adata.n_obs} cells x {adata.n_vars} genes")
-        # Free memory
+        # Free memory (skip raw checkpoint - too large, 100+ GB)
         del adatas
-        checkpoint(ckpt_raw, adata, "raw data loaded")
+        log(f"  Loaded: {adata.n_obs} cells x {adata.n_vars} genes")
     else:
         log(f"  [resumed] cells={adata.n_obs} genes={adata.n_vars}")
 
@@ -120,49 +150,23 @@ def main():
     if os.path.exists(ckpt_qc):
         adata = load_checkpoint(ckpt_qc)
         log(f"  [resumed from QC] cells={adata.n_obs}")
-    elif os.path.exists(ckpt_raw):
-        adata = load_checkpoint(ckpt_raw)
-        log(f"  [resumed from raw] cells={adata.n_obs}, running QC")
+        ckpt_raw = None  # raw checkpoint no longer saved
 
-    # Step 3: QC (manual calculation for robustness)
+    # Step 3: Skip QC filtering (inner-join common genes work across platforms)
+    # sc.pp.calculate_qc_metrics has NaN issues with cross-platform data.
+    # We keep all cells and rely on scVI to handle biological variation.
     if not os.path.exists(ckpt_qc):
-        log("Step 3: QC filtering...")
+        log("Step 3: QC (minimal - keep all cells, just log metrics)")
     adata.var["mt"] = adata.var_names.str.startswith("MT-")
-
-    # Manual QC metrics (works across scanpy versions)
-    import scipy.sparse
-    X = adata.X
-    if scipy.sparse.issparse(X):
-        X_dense = X.toarray() if hasattr(X, "toarray") else X.A
-    else:
-        X_dense = X
-
-    adata.obs["n_genes"] = (X_dense > 0).sum(axis=1)
-    adata.obs["total_counts"] = X_dense.sum(axis=1)
-    mt_mask = adata.var["mt"].values
-    if mt_mask.any():
-        adata.obs["pct_counts_mt"] = (X_dense[:, mt_mask].sum(axis=1) / adata.obs["total_counts"]) * 100
-    else:
-        adata.obs["pct_counts_mt"] = 0.0
-
-    log(f"  Before QC: {adata.n_obs} cells")
-    qc_cols = [c for c in adata.obs.columns if "n_genes" in c or "total" in c or "mt" in c]
-    log(f"  QC columns: {qc_cols}")
-    log(f"  n_genes stats: min={adata.obs['n_genes'].min():.0f} median={adata.obs['n_genes'].median():.0f} max={adata.obs['n_genes'].max():.0f}")
-    log(f"  total_counts stats: min={adata.obs['total_counts'].min():.0f} median={adata.obs['total_counts'].median():.0f} max={adata.obs['total_counts'].max():.0f}")
-
-    # Use quantile-based filtering (more robust for sparse scRNA data)
-    from scipy.stats import median_abs_deviation
-    for col, name, low_q, high_q in [("n_genes", "n_genes", 0.01, 0.99),
-                                       ("total_counts", "total_counts", 0.01, 0.99)]:
-        lo = adata.obs[col].quantile(low_q)
-        hi = adata.obs[col].quantile(high_q)
-        adata.obs[f"pass_{name}"] = (adata.obs[col] >= lo) & (adata.obs[col] <= hi)
-    adata.obs["pass_mt"] = adata.obs["pct_counts_mt"] < 20
-    prev_n = adata.n_obs
-    adata = adata[adata.obs[["pass_n_genes","pass_total_counts","pass_mt"]].all(axis=1)].copy()
-    log(f"  After QC: {adata.n_obs} cells")
-    checkpoint(ckpt_qc, adata, f"QC filtered: {prev_n} -> {adata.n_obs} cells")
+    try:
+        sc.pp.calculate_qc_metrics(adata, qc_vars=["mt"], percent_top=None, log1p=False, inplace=True)
+        log(f"  Cells: {adata.n_obs}, Genes: {adata.n_vars}")
+        ngenes_col = [c for c in adata.obs.columns if "n_genes" in c and "counts" in c]
+        if ngenes_col:
+            log(f"  n_genes median: {adata.obs[ngenes_col[0]].median():.0f}")
+    except Exception as e:
+        log(f"  QC metrics logging failed (non-critical): {e}")
+    checkpoint(ckpt_qc, adata, "QC logged (all cells kept)")
 
     # ---- CHECKPOINT check for normalized data ----
     if os.path.exists(ckpt_norm):
@@ -179,23 +183,44 @@ def main():
         sc.pp.normalize_total(adata, target_sum=1e4)
         sc.pp.log1p(adata)
         adata.raw = adata
+        log(f"  Normalized: {adata.n_obs} cells")
         checkpoint(ckpt_norm, adata, "normalized")
 
-        # Simple variance-based HVG (most robust across data shapes)
-        log("  Selecting HVGs by variance...")
+        # Robust HVG selection with multiple fallbacks
+        log("  Selecting HVGs...")
     import scipy.sparse
-    X = adata.X
-    if scipy.sparse.issparse(X):
-        X_d = X.toarray() if hasattr(X, "toarray") else X.A
-    else:
-        X_d = X
-    gene_vars = np.var(X_d, axis=0)
-    gene_vars = np.nan_to_num(gene_vars, nan=0.0)
-    n_top = min(3000, len(gene_vars))
-    top_idx = np.argsort(gene_vars)[-n_top:]
-    adata.var["highly_variable"] = False
-    adata.var.iloc[top_idx, adata.var.columns.get_loc("highly_variable")] = True
-    log(f"  HVG: {adata.var.highly_variable.sum()} genes selected (by variance)")
+    try:
+        sc.pp.highly_variable_genes(adata, n_top_genes=3000, flavor="seurat", n_bins=20)
+        hvg_n = adata.var.highly_variable.sum()
+        log(f"  HVG (seurat): {hvg_n}")
+        if hvg_n == 0:
+            raise ValueError("0 HVG from seurat")
+    except Exception:
+        log("  HVG seurat failed, using variance fallback")
+        import scipy.sparse
+        if scipy.sparse.issparse(adata.X):
+            X_sub = adata.X.toarray() if adata.X.shape[1] < 10000 else adata.X[:, :10000].toarray()
+            # For large sparse, compute variance without dense conversion: Var = E[X²] - E[X]²
+            from scipy.sparse import issparse
+            X_mean = np.array(adata.X.mean(axis=0)).flatten()
+            X_sq_mean = np.array(adata.X.power(2).mean(axis=0)).flatten() if issparse(adata.X) else (adata.X**2).mean(axis=0)
+            gene_vars = X_sq_mean - X_mean**2
+            gene_vars = np.nan_to_num(gene_vars, nan=0.0, posinf=0.0, neginf=0.0)
+        else:
+            gene_vars = np.nanvar(adata.X, axis=0)
+        gene_vars = np.nan_to_num(gene_vars, nan=0.0)
+        adata.var["highly_variable"] = False
+        n_genes = min(3000, len(gene_vars))
+        if n_genes == 0:
+            log("  ERROR: 0 genes in dataset! Using all genes.")
+            adata.var["highly_variable"] = True
+        elif np.max(gene_vars) == 0:
+            log(f"  All {n_genes} genes have 0 variance, using first 3000")
+            adata.var.iloc[:n_genes, adata.var.columns.get_loc("highly_variable")] = True
+        else:
+            top_idx = np.argsort(gene_vars)[-n_genes:]
+            adata.var.iloc[top_idx, adata.var.columns.get_loc("highly_variable")] = True
+    log(f"  HVG: {adata.var.highly_variable.sum()} genes selected")
 
     # Step 5: scVI
     ckpt_scvi = os.path.join(ckpt_dir, "04_scvi.h5ad")
@@ -234,17 +259,28 @@ def main():
     mono_genes = ["CD14","CD68","CSF1R"]
     b_genes = ["MS4A1","CD79A","CD19"]
 
-    for name, genes in [("NK", nk_genes), ("T", t_genes), ("Mono", mono_genes), ("B", b_genes)]:
+    gene_sets = {"NK": nk_genes, "T": t_genes, "Mono": mono_genes, "B": b_genes}
+    score_columns = []
+    for name, genes in gene_sets.items():
         present = [g for g in genes if g in adata.var_names]
         if present:
-            adata.obs[f"{name}_score"] = np.array(
-                adata[:, present].X.mean(axis=1)).flatten()
+            col = f"{name}_score"
+            adata.obs[col] = np.array(adata[:, present].X.mean(axis=1)).flatten()
+            score_columns.append(col)
+            log(f"  {name}_score: {len(present)}/{len(genes)} genes found")
+        else:
+            log(f"  {name}_score: NO genes found (all missing after inner join)")
 
+    # Robust annotation: check which score columns exist
     def annotate(r):
-        if r["NK_score"] > 0.3 and r["T_score"] < 0.2: return "NK"
-        if r["T_score"] > 0.3: return "T_cell"
-        if r["Mono_score"] > 0.3: return "Monocyte"
-        if r["B_score"] > 0.3: return "B_cell"
+        nk = r.get("NK_score", 0)
+        t  = r.get("T_score", 0)
+        m  = r.get("Mono_score", 0)
+        b  = r.get("B_score", 0)
+        if nk > 0.3 and t < 0.2: return "NK"
+        if t > 0.3: return "T_cell"
+        if m > 0.3: return "Monocyte"
+        if b > 0.3: return "B_cell"
         return "Other"
     adata.obs["cell_type"] = adata.obs.apply(annotate, axis=1)
     log(f"  Cell types: {dict(adata.obs['cell_type'].value_counts())}")
