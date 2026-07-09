@@ -33,7 +33,6 @@ import pandas as pd
 
 warnings.filterwarnings("ignore")
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-from src.common.log_utils import Logger  # noqa: E402
 from src.common.io_utils import ensure_dir, load_table, load_config  # noqa: E402
 from src.common.seed import set_seed  # noqa: E402
 
