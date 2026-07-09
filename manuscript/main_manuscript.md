@@ -669,12 +669,13 @@ This work was supported by grants from the National Natural Science Foundation o
 
 ---
 
-> **Document status:** Draft v0.3. All numeric results complete: positive-control
+> **Document status:** Draft v0.4. All numeric results complete: positive-control
 > recovery (Table 2), baseline comparison (Table 3), gastric extension + external
 > validation in two independent cohorts (Table 5), de-circularized targets
-> (Table 4). No results placeholders remain. See
-> `manuscript/notes/SUBMISSION_READINESS.md`.
-> **Last updated:** 2026-07-07.
-> **Next steps (no server compute needed):** generate publication Figures 1–3 from
-> the result tables; create the public code repository (replace https://github.com/nblvguohao/GC-NKGraph-Atlas);
-> add ORCID + verify [17]–[24] citation details; final formatting to BiB style.
+> (Table 4). **v0.4 additions:** multi-card analysis (adenosine + TGFβ mechanism
+> cards), edge-type ablation study, DepMap/DrugBank target cross-validation,
+> interactive web playground. See `manuscript/notes/SUBMISSION_READINESS.md`.
+> **Last updated:** 2026-07-09.
+> **Next steps before submission:** add ablation and multi-card results to
+> manuscript §3.7–3.8; final formatting to BiB style; push public code repository
+> to https://github.com/nblvguohao/GC-NKGraph-Atlas; fill ORCID iDs.

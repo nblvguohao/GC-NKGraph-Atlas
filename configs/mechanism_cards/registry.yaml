@@ -1,6 +1,28 @@
 active_mechanism_card: zheng_nk_sm_topology
 cards_dir: configs/mechanism_cards
+
+# Registry of all available mechanism cards.
+# Each entry maps a card ID to a one-line description and validation status.
+cards:
+  zheng_nk_sm_topology:
+    description: "Serine→sphingomyelin→membrane-topology→cytotoxicity axis (Zheng et al., Nat Immunol 2023)"
+    status: ACTIVE
+    arms: [liver_positive_control, gastric_extension]
+    gold_standard_recovery: partial
+  adenosine_nk_suppression:
+    description: "Adenosine→A2AR→cAMP-PKA→NK suppression axis (Chambers et al., JITC 2019)"
+    status: ACTIVE
+    arms: [gastric_adenosine_targets]
+    gold_standard_recovery: PENDING
+  tgfb_nk_exclusion:
+    description: "TGFβ→SMAD→NK receptor suppression + CAF ECM exclusion axis (Gao et al., JITC 2023)"
+    status: ACTIVE
+    arms: [gastric_tgfb_targets]
+    gold_standard_recovery: PENDING
+
 rules:
   - transcriptional_proxy != physical_ground_truth != metabolite_flux
   - crosstalk directions are calibrated on the positive-control cohort
   - physical ground-truth layer stays GATED unless real data are provided
+  - every card MUST define claim_boundary, attribution requirements, and caveats
+  - cards are independent: each card's modules, graph edges, and targets are card-scoped

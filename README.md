@@ -20,6 +20,20 @@ targets.
 
 Repo: `https://github.com/nblvguohao/GC-NKGraph-Atlas`
 
+> **🌐 Interactive Mechanism Card Playground:** [Open in browser](https://nblvguohao.github.io/GC-NKGraph-Atlas/web/) —
+> browse all mechanism cards, compare gene modules across mechanisms, and explore
+> the prioritized target list with external database evidence (DepMap, DrugBank, Open Targets).
+
+---
+
+## Highlights
+
+- **3 mechanism cards** (serine–SM–topology, adenosine–A2AR, TGFβ–SMAD–ECM) demonstrating reusable formalism
+- **37 tumor-intrinsic candidate targets** with DepMap/DrugBank/Open Targets cross-validation
+- **Edge-type ablation study** quantifying each graph edge's contribution to model performance
+- **Two-arm design** (liver positive control + gastric cancer extension) with pre-registered hypotheses
+- **Interactive web playground** (`web/index.html`) — browse cards and targets without installing anything
+
 ---
 
 ## Repository layout

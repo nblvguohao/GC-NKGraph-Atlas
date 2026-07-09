@@ -1,0 +1,161 @@
+mechanism_card:
+  id: tgfb_nk_exclusion
+  version: 0.1.0
+  status: ACTIVE
+  one_line: >
+    Tumor- and CAF-derived TGFβ binds TGFβR on NK cells, suppressing activating
+    receptors (NKG2D, NKp30, NKp44), downregulating cytotoxic effectors (GZMB,
+    PRF1, IFNG), and driving NK-to-ILC1 conversion; stromal TGFβ additionally
+    remodels the ECM to physically exclude NK cells from the tumor nest.
+    Rescued by TGFβR blockade (galunisertib) or anti-TGFβ antibodies.
+
+  origin:
+    paper_title: "TGF-β impairs NK cell migration and cytotoxicity by reprogramming the tumor microenvironment"
+    authors: "Gao J, Zheng X, Liu Y, et al."
+    journal: "Journal for ImmunoTherapy of Cancer"
+    year: 2023
+    doi: "10.1136/jitc-2023-005785"
+    pmid: ""
+    lab: "Multiple (pan-cancer)"
+    notes: >
+      TGFβ-mediated NK suppression is one of the most well-characterized
+      immune-evasion mechanisms in solid tumors. TGFβ signals through TGFβR1/2
+      and downstream SMAD2/3/4 transcription factors. Key effects on NK cells:
+      (1) suppression of activating receptors NKG2D/NKp30/NKp44 via SMAD-mediated
+      transcriptional repression; (2) downregulation of GZMB/PRF1/IFNG; (3) driving
+      NK-to-ILC1 plasticity (loss of EOMES, gain of ILC1 markers); (4) CAF-mediated
+      ECM deposition physically excludes NK cells. Galunisertib (LY2157299,
+      TGFβR1 inhibitor) is in Phase 2/3 trials. Parallel to the Zheng 2023 SM axis
+      and adenosine axis — mechanisms converge on NK cytotoxicity as the endpoint.
+
+  biology:
+    phenotype: "Loss of NK activating receptors, reduced cytotoxicity, NK-to-ILC1 conversion, physical NK exclusion from tumor nest"
+    cell_type_affected: "intratumoral NK cells"
+    tissue_context: "pan-cancer (gastric, colorectal, pancreatic, glioblastoma, breast, HCC)"
+    mechanistic_chain:
+      - step: 1
+        actor_cell_type: tumor
+        molecular_event: "tumor cells and CAFs secrete TGFβ1, activated by integrins and low pH in the TME"
+      - step: 2
+        actor_cell_type: nk
+        molecular_event: "TGFβ binds TGFβR1/TGFβR2 on NK cells, activating SMAD2/3 phosphorylation and nuclear translocation"
+      - step: 3
+        actor_cell_type: nk
+        molecular_event: "SMAD2/3-SMAD4 complex transcriptionally represses NK activating receptors (KLRK1/NKG2D, NCR3/NKp30, NCR2/NKp44) and cytotoxic effectors (GZMB, PRF1, IFNG)"
+      - step: 4
+        actor_cell_type: nk
+        molecular_event: "SMAD-mediated downregulation of EOMES and T-bet drives NK-to-ILC1 conversion, further reducing cytotoxic capacity"
+      - step: 5
+        actor_cell_type: stroma
+        molecular_event: "TGFβ-activated CAFs deposit collagen I/III and fibronectin, physically excluding NK cells from tumor cell contact"
+
+  transcriptional_proxy:
+    status: ACTIVE
+    claim_boundary: >
+      Outputs describe a transcriptional program ASSOCIATED-WITH TGFβ-mediated NK
+      suppression and exclusion. Never claim direct measurement of TGFβ protein
+      concentration, SMAD phosphorylation, or ECM stiffness from transcriptome.
+    modules:
+      - name: tumor_tgfb_ligand
+        role: tumor_side
+        cell_type_attribution: malignant
+        genes: [TGFB1, TGFB2, TGFB3, LTBP1, LTBP2, LTBP3, ITGAV, ITGB6, ITGB8]
+        expected_direction: NEEDS_REVIEW
+      - name: caf_ecm_program
+        role: stroma_side
+        cell_type_attribution: fibroblast
+        genes: [COL1A1, COL1A2, COL3A1, FN1, FAP, ACTA2, TGFBR1, TGFBR2, LOX, LOXL2, POSTN, THBS2, SPARC, VCAN]
+        expected_direction: higher_is_more_exclusion_permissive
+      - name: nk_tgfb_signaling
+        role: immune_side
+        cell_type_attribution: nk
+        genes: [TGFBR1, TGFBR2, TGFBR3, SMAD2, SMAD3, SMAD4, SMAD7, SKIL, SNON]
+        expected_direction: higher_is_more_suppressed
+      - name: nk_activating_receptors
+        role: immune_side
+        cell_type_attribution: nk
+        genes: [KLRK1, NCR1, NCR2, NCR3, CD226, SLAMF6, SLAMF7, CRTAM, KLRF1]
+        expected_direction: higher_is_more_cytotoxic
+      - name: nk_cytolytic_machinery
+        role: outcome_anchor
+        cell_type_attribution: nk
+        genes: [NKG7, GNLY, GZMB, PRF1, IFNG, LCP2, LAT, VAV1, TLN1, ITGAL, ITGB2]
+        expected_direction: axis_positive_correlate
+      - name: nk_ilc1_transition
+        role: therapeutic_hook
+        cell_type_attribution: nk
+        genes: [EOMES, TBX21, ID2, ZNF683, RORA, IL7R, KIT, ICOS, CXCR6]
+        expected_direction: less_EOMES_TBX21_is_more_ilc1
+    derived_scores:
+      tumor_tgfb_ligand_score: "mean_zscore(tumor_tgfb_ligand | malignant)"
+      caf_ecm_exclusion_score: "mean_zscore(caf_ecm_program | fibroblast)"
+      nk_tgfb_signaling_score: "mean_zscore(nk_tgfb_signaling | nk)"
+      nk_activating_receptor_score: "mean_zscore(nk_activating_receptors | nk)"
+      nk_ilc1_score: "mean_zscore(IL7R, KIT, RORA, CXCR6 | nk) - mean_zscore(EOMES, TBX21 | nk)"
+      tgfb_axis_score: "integrated(tumor_tgfb_ligand_score[calibrated], nk_tgfb_signaling_score, nk_activating_receptor_score_inverse, outcome)"
+    attribution:
+      require_celltype_resolution_before_claim: true
+      method: scrna_anchored
+      unresolved_flag: MIXED_UNRESOLVED
+    caveats:
+      - "Transcriptional proxy != TGFβ protein concentration != SMAD phosphorylation != ECM stiffness."
+      - "TGFβ is secreted and activated in the extracellular space; transcription captures capacity only."
+      - "SMAD signaling depends on receptor occupancy and ligand bioavailability, not just receptor expression."
+      - "CAF programs require fibroblast cell-type resolution; bulk deconvolution is insufficient."
+      - "NK-to-ILC1 conversion is a continuum, not a binary switch; transcriptional scores capture tendency, not committed fate."
+
+  physical_ground_truth:
+    status: GATED
+    data_modality: ["TGFβ ELISA", "phospho-SMAD2/3 flow cytometry", "second-harmonic generation collagen imaging", "multiplex IHC for NK-tumor distance"]
+    targets: [tumor_interstitial_tgfb_concentration, nk_pSMAD2_level, collagen_fiber_density,
+              nk_to_tumor_cell_minimum_distance, nk_ilc1_ratio]
+    availability: UNAVAILABLE
+    mock_policy:
+      allow_mock_for_code_test_only: true
+      mock_file_pattern: "*_MOCK_*"
+      real_loader_missing_data_behavior: raise_clear_error
+      mock_excluded_from_claims: true
+
+  graph_integration:
+    new_node_types: [tumor_tgfb_program, caf_ecm_exclusion_state, nk_ilc1_state]
+    new_edge_types: [tgfb_crosstalk, ecm_exclusion, nk_plasticity_edge]
+    rules:
+      - "tgfb_crosstalk edges require cell-type-resolved endpoints"
+      - "crosstalk edge sign is calibrated on the positive-control cohort, not assumed"
+      - "ecm_exclusion edges connect CAF ECM genes to NK migration/chemokine genes"
+      - "no edge derived from external-validation labels"
+
+  validation:
+    positive_control:
+      purpose: "recover the TGFβ-NK-suppression axis from gastric cancer transcriptomes"
+      cohort: TCGA-STAD
+      scrna_dataset: GSE246662
+      prereg_hypotheses:
+        - "H1 tumor_tgfb_ligand (+) nk_tgfb_signaling (direction calibrated)"
+        - "H2 nk_tgfb_signaling (-) nk_activating_receptors"
+        - "H3 nk_activating_receptors (+) nk_cytolytic_machinery"
+        - "H4 caf_ecm_program (-) nk_cytolytic_machinery (indirect: ECM exclusion reduces NK-tumor contact)"
+        - "H5 nk_ilc1_score (-) nk_cytolytic_machinery (ILC1-like NK have lower cytotoxicity)"
+      recovery_definition: "H2-H5 pass in expected direction in gastric cancer"
+    extension:
+      purpose: "identify TGFβ-pathway-driven NK exclusion targets in gastric cancer"
+      cohort_group: gastric_cancer
+    gold_standard_genes: [TGFB1, TGFBR1, TGFBR2, SMAD2, SMAD3, SMAD4, KLRK1, NCR3, EOMES, TBX21, FAP, COL1A1]
+
+  therapeutic_hook:
+    intervention: "block TGFβ signaling: galunisertib (TGFβR1 inhibitor), fresolimumab (anti-TGFβ pan-isoform), or bintrafusp alfa (TGFβR2-Fc trap fused to anti-PD-L1)"
+    combination: "TGFβ blockade + anti-PD-1/PD-L1 (bintrafusp alfa tests this as a single molecule) + activate NK via NKG2D engagement"
+    patient_stratification_readout: "in-silico TGFβ-exclusion benefit score"
+    validation_assays:
+      - "NK-tumor co-culture + TGFβ + galunisertib rescue"
+      - "phospho-SMAD2/3 flow cytometry on sorted intratumoral NK"
+      - "NKG2D/NKp30 surface staining by flow cytometry +/- TGFβ"
+      - "multiplex IHC: NK (NCAM1) + tumor (pancytokeratin) distance quantification"
+      - "Collagen second-harmonic generation imaging + NK spatial analysis"
+
+  provenance:
+    created_by: "GC-NKGraph-Atlas mechanism-card framework"
+    created_date: "2026-07-09"
+    calibration_status: PENDING
+    change_log:
+      - "0.1.0 initial card from TGFβ-NK literature (Gao 2023, Viel 2016, Cortez 2017, adding gastric CAF context)"
