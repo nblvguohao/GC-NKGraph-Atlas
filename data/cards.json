@@ -1,0 +1,799 @@
+{
+  "adenosine_nk_suppression": {
+    "mechanism_card": {
+      "id": "adenosine_nk_suppression",
+      "version": "0.1.0",
+      "status": "ACTIVE",
+      "one_line": "Tumor-derived adenosine (via CD39/CD73 ectonucleotidases) binds A2A/A2B receptors on NK cells, activating cAMP-PKA signaling that suppresses NK cytotoxicity, IFN-γ production, and granule exocytosis; rescued by A2AR antagonists or CD73 blockade.\n",
+      "origin": {
+        "paper_title": "Adenosine mediates NK cell dysfunction in the tumor microenvironment",
+        "authors": "Chambers AM, Matosevic S, et al.",
+        "journal": "Journal for ImmunoTherapy of Cancer",
+        "year": 2019,
+        "doi": "10.1136/jitc-2019-000190",
+        "pmid": "",
+        "lab": "Matosevic / various",
+        "notes": "Adenosine-mediated NK suppression is a well-established metabolic immune checkpoint. CD73 (NT5E) and CD39 (ENTPD1) sequentially convert extracellular ATP to AMP to adenosine. A2AR (ADORA2A) and A2BR (ADORA2B) are the cognate receptors on NK cells. Pharmacologically targetable: oleclumab (anti-CD73), CPI-444 (A2AR antagonist), IPH5201 (anti-CD39) are in Phase 1/2/3 trials. Parallel to the Zheng 2023 SM axis — independent mechanism, different metabolic pathway, same effector cell type.\n"
+      },
+      "biology": {
+        "phenotype": "Suppressed NK cytotoxicity, reduced IFN-gamma secretion, impaired granule polarization",
+        "cell_type_affected": "intratumoral NK cells",
+        "tissue_context": "pan-cancer (breast, lung, colorectal, gastric, ovarian)",
+        "mechanistic_chain": [
+          {
+            "step": 1,
+            "actor_cell_type": "tumor",
+            "molecular_event": "tumor cells and Tregs upregulate CD39 (ENTPD1) and CD73 (NT5E), converting extracellular ATP to adenosine"
+          },
+          {
+            "step": 2,
+            "actor_cell_type": "nk",
+            "molecular_event": "adenosine binds A2AR (ADORA2A) and A2BR (ADORA2B) on NK cells, activating Gs-coupled cAMP-PKA signaling"
+          },
+          {
+            "step": 3,
+            "actor_cell_type": "nk",
+            "molecular_event": "PKA phosphorylates and inhibits Vav1, blocking NK activating receptor signaling and granule polarization"
+          },
+          {
+            "step": 4,
+            "actor_cell_type": "nk",
+            "molecular_event": "reduced granzyme B / perforin secretion, impaired immune synapse stability"
+          },
+          {
+            "step": 5,
+            "actor_cell_type": "nk",
+            "molecular_event": "loss of NK cytotoxicity; compensatory upregulation of inhibitory receptors (TIGIT, CD96)"
+          }
+        ]
+      },
+      "transcriptional_proxy": {
+        "status": "ACTIVE",
+        "claim_boundary": "Outputs describe a transcriptional program ASSOCIATED-WITH adenosine-mediated NK suppression. Never claim direct measurement of adenosine concentration or cAMP-PKA signaling flux from transcriptome.\n",
+        "modules": [
+          {
+            "name": "tumor_adenosine_pathway",
+            "role": "tumor_side",
+            "cell_type_attribution": "malignant",
+            "genes": [
+              "NT5E",
+              "ENTPD1",
+              "ADA",
+              "ADK",
+              "SLC29A1",
+              "SLC29A2",
+              "SLC28A1",
+              "SLC28A2",
+              "SLC28A3"
+            ],
+            "expected_direction": "NEEDS_REVIEW"
+          },
+          {
+            "name": "nk_adenosine_receptors",
+            "role": "immune_side",
+            "cell_type_attribution": "nk",
+            "genes": [
+              "ADORA2A",
+              "ADORA2B",
+              "ADORA1",
+              "ADORA3"
+            ],
+            "expected_direction": "higher_is_more_suppressed"
+          },
+          {
+            "name": "nk_camp_pka_effectors",
+            "role": "immune_side",
+            "cell_type_attribution": "nk",
+            "genes": [
+              "PRKACA",
+              "PRKACB",
+              "PRKAR1A",
+              "PRKAR2A",
+              "CREB1",
+              "CREBBP",
+              "EP300",
+              "AKAP1",
+              "AKAP5"
+            ],
+            "expected_direction": "context_dependent"
+          },
+          {
+            "name": "nk_cytolytic_machinery",
+            "role": "outcome_anchor",
+            "cell_type_attribution": "nk",
+            "genes": [
+              "NKG7",
+              "GNLY",
+              "GZMB",
+              "PRF1",
+              "IFNG",
+              "LCP2",
+              "LAT",
+              "VAV1",
+              "TLN1",
+              "ITGAL",
+              "ITGB2"
+            ],
+            "expected_direction": "axis_positive_correlate"
+          },
+          {
+            "name": "nk_inhibitory_receptors",
+            "role": "therapeutic_hook",
+            "cell_type_attribution": "nk",
+            "genes": [
+              "TIGIT",
+              "CD96",
+              "KLRC1",
+              "KLRD1",
+              "HAVCR2",
+              "LAG3",
+              "CTLA4",
+              "PDCD1"
+            ],
+            "expected_direction": "higher_is_more_suppressed"
+          }
+        ],
+        "derived_scores": {
+          "tumor_adenosine_pathway_score": "mean_zscore(tumor_adenosine_pathway | malignant)",
+          "nk_a2ar_signaling_score": "mean_zscore(nk_adenosine_receptors | nk) + mean_zscore(nk_camp_pka_effectors | nk)",
+          "nk_adenosine_suppression_score": "integrated(tumor_adenosine_pathway_score[calibrated], nk_a2ar_signaling_score, outcome_inverse)"
+        },
+        "attribution": {
+          "require_celltype_resolution_before_claim": true,
+          "method": "scrna_anchored",
+          "unresolved_flag": "MIXED_UNRESOLVED"
+        },
+        "caveats": [
+          "Transcriptional proxy != adenosine concentration != cAMP-PKA flux.",
+          "Adenosine concentration is a metabolite-level effect governed by enzyme kinetics, not expression.",
+          "A2AR signaling depends on receptor occupancy and ligand availability, not just receptor expression.",
+          "Cell-type attribution is mandatory; CD73/CD39 are expressed by multiple stromal populations."
+        ]
+      },
+      "physical_ground_truth": {
+        "status": "GATED",
+        "data_modality": [
+          "LC-MS adenosine quantification",
+          "cAMP ELISA",
+          "phospho-PKA western blot"
+        ],
+        "targets": [
+          "tumor_interstitial_adenosine_concentration",
+          "nk_cAMP_level",
+          "nk_pPKA_level",
+          "nk_immune_synapse_stability_time"
+        ],
+        "availability": "UNAVAILABLE",
+        "mock_policy": {
+          "allow_mock_for_code_test_only": true,
+          "mock_file_pattern": "*_MOCK_*",
+          "real_loader_missing_data_behavior": "raise_clear_error",
+          "mock_excluded_from_claims": true
+        }
+      },
+      "graph_integration": {
+        "new_node_types": [
+          "tumor_adenosine_program",
+          "nk_pka_state"
+        ],
+        "new_edge_types": [
+          "adenosine_crosstalk",
+          "atp_cascade"
+        ],
+        "rules": [
+          "adenosine_crosstalk edges require cell-type-resolved endpoints",
+          "crosstalk edge sign is calibrated on the positive-control cohort, not assumed",
+          "no edge derived from external-validation labels"
+        ]
+      },
+      "validation": {
+        "positive_control": {
+          "purpose": "recover the adenosine-A2AR-cAMP-cytotoxicity axis from transcriptomes",
+          "cohort": "TCGA-STAD",
+          "scrna_dataset": "GSE246662",
+          "prereg_hypotheses": [
+            "H1 tumor_adenosine_pathway (+) nk_adenosine_receptors (direction calibrated)",
+            "H2 nk_adenosine_receptors (-) nk_cytolytic_machinery",
+            "H3 nk_camp_pka_effectors (-) nk_cytolytic_machinery",
+            "H4 nk_inhibitory_receptors (-) nk_cytolytic_machinery"
+          ],
+          "recovery_definition": "H2-H4 pass in expected direction in gastric cancer"
+        },
+        "extension": {
+          "purpose": "identify adenosine-pathway-driven NK suppression targets in gastric cancer",
+          "cohort_group": "gastric_cancer"
+        },
+        "gold_standard_genes": [
+          "NT5E",
+          "ENTPD1",
+          "ADORA2A",
+          "ADORA2B",
+          "TIGIT",
+          "CD96",
+          "PRKACA",
+          "LCP2",
+          "VAV1",
+          "IFNG"
+        ]
+      },
+      "therapeutic_hook": {
+        "intervention": "block adenosine production (anti-CD73 oleclumab / anti-CD39 IPH5201) or block A2AR signaling (CPI-444 / AZD4635)",
+        "combination": "A2AR antagonist + anti-PD-1/PD-L1 (known clinical synergy) + optionally Tim3 blockade",
+        "patient_stratification_readout": "in-silico adenosine-pathway benefit score",
+        "validation_assays": [
+          "NK-tumor co-culture + adenosine/NECA + A2AR antagonist (ZM241385) rescue",
+          "cAMP ELISA on sorted intratumoral NK cells",
+          "phospho-PKA flow cytometry",
+          "CD107a degranulation assay + IFN-gamma intracellular staining",
+          "CD73 IHC on tumor sections"
+        ]
+      },
+      "provenance": {
+        "created_by": "GC-NKGraph-Atlas mechanism-card framework",
+        "created_date": "2026-07-09",
+        "calibration_status": "PENDING",
+        "change_log": [
+          "0.1.0 initial card from adenosine-NK literature (Chambers 2019, Vigano 2019, Young 2018, adding gastric context)"
+        ]
+      }
+    }
+  },
+  "tgfb_nk_exclusion": {
+    "mechanism_card": {
+      "id": "tgfb_nk_exclusion",
+      "version": "0.1.0",
+      "status": "ACTIVE",
+      "one_line": "Tumor- and CAF-derived TGFβ binds TGFβR on NK cells, suppressing activating receptors (NKG2D, NKp30, NKp44), downregulating cytotoxic effectors (GZMB, PRF1, IFNG), and driving NK-to-ILC1 conversion; stromal TGFβ additionally remodels the ECM to physically exclude NK cells from the tumor nest. Rescued by TGFβR blockade (galunisertib) or anti-TGFβ antibodies.\n",
+      "origin": {
+        "paper_title": "TGF-β impairs NK cell migration and cytotoxicity by reprogramming the tumor microenvironment",
+        "authors": "Gao J, Zheng X, Liu Y, et al.",
+        "journal": "Journal for ImmunoTherapy of Cancer",
+        "year": 2023,
+        "doi": "10.1136/jitc-2023-005785",
+        "pmid": "",
+        "lab": "Multiple (pan-cancer)",
+        "notes": "TGFβ-mediated NK suppression is one of the most well-characterized immune-evasion mechanisms in solid tumors. TGFβ signals through TGFβR1/2 and downstream SMAD2/3/4 transcription factors. Key effects on NK cells: (1) suppression of activating receptors NKG2D/NKp30/NKp44 via SMAD-mediated transcriptional repression; (2) downregulation of GZMB/PRF1/IFNG; (3) driving NK-to-ILC1 plasticity (loss of EOMES, gain of ILC1 markers); (4) CAF-mediated ECM deposition physically excludes NK cells. Galunisertib (LY2157299, TGFβR1 inhibitor) is in Phase 2/3 trials. Parallel to the Zheng 2023 SM axis and adenosine axis — mechanisms converge on NK cytotoxicity as the endpoint.\n"
+      },
+      "biology": {
+        "phenotype": "Loss of NK activating receptors, reduced cytotoxicity, NK-to-ILC1 conversion, physical NK exclusion from tumor nest",
+        "cell_type_affected": "intratumoral NK cells",
+        "tissue_context": "pan-cancer (gastric, colorectal, pancreatic, glioblastoma, breast, HCC)",
+        "mechanistic_chain": [
+          {
+            "step": 1,
+            "actor_cell_type": "tumor",
+            "molecular_event": "tumor cells and CAFs secrete TGFβ1, activated by integrins and low pH in the TME"
+          },
+          {
+            "step": 2,
+            "actor_cell_type": "nk",
+            "molecular_event": "TGFβ binds TGFβR1/TGFβR2 on NK cells, activating SMAD2/3 phosphorylation and nuclear translocation"
+          },
+          {
+            "step": 3,
+            "actor_cell_type": "nk",
+            "molecular_event": "SMAD2/3-SMAD4 complex transcriptionally represses NK activating receptors (KLRK1/NKG2D, NCR3/NKp30, NCR2/NKp44) and cytotoxic effectors (GZMB, PRF1, IFNG)"
+          },
+          {
+            "step": 4,
+            "actor_cell_type": "nk",
+            "molecular_event": "SMAD-mediated downregulation of EOMES and T-bet drives NK-to-ILC1 conversion, further reducing cytotoxic capacity"
+          },
+          {
+            "step": 5,
+            "actor_cell_type": "stroma",
+            "molecular_event": "TGFβ-activated CAFs deposit collagen I/III and fibronectin, physically excluding NK cells from tumor cell contact"
+          }
+        ]
+      },
+      "transcriptional_proxy": {
+        "status": "ACTIVE",
+        "claim_boundary": "Outputs describe a transcriptional program ASSOCIATED-WITH TGFβ-mediated NK suppression and exclusion. Never claim direct measurement of TGFβ protein concentration, SMAD phosphorylation, or ECM stiffness from transcriptome.\n",
+        "modules": [
+          {
+            "name": "tumor_tgfb_ligand",
+            "role": "tumor_side",
+            "cell_type_attribution": "malignant",
+            "genes": [
+              "TGFB1",
+              "TGFB2",
+              "TGFB3",
+              "LTBP1",
+              "LTBP2",
+              "LTBP3",
+              "ITGAV",
+              "ITGB6",
+              "ITGB8"
+            ],
+            "expected_direction": "NEEDS_REVIEW"
+          },
+          {
+            "name": "caf_ecm_program",
+            "role": "stroma_side",
+            "cell_type_attribution": "fibroblast",
+            "genes": [
+              "COL1A1",
+              "COL1A2",
+              "COL3A1",
+              "FN1",
+              "FAP",
+              "ACTA2",
+              "TGFBR1",
+              "TGFBR2",
+              "LOX",
+              "LOXL2",
+              "POSTN",
+              "THBS2",
+              "SPARC",
+              "VCAN"
+            ],
+            "expected_direction": "higher_is_more_exclusion_permissive"
+          },
+          {
+            "name": "nk_tgfb_signaling",
+            "role": "immune_side",
+            "cell_type_attribution": "nk",
+            "genes": [
+              "TGFBR1",
+              "TGFBR2",
+              "TGFBR3",
+              "SMAD2",
+              "SMAD3",
+              "SMAD4",
+              "SMAD7",
+              "SKIL",
+              "SNON"
+            ],
+            "expected_direction": "higher_is_more_suppressed"
+          },
+          {
+            "name": "nk_activating_receptors",
+            "role": "immune_side",
+            "cell_type_attribution": "nk",
+            "genes": [
+              "KLRK1",
+              "NCR1",
+              "NCR2",
+              "NCR3",
+              "CD226",
+              "SLAMF6",
+              "SLAMF7",
+              "CRTAM",
+              "KLRF1"
+            ],
+            "expected_direction": "higher_is_more_cytotoxic"
+          },
+          {
+            "name": "nk_cytolytic_machinery",
+            "role": "outcome_anchor",
+            "cell_type_attribution": "nk",
+            "genes": [
+              "NKG7",
+              "GNLY",
+              "GZMB",
+              "PRF1",
+              "IFNG",
+              "LCP2",
+              "LAT",
+              "VAV1",
+              "TLN1",
+              "ITGAL",
+              "ITGB2"
+            ],
+            "expected_direction": "axis_positive_correlate"
+          },
+          {
+            "name": "nk_ilc1_transition",
+            "role": "therapeutic_hook",
+            "cell_type_attribution": "nk",
+            "genes": [
+              "EOMES",
+              "TBX21",
+              "ID2",
+              "ZNF683",
+              "RORA",
+              "IL7R",
+              "KIT",
+              "ICOS",
+              "CXCR6"
+            ],
+            "expected_direction": "less_EOMES_TBX21_is_more_ilc1"
+          }
+        ],
+        "derived_scores": {
+          "tumor_tgfb_ligand_score": "mean_zscore(tumor_tgfb_ligand | malignant)",
+          "caf_ecm_exclusion_score": "mean_zscore(caf_ecm_program | fibroblast)",
+          "nk_tgfb_signaling_score": "mean_zscore(nk_tgfb_signaling | nk)",
+          "nk_activating_receptor_score": "mean_zscore(nk_activating_receptors | nk)",
+          "nk_ilc1_score": "mean_zscore(IL7R, KIT, RORA, CXCR6 | nk) - mean_zscore(EOMES, TBX21 | nk)",
+          "tgfb_axis_score": "integrated(tumor_tgfb_ligand_score[calibrated], nk_tgfb_signaling_score, nk_activating_receptor_score_inverse, outcome)"
+        },
+        "attribution": {
+          "require_celltype_resolution_before_claim": true,
+          "method": "scrna_anchored",
+          "unresolved_flag": "MIXED_UNRESOLVED"
+        },
+        "caveats": [
+          "Transcriptional proxy != TGFβ protein concentration != SMAD phosphorylation != ECM stiffness.",
+          "TGFβ is secreted and activated in the extracellular space; transcription captures capacity only.",
+          "SMAD signaling depends on receptor occupancy and ligand bioavailability, not just receptor expression.",
+          "CAF programs require fibroblast cell-type resolution; bulk deconvolution is insufficient.",
+          "NK-to-ILC1 conversion is a continuum, not a binary switch; transcriptional scores capture tendency, not committed fate."
+        ]
+      },
+      "physical_ground_truth": {
+        "status": "GATED",
+        "data_modality": [
+          "TGFβ ELISA",
+          "phospho-SMAD2/3 flow cytometry",
+          "second-harmonic generation collagen imaging",
+          "multiplex IHC for NK-tumor distance"
+        ],
+        "targets": [
+          "tumor_interstitial_tgfb_concentration",
+          "nk_pSMAD2_level",
+          "collagen_fiber_density",
+          "nk_to_tumor_cell_minimum_distance",
+          "nk_ilc1_ratio"
+        ],
+        "availability": "UNAVAILABLE",
+        "mock_policy": {
+          "allow_mock_for_code_test_only": true,
+          "mock_file_pattern": "*_MOCK_*",
+          "real_loader_missing_data_behavior": "raise_clear_error",
+          "mock_excluded_from_claims": true
+        }
+      },
+      "graph_integration": {
+        "new_node_types": [
+          "tumor_tgfb_program",
+          "caf_ecm_exclusion_state",
+          "nk_ilc1_state"
+        ],
+        "new_edge_types": [
+          "tgfb_crosstalk",
+          "ecm_exclusion",
+          "nk_plasticity_edge"
+        ],
+        "rules": [
+          "tgfb_crosstalk edges require cell-type-resolved endpoints",
+          "crosstalk edge sign is calibrated on the positive-control cohort, not assumed",
+          "ecm_exclusion edges connect CAF ECM genes to NK migration/chemokine genes",
+          "no edge derived from external-validation labels"
+        ]
+      },
+      "validation": {
+        "positive_control": {
+          "purpose": "recover the TGFβ-NK-suppression axis from gastric cancer transcriptomes",
+          "cohort": "TCGA-STAD",
+          "scrna_dataset": "GSE246662",
+          "prereg_hypotheses": [
+            "H1 tumor_tgfb_ligand (+) nk_tgfb_signaling (direction calibrated)",
+            "H2 nk_tgfb_signaling (-) nk_activating_receptors",
+            "H3 nk_activating_receptors (+) nk_cytolytic_machinery",
+            "H4 caf_ecm_program (-) nk_cytolytic_machinery (indirect: ECM exclusion reduces NK-tumor contact)",
+            "H5 nk_ilc1_score (-) nk_cytolytic_machinery (ILC1-like NK have lower cytotoxicity)"
+          ],
+          "recovery_definition": "H2-H5 pass in expected direction in gastric cancer"
+        },
+        "extension": {
+          "purpose": "identify TGFβ-pathway-driven NK exclusion targets in gastric cancer",
+          "cohort_group": "gastric_cancer"
+        },
+        "gold_standard_genes": [
+          "TGFB1",
+          "TGFBR1",
+          "TGFBR2",
+          "SMAD2",
+          "SMAD3",
+          "SMAD4",
+          "KLRK1",
+          "NCR3",
+          "EOMES",
+          "TBX21",
+          "FAP",
+          "COL1A1"
+        ]
+      },
+      "therapeutic_hook": {
+        "intervention": "block TGFβ signaling: galunisertib (TGFβR1 inhibitor), fresolimumab (anti-TGFβ pan-isoform), or bintrafusp alfa (TGFβR2-Fc trap fused to anti-PD-L1)",
+        "combination": "TGFβ blockade + anti-PD-1/PD-L1 (bintrafusp alfa tests this as a single molecule) + activate NK via NKG2D engagement",
+        "patient_stratification_readout": "in-silico TGFβ-exclusion benefit score",
+        "validation_assays": [
+          "NK-tumor co-culture + TGFβ + galunisertib rescue",
+          "phospho-SMAD2/3 flow cytometry on sorted intratumoral NK",
+          "NKG2D/NKp30 surface staining by flow cytometry +/- TGFβ",
+          "multiplex IHC: NK (NCAM1) + tumor (pancytokeratin) distance quantification",
+          "Collagen second-harmonic generation imaging + NK spatial analysis"
+        ]
+      },
+      "provenance": {
+        "created_by": "GC-NKGraph-Atlas mechanism-card framework",
+        "created_date": "2026-07-09",
+        "calibration_status": "PENDING",
+        "change_log": [
+          "0.1.0 initial card from TGFβ-NK literature (Gao 2023, Viel 2016, Cortez 2017, adding gastric CAF context)"
+        ]
+      }
+    }
+  },
+  "zheng_nk_sm_topology": {
+    "mechanism_card": {
+      "id": "zheng_nk_sm_topology",
+      "version": "0.1.0",
+      "status": "ACTIVE",
+      "one_line": "Tumor serine-metabolism dysregulation lowers sphingomyelin in NK-cell membranes, collapsing membrane protrusions and lytic synapse formation and abolishing NK cytotoxicity; rescued by blocking SM catabolism, synergistic with Tim3 blockade.\n",
+      "origin": {
+        "paper_title": "Tumors evade immune cytotoxicity by altering the surface topology of NK cells",
+        "authors": "Zheng X, Hou Z, Qian Y, ... Tian Z, Huang G, Wei H",
+        "journal": "Nature Immunology",
+        "year": 2023,
+        "doi": "10.1038/s41590-023-01462-9",
+        "pmid": "36959292",
+        "lab": "Wei Haiming / Zheng Xiaohu / Tian Zhigang, USTC",
+        "notes": "Follow-up framing \"Sphingomyelin is a prospective metabolic immune checkpoint for NK cells\" (Clin Transl Med 2023, DOI 10.1002/ctm2.1395) states the mechanism extends beyond liver to lung, colon and ovarian cancers. Gastric cancer is a natural, not-yet-claimed digestive-tract extension.\n"
+      },
+      "biology": {
+        "phenotype": "Loss / shortening of NK-cell membrane protrusions (microvilli); smooth, rounded NK surface",
+        "cell_type_affected": "intratumoral NK cells",
+        "tissue_context": "liver / hepatocellular carcinoma (HCC)",
+        "mechanistic_chain": [
+          {
+            "step": 1,
+            "actor_cell_type": "tumor",
+            "molecular_event": "dysregulated tumor serine metabolism reduces serine available for NK sphingolipid synthesis"
+          },
+          {
+            "step": 2,
+            "actor_cell_type": "nk",
+            "molecular_event": "reduced sphingomyelin (SM) content in NK membrane (SGMS1-dependent synthesis vs SMPD catabolism)"
+          },
+          {
+            "step": 3,
+            "actor_cell_type": "nk",
+            "molecular_event": "loss of membrane protrusions / microvilli (cortical actin / ERM / Arp2-3 machinery)"
+          },
+          {
+            "step": 4,
+            "actor_cell_type": "nk",
+            "molecular_event": "failure to recognize tumor and to form lytic immunological synapse"
+          },
+          {
+            "step": 5,
+            "actor_cell_type": "nk",
+            "molecular_event": "loss of cytotoxicity; Tim3 (HAVCR2) upregulated"
+          }
+        ]
+      },
+      "transcriptional_proxy": {
+        "status": "ACTIVE",
+        "claim_boundary": "Outputs describe a transcriptional program PERMISSIVE-OF / ASSOCIATED-WITH the topology phenotype. Never claim prediction of physical membrane topology or of SM metabolite content from transcriptome.\n",
+        "modules": [
+          {
+            "name": "tumor_serine_capacity",
+            "role": "tumor_side",
+            "cell_type_attribution": "malignant",
+            "genes": [
+              "PHGDH",
+              "PSAT1",
+              "PSPH",
+              "SHMT1",
+              "SHMT2",
+              "MTHFD1",
+              "MTHFD2",
+              "MTHFD1L",
+              "SLC1A4",
+              "SLC1A5"
+            ],
+            "expected_direction": "NEEDS_REVIEW"
+          },
+          {
+            "name": "nk_sm_synthesis",
+            "role": "immune_side",
+            "cell_type_attribution": "nk",
+            "genes": [
+              "SGMS1",
+              "SGMS2"
+            ],
+            "expected_direction": "higher_is_more_topology_permissive"
+          },
+          {
+            "name": "nk_sm_catabolism",
+            "role": "immune_side",
+            "cell_type_attribution": "nk",
+            "genes": [
+              "SMPD1",
+              "SMPD2",
+              "SMPD3",
+              "SMPD4"
+            ],
+            "expected_direction": "higher_is_less_topology_permissive"
+          },
+          {
+            "name": "nk_denovo_sphingolipid",
+            "role": "immune_side",
+            "cell_type_attribution": "nk",
+            "genes": [
+              "SPTLC1",
+              "SPTLC2",
+              "SPTLC3",
+              "SPTSSA",
+              "CERS2",
+              "CERS4",
+              "CERS5",
+              "CERS6",
+              "DEGS1"
+            ],
+            "expected_direction": "context_dependent"
+          },
+          {
+            "name": "nk_protrusion_machinery",
+            "role": "immune_side",
+            "cell_type_attribution": "nk",
+            "genes": [
+              "EZR",
+              "MSN",
+              "RDX",
+              "ACTR2",
+              "ACTR3",
+              "ARPC1B",
+              "ARPC2",
+              "ARPC3",
+              "ARPC4",
+              "ARPC5",
+              "WAS",
+              "WASL",
+              "WASF1",
+              "WASF2",
+              "WASF3",
+              "WIPF1",
+              "CDC42",
+              "RAC1",
+              "RHOA",
+              "DIAPH1",
+              "DIAPH3",
+              "FMNL1",
+              "BAIAP2",
+              "PACSIN2"
+            ],
+            "expected_direction": "higher_is_more_topology_permissive"
+          },
+          {
+            "name": "nk_synapse_cytotoxicity_outcome",
+            "role": "outcome_anchor",
+            "cell_type_attribution": "nk",
+            "genes": [
+              "NKG7",
+              "GNLY",
+              "GZMB",
+              "PRF1",
+              "IFNG",
+              "LCP2",
+              "LAT",
+              "VAV1",
+              "TLN1",
+              "ITGAL",
+              "ITGB2"
+            ],
+            "expected_direction": "axis_positive_correlate"
+          },
+          {
+            "name": "checkpoint_link",
+            "role": "therapeutic_hook",
+            "cell_type_attribution": "nk",
+            "genes": [
+              "HAVCR2"
+            ],
+            "expected_direction": "higher_is_less_topology_permissive"
+          }
+        ],
+        "derived_scores": {
+          "tumor_serine_capacity_score": "mean_zscore(tumor_serine_capacity | malignant)",
+          "nk_sm_balance_score": "mean_zscore(nk_sm_synthesis) - mean_zscore(nk_sm_catabolism)",
+          "nk_protrusion_machinery_score": "mean_zscore(nk_protrusion_machinery | nk)",
+          "nk_topology_permissive_score": "composite(nk_sm_balance_score, nk_protrusion_machinery_score)",
+          "sst_axis_score": "integrated(tumor_serine_capacity_score[calibrated sign], nk_topology_permissive_score, outcome)"
+        },
+        "attribution": {
+          "require_celltype_resolution_before_claim": true,
+          "method": "scrna_anchored",
+          "unresolved_flag": "MIXED_UNRESOLVED"
+        },
+        "caveats": [
+          "Transcriptional proxy != physical topology != metabolite flux.",
+          "Serine/SM crosstalk is a metabolite-level effect; transcription captures machinery/capacity only.",
+          "SM/serine/actin genes are broadly expressed; cell-type attribution is mandatory before any tumor-vs-NK claim.",
+          "Tumor-serine direction w.r.t. NK SM availability MUST be calibrated, not assumed."
+        ]
+      },
+      "physical_ground_truth": {
+        "status": "GATED",
+        "data_modality": [
+          "SEM / super-resolution imaging",
+          "single-immunocyte mass spectrometry"
+        ],
+        "targets": [
+          "membrane_protrusion_density",
+          "microvilli_density",
+          "membrane_roughness",
+          "immune_synapse_contact_area",
+          "membrane_SM_content"
+        ],
+        "availability": "UNAVAILABLE",
+        "mock_policy": {
+          "allow_mock_for_code_test_only": true,
+          "mock_file_pattern": "*_MOCK_*",
+          "real_loader_missing_data_behavior": "raise_clear_error",
+          "mock_excluded_from_claims": true
+        }
+      },
+      "graph_integration": {
+        "new_node_types": [
+          "tumor_serine_program",
+          "nk_topology_state"
+        ],
+        "new_edge_types": [
+          "metabolic_crosstalk",
+          "sm_topology_axis"
+        ],
+        "rules": [
+          "metabolic_crosstalk edges require cell-type-resolved endpoints",
+          "crosstalk edge sign is calibrated on the positive-control cohort, not assumed",
+          "no edge derived from external-validation labels"
+        ]
+      },
+      "validation": {
+        "positive_control": {
+          "purpose": "recover the published serine->SM->topology->cytotoxicity axis where it was proven",
+          "cohort": "TCGA-LIHC",
+          "scrna_dataset": "SEARCH_REQUIRED",
+          "prereg_hypotheses": [
+            "H1 tumor_serine_capacity ⟂ nk_sm_balance (direction calibrated, reported)",
+            "H2 nk_sm_balance (+) nk_protrusion_machinery",
+            "H3 nk_protrusion_machinery (+) cytotoxicity anchors",
+            "H4 nk_topology_permissive (−) HAVCR2 / dysfunction",
+            "H5 intratumoral NK < peritumoral/peripheral NK in sm_balance & protrusion machinery (scRNA)"
+          ],
+          "recovery_definition": "H2-H5 pass in pre-registered direction in liver"
+        },
+        "extension": {
+          "purpose": "test the same axis in a new, unclaimed cancer = the novel result",
+          "cohort_group": "gastric_cancer"
+        },
+        "gold_standard_genes": [
+          "SGMS1",
+          "SMPD1",
+          "SMPD3",
+          "PHGDH",
+          "PSAT1",
+          "HAVCR2",
+          "ADAM10",
+          "ADAM17",
+          "TIGIT",
+          "MICA",
+          "MICB"
+        ]
+      },
+      "therapeutic_hook": {
+        "intervention": "restore NK sphingomyelin (inhibit SM catabolism: ASM/SMPD1, NSMASE1-3/SMPD2-4)",
+        "combination": "sphingomyelinase inhibition + Tim3 (HAVCR2) checkpoint blockade",
+        "patient_stratification_readout": "in-silico SM-restoration benefit ranking (Phase 14R.8)",
+        "validation_assays": [
+          "NK-tumor co-culture cytotoxicity assay",
+          "SEM / super-resolution membrane-protrusion imaging",
+          "single-immunocyte mass spectrometry (membrane SM)",
+          "lytic immune-synapse formation assay",
+          "sphingomyelinase-inhibitor rescue +/- Tim3 blockade"
+        ]
+      },
+      "provenance": {
+        "created_by": "",
+        "created_date": "2026-07-06",
+        "calibration_status": "PENDING",
+        "change_log": [
+          "0.1.0 initial card from Nat Immunol 2023 + Clin Transl Med 2023 framing"
+        ]
+      }
+    }
+  }
+}
