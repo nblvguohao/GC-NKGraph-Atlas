@@ -17,7 +17,7 @@ sst_axis:
       role: tumor_side
       cell_type_attribution: malignant
       genes: [PHGDH, PSAT1, PSPH, SHMT1, SHMT2, MTHFD1, MTHFD2, MTHFD1L, SLC1A4, SLC1A5]
-      expected_direction: NEEDS_REVIEW
+      expected_direction: CALIBRATION_FAILED_DEFAULTING_TO_ANCHOR_PAPER_DIRECTION
 
     nk_sm_synthesis:
       role: immune_side

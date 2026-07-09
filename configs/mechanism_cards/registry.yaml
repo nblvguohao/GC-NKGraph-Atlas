@@ -1,3 +1,15 @@
+cards:
+  - id: zheng_nk_sm_topology
+    file: zheng_nk_sm_topology.yaml
+    version: 0.1.0
+    status: ACTIVE
+    one_line: "Serine→sphingomyelin→membrane-topology→cytotoxicity axis of NK immune evasion (Zheng et al., Nat Immunol 2023)"
+  - id: adenosine_a2ar_nk_suppression
+    file: adenosine_a2ar_nk_suppression.yaml
+    version: 0.1.0
+    status: DRAFT
+    one_line: "Adenosine-A2AR-cAMP NK suppression axis in hypoxic tumors (Young et al., Cancer Res 2018)"
+
 active_mechanism_card: zheng_nk_sm_topology
 cards_dir: configs/mechanism_cards
 rules:

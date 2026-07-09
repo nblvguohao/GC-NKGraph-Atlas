@@ -195,15 +195,16 @@ class GeneGraphEncoder:
         deg_inv_sqrt = np.diag(1.0 / np.sqrt(deg))
         adj_norm = deg_inv_sqrt @ adj_combined @ deg_inv_sqrt
 
-        # Spectral embedding via truncated SVD (fallback when no torch_geometric)
-        # This captures the graph Laplacian structure
+        # Spectral embedding via randomized SVD (sklearn) or sparse SVD fallback
         log(f"  Computing spectral embeddings (dim={self.embedding_dim})...")
         try:
-            from scipy.sparse.linalg import svds
-            u, s, vt = svds(adj_norm.astype(np.float64), k=min(self.embedding_dim, graph["num_nodes"] - 2))
-            # SVD returns smallest singular values first; we want largest
-            idx = np.argsort(s)[::-1]
-            self._embeddings = u[:, idx] @ np.diag(np.sqrt(np.maximum(s[idx], 0)))
+            from sklearn.decomposition import TruncatedSVD
+            k = min(self.embedding_dim, graph["num_nodes"] - 2)
+            svd = TruncatedSVD(n_components=k, algorithm='randomized', random_state=42, n_iter=7)
+            self._embeddings = svd.fit_transform(adj_norm.astype(np.float32))
+            # Already sorted by singular value descending
+            s = svd.singular_values_
+            self._embeddings = self._embeddings * np.sqrt(np.maximum(s, 0))[None, :]
             # Pad or truncate to embedding_dim
             if self._embeddings.shape[1] < self.embedding_dim:
                 pad = np.zeros((self._embeddings.shape[0], self.embedding_dim - self._embeddings.shape[1]))
@@ -211,14 +212,27 @@ class GeneGraphEncoder:
             else:
                 self._embeddings = self._embeddings[:, :self.embedding_dim]
         except Exception as e:
-            log(f"  SVD failed ({e}), using random projections...")
-            rng = np.random.RandomState(42)
-            proj = rng.randn(graph["num_nodes"], self.embedding_dim).astype(np.float32)
-            # Power iteration to approximate top eigenvectors
-            for _ in range(5):
-                proj = adj_norm @ proj
-                proj = proj / (np.linalg.norm(proj, axis=0, keepdims=True) + 1e-10)
-            self._embeddings = proj.astype(np.float32)
+            log(f"  Randomized SVD failed ({e}), trying sparse SVD...")
+            try:
+                from scipy.sparse.linalg import svds
+                from scipy.sparse import csr_matrix
+                adj_sparse = csr_matrix(adj_norm.astype(np.float64))
+                u, s, vt = svds(adj_sparse, k=min(self.embedding_dim, graph["num_nodes"] - 2))
+                idx = np.argsort(s)[::-1]
+                self._embeddings = u[:, idx] @ np.diag(np.sqrt(np.maximum(s[idx], 0)))
+                if self._embeddings.shape[1] < self.embedding_dim:
+                    pad = np.zeros((self._embeddings.shape[0], self.embedding_dim - self._embeddings.shape[1]))
+                    self._embeddings = np.hstack([self._embeddings, pad])
+                else:
+                    self._embeddings = self._embeddings[:, :self.embedding_dim]
+            except Exception as e2:
+                log(f"  SVD also failed ({e2}), using random projections...")
+                rng = np.random.RandomState(42)
+                proj = rng.randn(graph["num_nodes"], self.embedding_dim).astype(np.float32)
+                for _ in range(5):
+                    proj = adj_norm @ proj
+                    proj = proj / (np.linalg.norm(proj, axis=0, keepdims=True) + 1e-10)
+                self._embeddings = proj.astype(np.float32)
 
         log(f"  Gene embeddings: {self._embeddings.shape}")
         return self

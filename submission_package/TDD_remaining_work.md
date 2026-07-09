@@ -217,14 +217,172 @@ and the total cell retention rate.
 
 ```
 T1 ──► T2 ──┐
-T3 ─────────┼──► T5（图 1–5）──► 投稿
+T3 ─────────┼──► T5（图 1–5）
 T4 ─────────┘        │
 T6（✅ 已推送）       │
 T7（✅ 大部分完成）   │
                      ▼
-              📋 PRE_SUBMISSION_CHECKLIST.md
+T8（格式清洁）──► T10（替代解释+校准透明）
+T13（第二张卡片）  T15（补充索引）
+                     │
+T9（H2效应量）──► T11（嵌入分析）──► 投稿
+T4（QC服务器）    T12（消融实验）
+                  T14（排名稳定性）
 ```
 
-**更新（2026-07-09）：T1/T2/T3/T5/T6 已全部通过。T4（scRNA QC）脚本和回归测试
-已写好，需在服务器上执行（~30 min）。T7 仅剩 ORCID/CRediT/基金号核实（需作者操作）。
-详见 `manuscript/PRE_SUBMISSION_CHECKLIST.md`。**
+**状态（2026-07-09）：**
+- 🟢 本地完成：T1/T2/T3/T5/T6/T8/T10/T13/T15
+- 🟡 脚本就绪，需服务器执行：T4/T9/T11/T12/T14
+- 🟡 需作者操作：T7（ORCID/CRediT/基金号）
+
+**T8–T15 详细规格：** 见 `submission_package/TDD_reviewer_and_editor.md`。
+
+**服务器执行清单（一次性批量运行，~2-3 小时）：**
+```bash
+# 1. scRNA QC (T4)
+python src/scrna_analysis/qc_filter.py \
+    --in data/processed/scrna/gc_integrated.h5ad \
+    --out data/processed/scrna/gc_integrated_qc.h5ad
+pytest tests/test_qc_regression.py -v -m server
+
+# 2. H2 effect size (T9)
+python src/analysis/h2_effect_size.py \
+    --input results/tables/sst_axis_scores_single_cell.tsv \
+    --output-dir results/tables/
+
+# 3. Gene embedding analysis (T11) — requires GNN checkpoint
+python src/interpretation/gene_embedding_analysis.py \
+    --embeddings results/model/gene_embeddings.npy \
+    --gene-list data/processed/graph/gene_nodes.tsv \
+    --output-dir results/
+
+# 4. Ablation study (T12) — update script with actual GNN calls first
+python src/baselines/run_ablation.py \
+    --full-edges data/processed/graph/edges.tsv \
+    --nodes data/processed/graph/nodes.tsv \
+    --expression data/processed/bulk/tcga_stad_expression.tsv \
+    --labels data/processed/bulk/tcga_stad_labels.tsv \
+    --output-dir results/
+
+# 5. Target rank stability (T14)
+python src/interpretation/target_rank_stability.py \
+    --input results/tables/tumor_intrinsic_candidates.tsv \
+    --output results/tables/target_rank_stability.tsv
+
+# 6. Regenerate all figures with latest data
+python src/figures/make_figures.py --dpi 300
+```
+
+---
+
+## T8 — 手稿格式清洁（主编阻断项）🟢 已通过（2026-07-09）
+
+> 删除所有编辑注释、缩短标题至 ≤150 字符、删除 cover_letter 内部备注。
+
+- A1–A5 ✅：`main_manuscript.md` 中 ORCID 备注、传记备注、CRediT 备注、"Draft v0.3" 状态块均已删除；标题从 ~190 字符缩短为 ~150 字符（删除 "from Liver to Gastric Cancer"）；cover_letter.md 内部备注已删除。
+- 验证：`grep -nE 'ORCID iDs: fill|Biographies ~30|CRediT taxonomy|Document status|Internal note' manuscript/*.md` 返回空 ✅
+
+---
+
+## T9 — H2 效应量分析脚本 🟡 脚本就绪（2026-07-09）
+
+> `src/analysis/h2_effect_size.py` 完成。Bootstrap 95% CI + 下采样曲线（8310→100 步长200）+ 方差解释率。需在服务器执行。
+
+```bash
+python src/analysis/h2_effect_size.py \
+    --input results/tables/sst_axis_scores_single_cell.tsv \
+    --output-dir results/tables/ \
+    --output-fig results/figures/figS_h2_downsample.pdf
+python - <<'PY'
+import pandas as pd
+ci = pd.read_csv("results/tables/h2_bootstrap_ci.tsv", sep="\t")
+assert ci["ci_lower_95"].iloc[0] > 0, "H2 CI crosses zero"
+assert ci["r_squared"].iloc[0] < 0.01, f"H2 r²={ci['r_squared'].iloc[0]} — should be <1%"
+print("T9 PASS")
+PY
+```
+
+---
+
+## T10 — H4/H5 替代解释 + metabolic_crosstalk 校准透明 🟢 已通过（2026-07-09）
+
+> 向手稿添加了两段关键文本 + 预注册日志 + 参考文献 [25][26]。
+
+- C1 ✅：§4.3 Limitation #1 新增替代解释段落（NK 转录激活-功能解耦，类比 T 细胞耗竭），引用 Wherry 2015 [25] + Bi 2017 [26]
+- C2 ✅：§2.5 新增校准状态披露段落（H1 null → 边默认为锚定论文方向，标记 NEEDS_REVIEW）
+- C3 ✅：`configs/sst_axis_config.yaml` 中 `tumor_serine_capacity.expected_direction` 更新为 `CALIBRATION_FAILED_DEFAULTING_TO_ANCHOR_PAPER_DIRECTION`
+- C4 ✅：`configs/sst_axis_prereg_log.md` 创建，记录 CHANGE-001（校准源失败）和 CHANGE-002（恢复判定修订）
+
+---
+
+## T11 — 基因嵌入可解释性分析脚本 🟡 脚本就绪（2026-07-09）
+
+> `src/interpretation/gene_embedding_analysis.py` 完成。UMAP 投影 + 模块内/间距离 + 嵌入距离 vs 共表达 Spearman。需在服务器执行（需训练好的 GNN checkpoint）。
+
+```bash
+python src/interpretation/gene_embedding_analysis.py \
+    --embeddings results/model/gene_embeddings.npy \
+    --gene-list data/processed/graph/gene_nodes.tsv \
+    --scRNA-expr data/processed/scrna/gc_nk_expression.tsv \
+    --output-dir results/
+python - <<'PY'
+import pandas as pd
+eco = pd.read_csv("results/tables/embedding_distance_vs_coexpression.tsv", sep="\t")
+assert eco["spearman_rho"].iloc[0] > 0, "embedding distance should positively correlate with coexpression"
+print("T11 PASS")
+PY
+```
+
+---
+
+## T12 — 消融实验脚本 🟡 脚本就绪（2026-07-09）
+
+> `src/baselines/run_ablation.py` 完成。全图 vs 去除 metabolic_crosstalk 边，5 折相同种子。**注意：脚本使用占位符值，需在服务器上替换为实际 GNN 训练调用。**
+
+```bash
+python src/baselines/run_ablation.py \
+    --full-edges data/processed/graph/edges.tsv \
+    --nodes data/processed/graph/nodes.tsv \
+    --expression data/processed/bulk/tcga_stad_expression.tsv \
+    --labels data/processed/bulk/tcga_stad_labels.tsv \
+    --output-dir results/
+```
+
+---
+
+## T13 — 第二张机制卡片 🟢 已通过（2026-07-09）
+
+> 为 adenosine–A2AR–cAMP NK 抑制轴创建第二张机制卡片，证明卡片格式复用性。
+
+- F1 ✅：`configs/mechanism_cards/adenosine_a2ar_nk_suppression.yaml`（7 基因模块、5 预注册假设、GATED physical_ground_truth）
+- F2 ✅：`configs/mechanism_cards/registry.yaml` 已更新，注册两张卡片
+- F3 ✅：§4.2 新增段落说明第二张卡片作为复用性初步证明
+
+---
+
+## T14 — 靶点排名稳定性分析脚本 🟡 脚本就绪（2026-07-09）
+
+> `src/interpretation/target_rank_stability.py` 完成。5 个评分维度各 ±0.10 扰动，Jaccard 重叠 + PHGDH/SGMS2 top-3 稳定性。
+
+```bash
+python src/interpretation/target_rank_stability.py \
+    --input results/tables/tumor_intrinsic_candidates.tsv \
+    --output results/tables/target_rank_stability.tsv \
+    --n-perturbations 10
+python - <<'PY'
+import pandas as pd
+df = pd.read_csv("results/tables/target_rank_stability.tsv", sep="\t")
+avg_j = df["jaccard_top10"].mean()
+assert avg_j >= 0.7, f"avg Jaccard={avg_j:.3f} < 0.7"
+print("T14 PASS")
+PY
+```
+
+---
+
+## T15 — 补充材料索引 + Supplementary Methods 🟢 已通过（2026-07-09）
+
+> 补充材料索引 + Supplementary Methods 说明探针重映射方法 + NK 状态分类细节。
+
+- H1 ✅：`submission_package/02_supplementary_tables/README.md`（S1–S6 文件清单 + 列说明 + 再生命令）
+- H2–H4 ✅：Supplementary Methods 已包含探针→基因重映射步骤（GPL570/GPL6947、多探针策略、NK marker 验证）、NK 状态分类细节、复合评分权重说明

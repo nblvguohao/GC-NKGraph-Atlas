@@ -1,8 +1,3 @@
-> **Internal note (delete before sending):** Delete this note and the ORCID
-> placeholder reminder before submission. Verify reviewer emails are current.
-
----
-
 **To:** The Editors, *Briefings in Bioinformatics*
 **Re:** Submission of a Problem Solving Protocol
 

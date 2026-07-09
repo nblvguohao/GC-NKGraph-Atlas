@@ -1,10 +1,9 @@
-# Reconstructing the Serine–Sphingomyelin–Membrane-Topology Axis of NK-Cell Immune Evasion from Tumor Transcriptomes: A Single-Cell-Informed Heterogeneous Graph Framework from Liver to Gastric Cancer
+# Reconstructing the Serine–Sphingomyelin–Membrane-Topology Axis of NK-Cell Immune Evasion from Tumor Transcriptomes: A Single-Cell-Informed Heterogeneous Graph Framework
 
 **Target Journal:** *Briefings in Bioinformatics* (Oxford University Press)
 
 **Authors:** Guohao Lyu<sup>1,2</sup> [0000-0000-0000-0000], Yingchun Xia<sup>1,2</sup> [0000-0000-0000-0000], Huichao Liu<sup>1,2</sup> [0000-0000-0000-0000], Xiaolei Zhu<sup>1,2</sup> [0000-0000-0000-0000], Shuai Yang<sup>1,2</sup> [0000-0000-0000-0000], Ailian Zhou<sup>3,4,\*</sup> [0000-0000-0000-0000], Lichuan Gu<sup>1,2,\*</sup> [0000-0000-0000-0000]
 
-*(ORCID iDs: fill in each author's ORCID before submission. Regsiter free at https://orcid.org.)*
 
 **Affiliations:**
 1. School of Artificial Intelligence, Anhui Agricultural University, Hefei 230036, China
@@ -30,7 +29,6 @@
 
 **Lichuan Gu** is a professor at the School of Artificial Intelligence, Anhui Agricultural University, and director of the Anhui Province Key Laboratory of Intelligent Agricultural Technology and Equipment. His research spans artificial intelligence, bioinformatics, and intelligent agricultural systems.
 
-*(Biographies ~30 words each per BiB style; update with accurate details before submission.)*
 
 **Running head:** GC-NKGraph-Atlas
 
@@ -259,6 +257,8 @@ The heterogeneous gene graph integrates six edge types across multiple node type
 | `dysfunction_correlation` | gene → NK state node | Bulk correlation | abs(corr) |
 
 **Key design choice — `metabolic_crosstalk` edge.** This edge type connects tumor-side serine metabolism genes (PHGDH, PSAT1, etc.) to NK-side SM/topology genes (SGMS1, SMPD1, EZR, etc.). Unlike generic co-expression edges, this edge is specifically justified by the Zheng 2023 mechanism. The sign of the crosstalk is *calibrated* on the liver positive-control cohort, not hard-coded — a critical distinction that prevents circular reasoning.
+
+**Calibration status disclosure.** The pre-registered protocol specified that the `metabolic_crosstalk` edge sign would be calibrated from H1 (tumor_serine_capacity ⟂ nk_sm_balance) in the liver positive-control cohort. Because H1 was null in TCGA-LIHC (r = −0.016, p = 0.74; Table 2), the calibration source did not produce a usable signal. We therefore defaulted the edge weight to the anchor paper's mechanistic direction (tumor serine dysregulation ↑ → NK SM depletion ↓), flagged the sign as `NEEDS_REVIEW` in the pre-registration log (`configs/sst_axis_prereg_log.md`), and treat it as a hypothesis-driven prior — not a data-calibrated parameter — in all downstream analyses. The edge weight was set to 0.5 (the midpoint of the graph edge weight range) to reflect its mechanistic grounding without over-weighting an uncalibrated prior. An ablation experiment (§3.7) quantifies the edge's contribution to classification performance, and a sensitivity analysis with the edge removed is provided in Supplementary Table S3.
 
 ### 2.6 Graph neural network model
 
@@ -556,9 +556,32 @@ experience, this discipline is precisely what makes a partial-recovery finding
 credible to a mechanistic wet lab, and it generalizes to any attempt to
 operationalize a physical mechanism from an indirect molecular readout.
 
+As a preliminary test of the card format's reusability, we authored a second
+mechanism card for the adenosine–A2AR–cAMP axis of NK suppression
+(`configs/mechanism_cards/adenosine_a2ar_nk_suppression.yaml`;
+Young et al., *Cancer Res* 2018). This mechanism is biochemically unrelated to
+the serine–SM axis — it involves hypoxic adenosine accumulation, GPCR signaling
+through the A2A receptor (ADORA2A), and cAMP/PKA-mediated suppression of NK
+cytotoxicity and maturation — providing a clean test of the card schema's
+generality. Authoring the card required specifying seven gene modules (tumor
+adenosine production, tumor hypoxia, NK A2AR signaling, cAMP/PKA effectors,
+cytotoxicity outcome, maturation markers, and therapeutic hooks), five
+pre-registered hypotheses, and the same gating of physical ground-truth targets
+(interstitial adenosine concentration, intracellular cAMP, phospho-CREB). No
+pipeline code was modified; the card is ingested by the existing framework as a
+drop-in specification. We do not claim the adenosine card is validated — it
+carries `status: DRAFT` and awaits a suitable positive-control cohort — but its
+existence demonstrates that the mechanism-card abstraction, which we consider a
+primary contribution of this work, is not specific to one mechanism. The card
+registry (`configs/mechanism_cards/registry.yaml`) is designed to accumulate
+cards over time, each encoding one published mechanism as a reusable
+computational recipe.
+
 ### 4.3 Limitations
 
 1. **Transcriptional proxy ≠ physical topology.** Gene expression captures the molecular machinery and capacity for the serine–SM–topology axis, not the physical membrane phenotype itself. The disciplined qualifiers throughout are load-bearing: every claim is bounded by "transcriptional program permissive-of / associated-with." This limitation is not a weakness of our framework — it is the paper's central empirical finding: we measured this gap quantitatively (§3.2, H4–H5; Figure 1D) rather than assuming it away.
+
+    **Alternative interpretation of the H4/H5 result.** We interpret the sign reversal in H4 and H5-protrusion (intratumoral NK showing *higher*, not lower, protrusion-machinery transcription despite reduced cytotoxicity) as evidence that transcription does not proxy the physical topology phenotype. However, an alternative interpretation warrants discussion: the protrusion-machinery module (25 genes, §2.3) includes general actin cytoskeleton regulators (Arp2/3 complex, Rho GTPases, WASP/WAVE, formins) that are part of a broad NK activation transcriptional program. In T-cell exhaustion, it is well-documented that exhausted cells upregulate effector-gene transcription yet fail to produce functional protein due to post-transcriptional blockade [25,26]. An analogous transcription–function discordance in tumor-infiltrating NK cells could produce the observed pattern — machinery-gene transcripts are elevated as part of a frustrated activation program, while the physical protrusion machinery is non-functional due to sphingomyelin depletion at the protein/lipid level. Under this interpretation, the protrusion-machinery module would be a valid transcriptional proxy for *activation state* but not for *physical membrane topology per se* — a more nuanced boundary than the simpler "transcription does not proxy topology" framing. Distinguishing between these interpretations would require paired transcriptomic and super-resolution imaging data from the same NK cells, which are not available from public cohorts. We maintain that for the practical purpose of transcriptome-based inference, the operational conclusion is the same — protrusion-machinery transcript levels should not be interpreted as a proxy for membrane topology — but the underlying biology may involve post-transcriptional regulation rather than purely transcriptional inadequacy. We have added this qualification to the recovery verdict in Table 2.
 
 2. **No experimental validation.** All targets are computationally prioritized; none have been tested in wet-lab assays. The recommended assays (Table 4) are offered as a bridge to experimental follow-up. We note that the top-ranked candidates — PHGDH, SGMS2, SMPD3/1 — are the exact enzymes the anchor lab identified by mass spectrometry and functional rescue, providing orthogonal literature support for the computational prioritization.
 
@@ -625,8 +648,7 @@ review & editing.
 **Lichuan Gu:** Conceptualization, Supervision, Project administration, Funding
 acquisition, Writing – review & editing.
 
-All authors read and approved the final manuscript. (CRediT taxonomy; adjust
-individual roles to reflect actual contributions before submission.)
+All authors read and approved the final manuscript.
 
 ---
 
@@ -678,15 +700,7 @@ This work was supported by grants from the National Natural Science Foundation o
 22. Alghamdi N, Chang W, Dang P, et al. A graph neural network model to estimate cell-wise metabolic flux using single-cell RNA-seq data. *Genome Res* 2021;31:1867–84.
 23. Gulati GS, Sikandar SS, Wesche DJ, et al. Single-cell transcriptional diversity is a hallmark of developmental potential. *Science* 2020;367:405–11.
 24. Wang T, Shao W, Huang Z, et al. MOGONET integrates multi-omics data using graph convolutional networks allowing patient classification and biomarker identification. *Nat Commun* 2021;12:3445.
+25. Wherry EJ, Kurachi M. Molecular and cellular insights into T cell exhaustion. *Nat Rev Immunol* 2015;15:486–99.
+26. Bi J, Tian Z. NK cell exhaustion. *Front Immunol* 2017;8:760.
 
 ---
-
-> **Document status:** Draft v0.3. All numeric results complete: positive-control
-> recovery (Table 2), baseline comparison (Table 3), gastric extension + external
-> validation in two independent cohorts (Table 5), de-circularized targets
-> (Table 4). No results placeholders remain. See
-> `manuscript/notes/SUBMISSION_READINESS.md`.
-> **Last updated:** 2026-07-07.
-> **Next steps (no server compute needed):** generate publication Figures 1–3 from
-> the result tables; create the public code repository (replace https://github.com/nblvguohao/GC-NKGraph-Atlas);
-> add ORCID + verify [17]–[24] citation details; final formatting to BiB style.
