@@ -1,0 +1,26 @@
+# Keep the Docker image small — exclude everything not needed at runtime
+.git
+.gitignore
+.venv
+.pytest_cache
+__pycache__
+*.pyc
+*.pyo
+
+# Data files are mounted at runtime, never baked into image
+data/
+
+# Results are generated at runtime
+results/
+
+# Development artifacts
+submission_package/
+manuscript/notes/
+*.md
+!README.md
+
+# Editor/IDE
+.vscode
+.idea
+*.swp
+*.swo
