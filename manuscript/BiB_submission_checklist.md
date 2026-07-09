@@ -34,10 +34,11 @@
 - [x] ✅ **External validation (§3.3, Table 5)** — GEO probe remapping done on A100
   (`run_geo_external_validation.py`); effector coupling replicates in both cohorts
   (r=0.42/0.62, p≪1e-13); NK markers 6/7 and 7/7.
-- [x] ✅ **Figures 1–4** — publication-quality figures generated
+- [x] ✅ **Figures 1–5** — publication-quality figures generated
   (`src/figures/make_figures.py`, Okabe-Ito CVD-safe palette, PDF+PNG): Fig1 Arm A
-  recovery, Fig2 Arm B + external validation, Fig3 targets, Fig4 model comparison.
-  All numbers read from result tables; visually inspected.
+  recovery, Fig2 Arm B + external validation, Fig3 targets, Fig4 model comparison,
+  Fig5 mechanism-card concept diagram. All numbers read from result tables; visually
+  inspected.
 - [ ] ⚠️ Ablation (§3.7) — either run a minimal ablation (graph edges on/off) or
   remove the placeholder heading.
 
@@ -93,12 +94,15 @@
 
 ---
 
-### The items that actually block submission (updated 2026-07-07)
+### The items that actually block submission (updated 2026-07-09)
 1. ~~Table 3 baselines~~ — ✅ **done** (pulled from A100, merged, tested).
 2. ~~External validation~~ — ✅ **done** (GEO remapped on A100; both cohorts replicate).
-3. ~~Publication figures~~ — ✅ Fig 1–4 done.
+3. ~~Publication figures~~ — ✅ Fig 1–5 done (including mechanism-card concept diagram).
 4. ~~References, ORCID placeholders, cover letter, author bios, keywords~~ — ✅ all done.
-5. **Public code repository** — the ONLY remaining blocker (push to GitHub).
+5. ~~Binary vs 4-class alignment~~ — ✅ **done** (Methods §2.4 now explains binary choice).
+6. ~~Limitations reordering~~ — ✅ **done** (leads with proxy≠topology and no experimental validation).
+7. **Public code repository** — the ONLY remaining blocker (push to GitHub).
+8. **Each author fills ORCID iD** — individual author action.
+9. **Grant number / CRediT verification** — corresponding author action.
 
-All data/analysis/figure/writing blockers cleared. Remaining: push repo to
-GitHub; then each author fills ORCID iD + confirm CRediT/grant numbers.
+See `manuscript/PRE_SUBMISSION_CHECKLIST.md` for the complete per-author action list.

@@ -6,7 +6,7 @@
 **To:** The Editors, *Briefings in Bioinformatics*
 **Re:** Submission of a Problem Solving Protocol
 
-Date: July 7, 2026
+Date: July 9, 2026
 
 Dear Editors,
 
@@ -46,6 +46,9 @@ useful and honest contribution:
 - The **physical membrane-topology phenotype** is demonstrably *not* captured by
   machinery-gene transcription, which we show and quantify rather than assume —
   delineating the honest boundary of any transcriptome-based reconstruction.
+- We introduce a **reusable mechanism-card abstraction** (Figure 5) that encodes
+  the wet-lab mechanism as a machine-readable YAML recipe — applying the framework
+  to a new published mechanism requires only a new card, not new code.
 
 On NK-state classification the graph-informed model reaches AUROC 0.95 / MCC 0.71
 under 5-fold cross-validation — statistically on par with the strongest
