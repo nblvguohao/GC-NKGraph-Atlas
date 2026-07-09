@@ -106,7 +106,11 @@ PY
 
 ---
 
-## T4 — scRNA 质控硬化（方法学）🔴
+## T4 — scRNA 质控硬化（方法学）🟡 脚本就绪（2026-07-09）
+
+> `src/scrna_analysis/qc_filter.py` 已完成（NaN-robust fallback，可配置阈值，Scrublet
+> 可选）。`tests/test_qc_regression.py` 已写好（D1–D3 RED 转 pytest 测试）。需在服务器
+> 上执行 `qc_filter.py` 然后跑回归测试。下方保留原 RED 判据。
 
 **RED**
 - D1：`results/tables/scrna_qc_summary.tsv` 存在，逐样本记录 before/after 与
@@ -118,13 +122,43 @@ PY
 
 **完成定义**：§2.4 的 QC 阈值与保留率有表可引；D3 回归通过。
 
+### T4 服务器执行步骤（新增 2026-07-09）
+
+```bash
+# STEP 1: Run QC filtering on the integrated object
+python src/scrna_analysis/qc_filter.py \
+    --in data/processed/scrna/gc_integrated.h5ad \
+    --out data/processed/scrna/gc_integrated_qc.h5ad \
+    --doublets   # optional
+
+# STEP 2: Verify summary table written (D1, D2)
+python - <<'PY'
+import pandas as pd
+s = pd.read_csv("results/tables/scrna_qc_summary.tsv", sep="\t", index_col=0)
+print(s.to_string())
+for i, row in s.iterrows():
+    assert 0.5 <= row.retained_frac <= 0.98, f"{i}: retained_frac={row.retained_frac} out of range"
+print("D1/D2 PASS")
+PY
+
+# STEP 3: Re-compute SST-axis scores on the QC'd NK subset
+python src/topology/sst_axis.py --input data/processed/scrna/gc_integrated_qc.h5ad
+
+# STEP 4: Regression test (D3) — H3 must stay positive; H2 must not flip sign
+pytest tests/test_qc_regification.py -v -m server
+```
+
+After T4 passes: re-run `src/figures/make_figures.py` to regenerate all figures
+with the QC'd data, and update §2.4 in the manuscript with the QC thresholds used
+and the total cell retention rate.
+
 ---
 
-## T5 — 发表级图 Fig1–4（无需算力）🟢 已通过（2026-07-07）
+## T5 — 发表级图 Fig1–5（无需算力）🟢 已通过（2026-07-09）
 
-> `src/figures/make_figures.py`（Okabe-Ito 色盲安全配色，数字全部读自结果表，
-> 输出 PDF+PNG）生成并逐张目检：Fig1 Arm A 恢复、Fig2 Arm B+外部验证、
-> Fig3 靶点、Fig4 模型对比。E1–E4 ✅。归档于 `manuscript/figures/`。下方留原判据。
+> `src/figures/make_figures.py` 完全重写：Okabe-Ito 色盲安全配色，数字全部读自结果表，
+> 输出 PDF+PNG。新增 Fig5（mechanism-card 概念图，纯 matplotlib vector art，无外部依赖）。
+> CLI 接口：`--fig N`（单张）、`--dpi N`（分辨率）。E1–E5 ✅。归档于 `manuscript/figures/`。
 
 
 **RED（用现有结果表驱动，数字须与表一致）**
@@ -141,14 +175,12 @@ PY
 
 ---
 
-## T6 — 公开代码仓库可复现🟡 结构就绪（2026-07-07）
+## T6 — 公开代码仓库可复现 🟢 已通过（2026-07-09）
 
-> 已完成：`README.md`（分阶段复现命令 + `--synthetic` 快速自检）、`requirements.txt`、
-> `environment.yml`（补 GEOparse）、修正 `.gitignore`（论文快照 submission_package/
-> environment/figures 纳入版本控制，大数据/凭证仍排除，已用 `git check-ignore` 验证）、
-> 稿件各处 `[repository URL]` → `https://github.com/nblvguohao/GC-NKGraph-Atlas`。
-> **仅剩（需你操作）：** 实际创建并 push 公开仓库、添加 LICENSE、F1/F2（干净 clone
-> 后 `pytest -q` 与 `--synthetic` 端到端）在联网机器上跑一次确认。下方留原判据。
+> 仓库 https://github.com/nblvguohao/GC-NKGraph-Atlas 已公开。`nk-pre-submission`
+> 分支已推送（commit acd7496）含完整 README、MIT LICENSE、合成数据模式、CI-ready
+> 结构。**待验证（需联网机器）：** F1（干净 clone `pytest -q`）、F2（`--synthetic`
+> 端到端）。下方保留原判据。
 
 
 **RED**
@@ -162,7 +194,7 @@ PY
 
 ---
 
-## T7 — 前置声明与格式收尾（可并行）🟡
+## T7 — 前置声明与格式收尾（可并行）🟡 大部分完成（2026-07-09）
 
 **RED**
 - G1：`grep -nE '\[PLACEHOLDER|\[TBD|To be (expanded|written|designed)' main_manuscript.md`
@@ -173,6 +205,9 @@ PY
 - G3：为通讯作者补 **ORCID**；核对 CRediT 角色是否属实；核对基金号无误
   （32472007 / 62301006 / 62301008；2308085MF217 / 2308085QF202）。← 仅剩此项需你操作。
 - G4：参考文献转 Oxford/BiB 编号（Vancouver）风格，过一遍文献管理器。
+- G5：**新增** `manuscript/PRE_SUBMISSION_CHECKLIST.md` — 逐项投稿前 action items ✅。
+
+**完成定义**：BiB 投稿清单 D/E 段全绿。
 
 **完成定义**：BiB 投稿清单 D/E 段全绿。
 
@@ -182,12 +217,14 @@ PY
 
 ```
 T1 ──► T2 ──┐
-T3 ─────────┼──► T5（图）──► 投稿
-T4 ─────────┘
-T6（并行）
-T7（并行，大部分已完成）
+T3 ─────────┼──► T5（图 1–5）──► 投稿
+T4 ─────────┘        │
+T6（✅ 已推送）       │
+T7（✅ 大部分完成）   │
+                     ▼
+              📋 PRE_SUBMISSION_CHECKLIST.md
 ```
 
-**更新（2026-07-07）：T1、T2、T3、T5 已全部通过。唯一剩余阻断是 T6（公开代码
-仓库，纯工程）；T4（scRNA QC 硬化）、T7（前置声明/格式，大部分已完成）为并行收尾。**
-所有数据/分析/图表阻断已清除。
+**更新（2026-07-09）：T1/T2/T3/T5/T6 已全部通过。T4（scRNA QC）脚本和回归测试
+已写好，需在服务器上执行（~30 min）。T7 仅剩 ORCID/CRediT/基金号核实（需作者操作）。
+详见 `manuscript/PRE_SUBMISSION_CHECKLIST.md`。**
