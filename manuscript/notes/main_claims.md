@@ -1,8 +1,9 @@
 # Main Claims — GC-NKGraph-Atlas
 
 > Each claim maps to a figure/table in `manuscript/main_manuscript.md`.
-> Checked claims have been verified by pipeline output.
-> Unchecked claims are planned but not yet executed.
+> Checked claims have been verified by pipeline output or curated submission tables.
+> This file records the current submission-facing claim boundary after the
+> pre-submission reviewer audit.
 
 ---
 
@@ -22,8 +23,8 @@
 ## Claim 2 — R2. Liver positive control: PARTIAL recovery (reframed, honest)
 **Statement (revised):** In liver cancer, the framework recovers the **effector
 layer** of the axis (protrusion→cytotoxicity) at both bulk and single-cell
-resolution, recovers the **metabolic coupling** (SM-balance→protrusion) only when
-cell-type is resolved, and does **not** recover the **physical topology
+resolution, detects a **weak metabolic coupling** (SM-balance→protrusion) only
+when cell-type is resolved, and does **not** recover the **physical topology
 phenotype** from machinery transcription. Reported as a scoping map, not full
 recovery.
 
@@ -31,11 +32,11 @@ recovery.
 |------|--------|
 | TCGA-LIHC expression processed (n=423) | ✅ Done |
 | H1–H5 pre-registered + tested (`sst_axis_positive_control_recovery.tsv`) | ✅ Done |
-| H2: sm_balance (+) protrusion | ⚠️ null in bulk; **recovered** single-cell NK (r=+0.030, p=6e-3) |
+| H2: sm_balance (+) protrusion | ⚠️ null in bulk; weak but significant in single-cell NK (r=+0.030, p=6e-3) |
 | H3: protrusion (+) cytotoxicity | ✅ **recovered** (bulk r=0.55; scNK r=0.32) |
 | H4: topology_permissive (−) dysfunction/HAVCR2 | ❌ not recovered (wrong sign both resolutions) |
 | H5: intratumoral < normal NK | ⚠️ cytotoxicity **recovered** (Δ=−0.14, p=6e-52); protrusion wrong sign |
-| Recovery verdict | ✅ Reframed: effector+cell-resolved-metabolic recovered; topology not |
+| Recovery verdict | ✅ Reframed: effector recovered; cell-resolved metabolic signal weak/partial; topology not recovered |
 | Figure/Table | Figure 1, Table 2 |
 
 ---
@@ -72,30 +73,30 @@ mechanism-structured gene embedding. We do **not** claim SOTA accuracy.
 ---
 
 ## Claim 5 — R5. Gastric cancer extension + target list
-**Statement:** The same axis is tested in gastric cancer; where it holds, we prioritize tumor-intrinsic candidate targets supported by multi-evidence patterns.
+**Statement:** The recoverable effector layer is tested in gastric cancer; where it holds, we prioritize putative tumor-intrinsic candidate targets supported by multi-evidence patterns.
 
 | Item | Status |
 |------|--------|
-| Gastric cancer axis tested | ⬜ Pending |
+| Gastric cancer axis tested | ✅ Done: effector coupling replicated in GSE62254/GSE84437 (`external_validation_results.tsv`) |
 | Candidate pool assembled (SST genes + seed candidates) | ✅ Done |
 | Multi-evidence matrix (5 dimensions) | ✅ Done |
 | Composite target score with weighting | ✅ Done |
 | Circularity fixed: split tumor-intrinsic vs axis-readout (`split_target_lists.py`) | ✅ Done |
-| Tumor-intrinsic candidates (n=37) with assays; led by PHGDH/SGMS2/PSAT1/PSPH/SMPD3 | ✅ Done (`tumor_intrinsic_candidates.tsv`) |
+| Putative tumor-intrinsic candidates (n=37) with assays; led by PHGDH/SGMS2/PSAT1/PSPH/SMPD3 | ✅ Done (`tumor_intrinsic_candidates.tsv`) |
 | Gold-standard druggable enzymes surfaced at top | ✅ Done (PHGDH, SMPD1/3, PSAT1) |
 | Figure/Table | Table 4, Figure 3 |
 
 ---
 
-## Claim 6 — R6. In-silico SM-restoration stratification
-**Statement:** A model-based in-silico "SM-restoration" readout stratifies samples by predicted benefit from an SM-restoration + Tim3-blockade combination logic — presented as a hypothesis for experimental testing, not a validated predictor.
+## Claim 6 — R6. In-silico SM-restoration stratification (secondary hypothesis)
+**Statement:** A model-based in-silico "SM-restoration" readout is retained only as a hypothesis for experimental testing, not as a validated predictor or primary manuscript claim.
 
 | Item | Status |
 |------|--------|
 | Readout defined (nk_sm_catabolism + HAVCR2) | ✅ Designed |
-| Per-sample stratification | ⬜ Pending |
+| Per-sample stratification | ⬜ Not promoted to a primary claim before experimental validation |
 | Qualifier language enforced | ✅ |
-| Figure/Table | Figure 6 |
+| Figure/Table | Optional / not required for the current submission package |
 
 ---
 
