@@ -1,12 +1,12 @@
 """
 GC-NKGraph-Atlas SST Axis Validation (Phase 14R.5).
-Arm A — LIVER Positive Control.
+Arm A 鈥?LIVER Positive Control.
 
 Pre-registered hypotheses (H1-H5) tested on TCGA-LIHC:
-  H1: tumor_serine_capacity ⟂ nk_sm_balance (CALIBRATE sign)
+  H1: tumor_serine_capacity 鉄?nk_sm_balance (CALIBRATE sign)
   H2: nk_sm_balance (+) nk_protrusion_machinery
   H3: nk_protrusion_machinery (+) cytotoxicity anchors
-  H4: nk_topology_permissive (−) HAVCR2 / dysfunction
+  H4: nk_topology_permissive (鈭? HAVCR2 / dysfunction
   H5: intratumoral NK < peritumoral NK in sm_balance & protrusion (scRNA)
 
 Usage:
@@ -23,7 +23,7 @@ warnings.filterwarnings("ignore")
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from src.common.io_utils import load_table, save_table, ensure_dir
-from src.common.logging import Logger
+from src.common.log_utils import Logger
 
 logger = Logger()
 
@@ -74,7 +74,7 @@ def hypothesis_test(data, h_name, test_type, expected_dir):
     result = {"hypothesis": h_name, "expected_direction": expected_dir}
 
     if test_type == "correlation":
-        col1, col2 = expected_dir.split(" ⟂ ") if " ⟂ " in expected_dir else ("", "")
+        col1, col2 = expected_dir.split(" 鉄?") if " 鉄?" in expected_dir else ("", "")
         r, p = stats.pearsonr(data[col1], data[col2])
         result["r"] = round(r, 4)
         result["p"] = f"{p:.4e}"
@@ -90,7 +90,7 @@ def hypothesis_test(data, h_name, test_type, expected_dir):
         result["p"] = f"{p:.4e}"
         result["pass"] = r > 0 and p < 0.05
         result["effect"] = "positive" if r > 0 else "negative"
-        log(f"  {h_name}: r={r:.4f}, p={p:.4e} {'✅ PASS' if result['pass'] else '❌ FAIL'} (expected: positive)")
+        log(f"  {h_name}: r={r:.4f}, p={p:.4e} {'鉁?PASS' if result['pass'] else '鉂?FAIL'} (expected: positive)")
 
     elif test_type == "negative_corr":
         col1, col2 = expected_dir
@@ -99,13 +99,13 @@ def hypothesis_test(data, h_name, test_type, expected_dir):
         result["p"] = f"{p:.4e}"
         result["pass"] = r < 0 and p < 0.05
         result["effect"] = "negative" if r < 0 else "positive"
-        log(f"  {h_name}: r={r:.4f}, p={p:.4e} {'✅ PASS' if result['pass'] else '❌ FAIL'} (expected: negative)")
+        log(f"  {h_name}: r={r:.4f}, p={p:.4e} {'鉁?PASS' if result['pass'] else '鉂?FAIL'} (expected: negative)")
 
     return result
 
 def main():
     log("=" * 60)
-    log("SST AXIS VALIDATION — Arm A: LIVER Positive Control")
+    log("SST AXIS VALIDATION 鈥?Arm A: LIVER Positive Control")
     log("=" * 60)
 
     out_dir = ensure_dir("results/tables")
@@ -131,41 +131,41 @@ def main():
 
     results = []
 
-    # H1: tumor_serine_capacity ⟂ nk_sm_balance (calibrate sign)
-    log("H1 — Crosstalk calibration:")
-    log("    tumor_serine_capacity_score ⟂ nk_sm_balance_score")
+    # H1: tumor_serine_capacity 鉄?nk_sm_balance (calibrate sign)
+    log("H1 鈥?Crosstalk calibration:")
+    log("    tumor_serine_capacity_score 鉄?nk_sm_balance_score")
     log("    (sign is CALIBRATED, not assumed)")
     h1 = hypothesis_test(scores, "H1", "correlation",
-                          "tumor_serine_capacity_score ⟂ nk_sm_balance_score")
+                          "tumor_serine_capacity_score 鉄?nk_sm_balance_score")
     results.append(h1)
     calibrated_sign = h1["direction"]
-    log(f"    → Calibrated sign: tumor_serine_capacity is {calibrated_sign}ly correlated")
+    log(f"    鈫?Calibrated sign: tumor_serine_capacity is {calibrated_sign}ly correlated")
     log(f"      with NK SM balance in liver. This sign will be used for ALL")
     log(f"      downstream metabolic_crosstalk edges and sst_axis_score.\n")
 
     # H2: nk_sm_balance (+) nk_protrusion_machinery
-    log("H2 — SM balance → Protrusion machinery:")
+    log("H2 鈥?SM balance 鈫?Protrusion machinery:")
     log("    nk_sm_balance_score (+) nk_protrusion_machinery_score")
     h2 = hypothesis_test(scores, "H2", "positive_corr",
                           ["nk_sm_balance_score", "nk_protrusion_machinery_score"])
     results.append(h2)
 
     # H3: nk_protrusion_machinery (+) cytotoxicity
-    log("\nH3 — Protrusion machinery → Cytotoxicity:")
+    log("\nH3 鈥?Protrusion machinery 鈫?Cytotoxicity:")
     log("    nk_protrusion_machinery_score (+) nk_synapse_cytotoxicity_outcome_score")
     h3 = hypothesis_test(scores, "H3", "positive_corr",
                           ["nk_protrusion_machinery_score", "nk_synapse_cytotoxicity_outcome_score"])
     results.append(h3)
 
-    # H4: nk_topology_permissive (−) checkpoint/dysfunction
-    log("\nH4 — Topology permissive (−) Dysfunction:")
-    log("    nk_topology_permissive_score (−) nk_dysfunction_score")
+    # H4: nk_topology_permissive (鈭? checkpoint/dysfunction
+    log("\nH4 鈥?Topology permissive (鈭? Dysfunction:")
+    log("    nk_topology_permissive_score (鈭? nk_dysfunction_score")
     h4 = hypothesis_test(scores, "H4", "negative_corr",
                           ["nk_topology_permissive_score", "nk_dysfunction_score"])
     results.append(h4)
 
     # H5 requires scRNA data (DATA_UNAVAILABLE for this dataset)
-    log("\nH5 — scRNA phenotype (requires intratumoral vs peritumoral NK):")
+    log("\nH5 鈥?scRNA phenotype (requires intratumoral vs peritumoral NK):")
     log("    DATA_UNAVAILABLE: The anchor paper (Zheng 2023) deposited no scRNA-seq.")
     log("    No public HCC scRNA with NK subset found. Skipping H5.\n")
     results.append({
@@ -184,16 +184,16 @@ def main():
     n_fail = sum(1 for r in results if r.get("pass") == False)
     n_other = len(results) - n_pass - n_fail
 
-    log(f"\n  H1: Crosstalk sign → {calibrated_sign.upper()} (calibrated, used downstream)")
+    log(f"\n  H1: Crosstalk sign 鈫?{calibrated_sign.upper()} (calibrated, used downstream)")
     for r in results:
         if r["hypothesis"] == "H5":
             log(f"  H5: {r['status']}")
         elif "pass" in r:
-            status = "✅ PASS" if r["pass"] else "❌ FAIL"
+            status = "鉁?PASS" if r["pass"] else "鉂?FAIL"
             log(f"  {r['hypothesis']}: {status} (r={r.get('r','?')}, p={r.get('p','?')})")
 
     overall = n_pass > 0 or len(results) >= 3  # recovery = H2-H4 pass in liver
-    log(f"\n  Overall: {'✅ POSITIVE CONTROL RECOVERED' if overall else '⚠️ NEEDS REVIEW'}")
+    log(f"\n  Overall: {'鉁?POSITIVE CONTROL RECOVERED' if overall else '鈿狅笍 NEEDS REVIEW'}")
     log(f"  PASS: {n_pass}, FAIL: {n_fail}, SKIP: {n_other}")
 
     # Save results
@@ -211,8 +211,8 @@ def main():
 
         fig, axes = plt.subplots(2, 2, figsize=(12, 10))
         pairs = [
-            ("nk_sm_balance_score", "nk_protrusion_machinery_score", "H2: SM → Protrusion"),
-            ("nk_protrusion_machinery_score", "nk_synapse_cytotoxicity_outcome_score", "H3: Protrusion → Cytotoxicity"),
+            ("nk_sm_balance_score", "nk_protrusion_machinery_score", "H2: SM 鈫?Protrusion"),
+            ("nk_protrusion_machinery_score", "nk_synapse_cytotoxicity_outcome_score", "H3: Protrusion 鈫?Cytotoxicity"),
             ("nk_topology_permissive_score", "nk_dysfunction_score", "H4: Topology vs Dysfunction"),
             ("tumor_serine_capacity_score", "nk_sm_balance_score", f"H1: Crosstalk ({calibrated_sign})"),
         ]

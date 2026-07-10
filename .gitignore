@@ -35,6 +35,7 @@ notebooks/
 
 # Environment
 .env
+.venv/
 # environment.yml is committed (needed to reproduce from a clean clone).
 # Regenerate with `conda env export --no-builds > environment.yml` if deps change.
 

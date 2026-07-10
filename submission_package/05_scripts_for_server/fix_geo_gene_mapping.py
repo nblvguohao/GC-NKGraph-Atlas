@@ -41,7 +41,7 @@ import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-from src.common.logging import Logger
+from src.common.log_utils import Logger
 
 RAW_DIR = "data/raw/bulk"
 OUT_DIR = "data/processed/bulk"

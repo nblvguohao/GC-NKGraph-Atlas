@@ -21,14 +21,14 @@ import pandas as pd
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-from src.common.logging import Logger
+from src.common.log_utils import Logger
 from src.common.io_utils import load_config, save_table, ensure_dir
 
 
 # Gene aliases for common symbols (curated from HGNC)
 GENE_ALIASES = {
     "TGFB1": ["TGFB1", "TGFB"],
-    "TNF": ["TNF", "TNFA", "TNF-α"],
+    "TNF": ["TNF", "TNFA", "TNF-伪"],
     "NKG7": ["NKG7", "GIG1"],
     "GNLY": ["GNLY", "D2S69E", "LAG-2", "NKG5", "TLA-2"],
     "GZMB": ["GZMB", "CCP1", "CGL-1", "CGL1", "CSP-B", "CSPB", "CTLA-1", "CTLA1", "HLP"],

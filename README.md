@@ -1,22 +1,23 @@
 # GC-NKGraph-Atlas
 
-**Reconstructing the serine–sphingomyelin–membrane-topology axis of NK-cell immune
-evasion from tumor transcriptomes — a single-cell-informed heterogeneous graph
+**Mapping the transcriptional reach of the serine–sphingomyelin–membrane-topology
+axis of NK-cell immune evasion with a single-cell-informed heterogeneous graph
 framework, from liver to gastric cancer.**
 
-This repository accompanies the manuscript submitted to *Briefings in
+This repository accompanies a manuscript prepared for *Briefings in
 Bioinformatics*. It operationalizes a published wet-lab immune-evasion mechanism
-(Zheng et al., *Nat Immunol* 2023) as a reusable **mechanism-card**, reconstructs
-the axis from public transcriptomes under a two-arm design (liver positive
-control + gastric-cancer extension), benchmarks a mechanism-grounded heterogeneous
-graph model against tabular baselines, and prioritizes tumor-intrinsic candidate
-targets.
+(Zheng et al., *Nat Immunol* 2023) as a reusable **mechanism-card**, maps the
+axis's transcriptional reach under a two-arm design (liver positive control +
+gastric-cancer extension), benchmarks a mechanism-grounded heterogeneous graph
+model against tabular baselines, and prioritizes putative tumor-intrinsic
+candidate targets.
 
 > **Honest scope.** The framework produces a *map of the mechanism's
 > transcriptional reach*, not a blanket recovery: the effector layer
-> (protrusion→cytotoxicity) recovers and generalizes; the metabolic coupling
-> recovers only at single-cell resolution; the physical topology phenotype is not
-> captured by machinery transcription. See the manuscript for the full framing.
+> (protrusion→cytotoxicity) recovers and generalizes; the metabolic coupling is
+> weakly detectable only at single-cell resolution; the physical topology
+> phenotype is not captured by machinery transcription. See the manuscript for
+> the full framing.
 
 Repo: `https://github.com/nblvguohao/GC-NKGraph-Atlas`
 

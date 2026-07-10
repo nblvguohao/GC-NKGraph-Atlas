@@ -135,7 +135,7 @@ def figure1():
                        Line2D([0],[0],marker="o",ls="",mfc=WEAK,mec="w",label="inconclusive")],
               loc="lower right")
 
-    fig.suptitle("Figure 1  |  Arm A — partial recovery of the SST axis in liver",
+    fig.suptitle("Arm A — partial recovery of the SST axis in liver",
                  fontsize=12, fontweight="bold", y=1.00)
     fig.tight_layout()
     save(fig, "fig1_armA_positive_control")
@@ -191,7 +191,7 @@ def figure2():
     ax.set_ylabel("protrusion~cytotoxicity  r"); ax.set_ylim(0, 0.72)
     ax.set_title("Effector coupling replicates (4 cohorts)")
 
-    fig.suptitle("Figure 2  |  Arm B — gastric extension and independent external validation",
+    fig.suptitle("Arm B — gastric extension and independent external validation",
                  fontsize=12, fontweight="bold", y=1.03)
     fig.tight_layout()
     save(fig, "fig2_armB_extension")
@@ -245,7 +245,7 @@ def figure3():
     for i, v in enumerate(cc.values): ax.text(v + 0.1, i, str(v), va="center", fontsize=8)
     ax.set_xlabel("genes"); ax.set_title("Tumor-intrinsic pool (n=37) by category")
 
-    fig.suptitle("Figure 3  |  De-circularized tumor-intrinsic target prioritization",
+    fig.suptitle("De-circularized tumor-intrinsic target prioritization",
                  fontsize=12, fontweight="bold", y=1.03)
     fig.tight_layout()
     save(fig, "fig3_targets")
@@ -269,7 +269,7 @@ def figure4():
         ax.set_title(f"NK-state classification — {ttl}")
         for i, v in enumerate(summ[m]): ax.text(v + summ[s].iloc[i] + 0.01, i, f"{v:.2f}", va="center", fontsize=7.5)
     from matplotlib.patches import Patch
-    fig.suptitle("Figure 4  |  Graph model on par with top tree baselines (paired p>0.27), beats linear/kernel/shallow (p<0.05)",
+    fig.suptitle("Graph model on par with top tree baselines (paired p>0.27), beats linear/kernel/shallow (p<0.05)",
                  fontsize=10.5, fontweight="bold", y=1.02)
     fig.tight_layout(rect=(0, 0.06, 1, 1))
     fig.legend(handles=[Patch(fc=OK["verm"], label="GC-NKGraph-Atlas (ours)"),

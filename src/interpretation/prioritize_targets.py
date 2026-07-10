@@ -218,23 +218,70 @@ def main() -> None:
     import scipy.sparse
 
     adata = sc.read(integrated_path)
-    if scipy.sparse.issparse(adata.X):
-        expr = pd.DataFrame(
-            adata.X.toarray(), index=adata.obs_names, columns=adata.var_names
-        )
-    else:
-        expr = pd.DataFrame(
-            adata.X, index=adata.obs_names, columns=adata.var_names
-        )
 
-    is_nk = adata.obs["cell_type"] == "NK"
-    is_other_tumor = (adata.obs["cell_type"] == "Other") & (adata.obs["condition"] == "tumor")
-    epi_genes = [g for g in ["EPCAM", "KRT19", "KRT18", "KRT8", "CDH1"] if g in expr.columns]
-    is_epithelial = pd.Series(False, index=expr.index)
-    if epi_genes:
-        is_epithelial = expr[epi_genes].mean(axis=1) > expr[epi_genes].mean(axis=1).quantile(0.75)
-    is_malignant = is_other_tumor | is_epithelial
-    log(f"  NK cells: {is_nk.sum()}, Malignant: {is_malignant.sum()}")
+    # Check if h5ad has valid data
+    if adata.n_obs == 0 or adata.n_vars == 0:
+        log("  WARNING: h5ad is empty (scRNA pipeline fallback) — using bulk expression for prioritization")
+        # Fallback: use bulk TCGA-STAD expression directly
+        tcga_path = "data/processed/bulk/tcga_stad_expression.tsv"
+        clinical_path = "data/processed/bulk/tcga_stad_clinical.tsv"
+        if os.path.exists(tcga_path):
+            expr = pd.read_csv(tcga_path, sep="\t", index_col=0)
+            # Use tumor/normal from clinical or sample barcode
+            is_tumor = pd.Series(False, index=expr.index)
+            tumor_mask = expr.index.str.contains("-01", na=False)
+            is_tumor[tumor_mask] = True
+            is_normal = expr.index.str.contains("-11", na=False)
+            # Approximate cell types from bulk
+            is_malignant = is_tumor.copy()
+            # Approximate NK presence using marker expression
+            nk_markers = ["NKG7", "GNLY", "KLRD1", "KLRF1", "NCAM1"]
+            avail = [g for g in nk_markers if g in expr.columns]
+            if avail:
+                nk_score = expr[avail].mean(axis=1)
+                is_nk_like = nk_score > nk_score.median()
+            else:
+                is_nk_like = pd.Series(True, index=expr.index)
+            is_nk = is_nk_like
+            # For NK correlations, use high-NK-score samples as NK proxy
+            log(f"  Bulk fallback: {expr.shape[0]} samples, {is_tumor.sum()} tumor, {is_normal.sum()} normal")
+            log(f"  NK-like samples (marker > median): {is_nk_like.sum()}")
+        else:
+            log("  ERROR: No expression data available for prioritization")
+            return
+    else:
+        if scipy.sparse.issparse(adata.X):
+            expr = pd.DataFrame(
+                adata.X.toarray(), index=adata.obs_names, columns=adata.var_names
+            )
+        else:
+            expr = pd.DataFrame(
+                adata.X, index=adata.obs_names, columns=adata.var_names
+            )
+
+        is_nk = (adata.obs["cell_type"] == "NK") if "cell_type" in adata.obs else pd.Series(False, index=adata.obs_names)
+        is_other_tumor = ((adata.obs["cell_type"] == "Other") & (adata.obs["condition"] == "tumor")) if "cell_type" in adata.obs else pd.Series(False, index=adata.obs_names)
+        epi_genes = [g for g in ["EPCAM", "KRT19", "KRT18", "KRT8", "CDH1"] if g in expr.columns]
+        is_epithelial = pd.Series(False, index=expr.index)
+        if epi_genes:
+            is_epithelial = expr[epi_genes].mean(axis=1) > expr[epi_genes].mean(axis=1).quantile(0.75)
+        is_malignant = is_other_tumor | is_epithelial
+
+        # Fallback: if scRNA annotation failed (all Unknown), use marker-based heuristics
+        if is_nk.sum() == 0:
+            log("  WARNING: No NK cells found in h5ad — using marker-based NK detection")
+            nk_markers = ["NKG7", "GNLY", "KLRD1", "KLRF1", "NCAM1"]
+            avail = [g for g in nk_markers if g in expr.columns]
+            if avail:
+                nk_score = expr[avail].mean(axis=1)
+                is_nk = nk_score > nk_score.quantile(0.90)
+                log(f"  Marker-based NK: {is_nk.sum()} cells")
+        if is_malignant.sum() == 0:
+            log("  WARNING: No malignant cells found — using condition=='tumor' as proxy")
+            is_malignant = (adata.obs["condition"] == "tumor") if "condition" in adata.obs else pd.Series(True, index=adata.obs_names)
+            log(f"  Condition-based malignant: {is_malignant.sum()} cells")
+
+        log(f"  NK cells: {is_nk.sum()}, Malignant: {is_malignant.sum()}")
 
     # ---- Build candidate pool ----
     log("\nBuilding candidate pool...")
@@ -315,6 +362,10 @@ def main() -> None:
         })
 
     ev_df = pd.DataFrame(rows)
+
+    if len(ev_df) == 0:
+        log("  ERROR: Empty evidence matrix — no candidates found. Check expression data.")
+        return
 
     # ---- Compute composite target score ----
     log("Computing composite target scores...")

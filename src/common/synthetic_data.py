@@ -82,6 +82,7 @@ def generate_bulk_expression(
         Expression DataFrame (samples × genes).
     """
     rng = np.random.RandomState(seed)
+    n_genes = min(n_genes, len(ALL_GENES))
     genes = ALL_GENES[:n_genes]
 
     # Base expression: log-normal
@@ -247,6 +248,7 @@ def generate_scrn_data(
         return None
 
     rng = np.random.RandomState(seed)
+    n_genes = min(n_genes, len(ALL_GENES))
     genes = ALL_GENES[:n_genes]
 
     # Cell type proportions

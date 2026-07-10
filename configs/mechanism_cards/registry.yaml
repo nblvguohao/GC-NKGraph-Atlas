@@ -19,6 +19,11 @@ cards:
     status: ACTIVE
     arms: [gastric_tgfb_targets]
     gold_standard_recovery: PENDING
+  nkg2d_micab_shedding:
+    description: "NKG2D-MICA/B shedding axis (Groh et al., Nature 2002) — complement to SST metabolic axis"
+    status: ACTIVE
+    arms: [gastric_nkg2d_targets]
+    gold_standard_recovery: PENDING
 
 rules:
   - transcriptional_proxy != physical_ground_truth != metabolite_flux

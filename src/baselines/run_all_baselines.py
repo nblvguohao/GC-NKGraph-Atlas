@@ -16,7 +16,7 @@ import pandas as pd
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-from src.common.logging import Logger
+from src.common.log_utils import Logger
 from src.common.io_utils import load_config, save_table, ensure_dir, load_table
 from src.common.seed import set_seed
 
@@ -70,11 +70,23 @@ def evaluate(y_true, y_pred, y_prob=None):
     return metrics
 
 
+def _use_gpu():
+    """Check if GPU acceleration is available."""
+    try:
+        import torch
+        return torch.cuda.is_available()
+    except ImportError:
+        return False
+
+
 def run_xgboost(X_train, y_train, X_test, y_test):
-    """XGBoost baseline."""
+    """XGBoost baseline with GPU acceleration if available."""
     import xgboost as xgb
-    model = xgb.XGBClassifier(n_estimators=200, max_depth=6, learning_rate=0.1,
-                              random_state=42, n_jobs=32, eval_metric="mlogloss")
+    kwargs = dict(n_estimators=200, max_depth=6, learning_rate=0.1,
+                  random_state=42, n_jobs=32, eval_metric="mlogloss")
+    if _use_gpu():
+        kwargs["device"] = "cuda"
+    model = xgb.XGBClassifier(**kwargs)
     model.fit(X_train, y_train)
     y_pred = model.predict(X_test)
     y_prob = model.predict_proba(X_test) if len(np.unique(y_train)) > 2 else model.predict_proba(X_test)
@@ -82,10 +94,13 @@ def run_xgboost(X_train, y_train, X_test, y_test):
 
 
 def run_lightgbm(X_train, y_train, X_test, y_test):
-    """LightGBM baseline."""
+    """LightGBM baseline with GPU acceleration if available."""
     import lightgbm as lgb
-    model = lgb.LGBMClassifier(n_estimators=200, max_depth=6, learning_rate=0.1,
-                                random_state=42, n_jobs=32, verbose=-1)
+    kwargs = dict(n_estimators=200, max_depth=6, learning_rate=0.1,
+                  random_state=42, n_jobs=32, verbose=-1)
+    if _use_gpu():
+        kwargs["device"] = "gpu"
+    model = lgb.LGBMClassifier(**kwargs)
     model.fit(X_train, y_train)
     y_pred = model.predict(X_test)
     y_prob = model.predict_proba(X_test)
@@ -147,6 +162,21 @@ def main():
 
     # Load data
     X_train_full, y_train_full = load_training_data(load_config("configs/data_config.yaml"), logger)
+
+    # Gene selection: use same 100 genes as GNN for fair comparison and speed
+    try:
+        from src.models.gc_nkgraph_atlas import select_informative_genes, _build_nx_graph
+        graph_dir = "data/processed/graph"
+        if os.path.exists(os.path.join(graph_dir, "nodes.tsv")):
+            graph = _build_nx_graph(graph_dir)
+            graph_genes = set(graph["node_to_idx"].keys())
+            selected = select_informative_genes(X_train_full, graph_genes)
+            X_train_full = X_train_full[selected]
+            logger.ok("BASELINE", f"Gene selection: {X_train_full.shape[1]} genes", script=__file__)
+        else:
+            logger.ok("BASELINE", f"Using all {X_train_full.shape[1]} genes", script=__file__)
+    except Exception as e:
+        logger.ok("BASELINE", f"Gene selection failed ({e}), using all genes", script=__file__)
 
     # Prepare labels (simplify to binary: NK-hot vs rest for baseline)
     y_train_full["label"] = y_train_full["nk_immune_state"].apply(

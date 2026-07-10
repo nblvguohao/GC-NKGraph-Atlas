@@ -17,7 +17,7 @@ from pathlib import Path
 import subprocess
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-from src.common.logging import Logger
+from src.common.log_utils import Logger
 from src.common.io_utils import load_config, ensure_dir
 
 

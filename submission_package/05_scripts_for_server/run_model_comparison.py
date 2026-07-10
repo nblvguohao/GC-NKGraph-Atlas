@@ -14,7 +14,7 @@ VALIDITY NOTE (verified against source)
 `nk_immune_state == "NK-hot-cytotoxic"` and both use
 `StratifiedKFold(n_splits=5, shuffle=True, random_state=42)` over the same
 `_load_training_data()` ordering. Folds are therefore identical by construction,
-so per-fold paired tests between the GNN and each baseline are valid — provided
+so per-fold paired tests between the GNN and each baseline are valid 鈥?provided
 you did not change the data ordering or the label between the two runs.
 
 WHAT THIS DOES
@@ -46,7 +46,7 @@ import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-from src.common.logging import Logger
+from src.common.log_utils import Logger
 from src.common.io_utils import load_config, ensure_dir
 from src.common.seed import set_seed
 from src.baselines.run_all_baselines import (

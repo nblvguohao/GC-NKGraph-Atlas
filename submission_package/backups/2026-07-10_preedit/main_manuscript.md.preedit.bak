@@ -102,11 +102,7 @@ methods such as Scissor [19], which links single-cell phenotypes to bulk clinica
 variables. These estimate *how much* of a cell type is present or *which*
 phenotype dominates; none operationalizes a defined mechanistic chain or enforces
 the claim boundary between a transcriptional proxy and a physical phenotype, which
-is central to our design. Single-cell atlases increasingly link a functional cell
-state to long-term clinical outcome — for example, a type-2 program in CAR-T
-infusion products associated with multi-year leukaemia remission [46]; our
-framework instead attributes states to a defined evasion mechanism, and anchoring
-the NK-state readout to clinical outcome remains future work (§4.3).
+is central to our design.
 
 **Cell–cell communication and metabolic-flux inference.** CellChat [20],
 CellPhoneDB [16] and NicheNet [21] infer ligand–receptor signaling between cell
@@ -119,11 +115,7 @@ serine→sphingomyelin relationship, rather than a generic communication prior.
 pseudotime methods order cells along differentiation or dysfunction gradients;
 we use an analogous NK dysfunction axis to define reversible-state proxy labels,
 but anchor the states to the specific effector/checkpoint genes of the target
-mechanism rather than to a generic exhaustion signature. Most characterized
-regulators of NK dysfunction are surface checkpoints; intracellular and
-transcription-factor-level regulators (e.g. the cAMP-responsive factor CREM
-downstream of CAR and IL-15 signalling [47]) are comparatively understudied, and
-our candidate prioritization currently inherits this surface/metabolic-gene bias (§4.3).
+mechanism rather than to a generic exhaustion signature.
 
 **Graph learning in cancer genomics.** Graph neural networks [36–38] have been applied to
 multi-omics integration (e.g. MOGONET [24]) and to molecular-interaction networks
@@ -352,9 +344,6 @@ is consistent and interpretable rather than a uniform pass:
   *P*=1.6×10⁻¹⁵⁶; r²=0.082 vs raw r²=0.122), with only 33% of the shared
   variance attributable to co-activation. The residual is a real, independent
   effect — the effector-arm recovery is not an artifact of module overlap.
-  That tumor-infiltrating NK co-express activation and dysfunction programs is
-  well documented [47], which is precisely why we control for a generic
-  activation signature here rather than reporting the raw coupling alone.
 - **The upstream metabolic coupling is statistically detectable but of negligible
   magnitude (H2).** The SM-balance→protrusion coupling is undetectable in
   bulk (r=−0.017, *P*=0.72) and becomes statistically significant after NK-cell
@@ -371,13 +360,7 @@ is consistent and interpretable rather than a uniform pass:
   normal-tissue NK (Δ=+0.142, p=3.0×10⁻⁹¹) — the opposite of the physical
   collapse — even though their cytotoxic output is correctly reduced
   (Δ=−0.141, p=5.9×10⁻⁵²). Transcription of the machinery genes therefore does
-  not proxy the membrane-topology state itself. The reduced cytotoxic output of
-  intratumoral NK (H5-cytotoxicity) is independently corroborated by a single-cell
-  HCC study reporting that intratumoral, relative to peritumoral, NK cells
-  upregulate inhibitory-checkpoint and exhaustion programs and downregulate
-  cytotoxicity pathways [48] — external support, from cohorts independent of ours,
-  for the effector-layer direction; the opposing protrusion-transcription result
-  remains our own observation.
+  not proxy the membrane-topology state itself.
 
 **Pre-registered hypothesis outcomes (multi-resolution).**
 
@@ -557,11 +540,7 @@ mechanism-grounded edge has a confirmable structural effect beyond what
 generic PPI/ligand–receptor edges provide. This ablation adds empirical
 support to the paper's core architectural claim: the heterogeneous graph's
 value lies in its mechanism-structured embedding, not in raw classification
-accuracy (where the GNN is on par with LightGBM/XGBoost; §3.4). The value of
-typed ligand–receptor and mechanism-grounded edges over generic co-expression is
-consistent with single-cell studies in which ligand–receptor interaction
-analysis, rather than expression alone, explained how one cell subset regulates
-another [46].
+accuracy (where the GNN is on par with LightGBM/XGBoost; §3.4).
 
 ---
 
@@ -599,11 +578,7 @@ map into experimentally testable follow-up. Additionally, a per-sample readout
 combining NK SM-catabolism score and HAVCR2 (Tim3) expression can stratify
 samples by the logic of the SM-restoration + Tim3-blockade combination proposed
 in the anchor paper — presented as an in-silico hypothesis for experimental
-testing, not a validated clinical predictor. Consistent with this
-checkpoint-combination logic, inhibitory receptors are co-regulated on tumor NK
-cells: an independent HCC study reports that a distinct NK checkpoint, CLEC12B,
-correlates in TCGA-HCC with HAVCR2/TIM-3, TIGIT, PDCD1 and LAG-3 [48], supporting
-the biological coherence of a combined SM-catabolism plus Tim3-axis readout.
+testing, not a validated clinical predictor.
 
 ### 4.2 The mechanism-card approach
 
@@ -645,13 +620,11 @@ operationalize a physical mechanism from an indirect molecular readout.
 5. **NK subtype resolution.** scRNA-based NK annotation depends on the quality of the reference atlas. Populations that are rare or absent in the reference may be misclassified.
 6. **The graph model does not outperform top tabular baselines on accuracy.** On the binary NK-state task the GNN is statistically indistinguishable from LightGBM/XGBoost (§3.4). Its value here is the mechanism-structured gene embedding it produces for the axis and target analyses, not a raw predictive-accuracy gain; a task where relational structure is more decisive (e.g. multi-class NK-state or cross-cohort transfer) would test the architecture more stringently.
 7. **Residual NK bias in the tumor-intrinsic candidate pool.** The `tumor_specificity_log2>0` gate is permissive: 17 of 37 candidates are annotated to NK-side mechanism-card modules, including RAC1 and WASL. The pool should be interpreted as "genes with a non-zero malignant-cell transcript signal that mechanistically intersect the SST axis," not as a clean set of tumor-exclusive targets. A stricter filter (e.g. tumor_specificity_log2>0.5 or a module-level penalty) would reduce NK-side contamination at the cost of losing borderline tumor-intrinsic candidates.
-8. **Candidate atlas omits intracellular/TF-level regulators.** The prioritization scores surface and metabolic-enzyme genes; transcription-factor and intracellular negative regulators of NK function (e.g. the CREM/PKA–CREB axis [47]) fall outside the current candidate space and are a natural extension of the mechanism-card modules.
-9. **No clinical-outcome anchor.** NK states are linked to scRNA-defined labels, not to patient survival or therapy response. Single-cell atlases that tie a functional state to durable clinical outcome [46] indicate a clear next step: anchoring the NK-state readout to outcome in a cohort with follow-up.
 
 ### 4.4 Future directions
 
 - **Additional cancer types.** Once the gastric extension is validated, the framework can test the axis in other digestive-tract cancers (colorectal, pancreatic, esophageal) using the same mechanism card.
-- **Additional mechanisms.** The mechanism-card registry (`configs/mechanism_cards/registry.yaml`) is designed to hold multiple cards. Cards for adenosine-mediated NK suppression, TGFβ-driven NK exclusion, stress-ligand shedding (MICA/B-ADAM17), and other NK checkpoint axes (TIGIT/CD96 [41,42]; the CLEC12B–lipoprotein-lipase axis recently shown to restrain tumor NK cells and to synergize with PD-1 blockade [48]) are natural next additions.
+- **Additional mechanisms.** The mechanism-card registry (`configs/mechanism_cards/registry.yaml`) is designed to hold multiple cards. Cards for adenosine-mediated NK suppression, TGFβ-driven NK exclusion, stress-ligand shedding (MICA/B-ADAM17), and other NK checkpoint axes (TIGIT/CD96) [41,42] are natural next additions.
 - **Physical topology integration.** When membrane protrusion / microvilli imaging data become available (even for a subset of samples), Layer 14R-B of the SST-axis module can be activated to provide direct phenotype-transcriptome correlation.
 - **Prospective validation cohort.** A dedicated gastric cancer cohort with paired bulk RNA-seq, scRNA-seq, and functional NK assays would provide the strongest validation of the prioritized targets.
 
@@ -778,9 +751,6 @@ This work was supported by grants from the National Natural Science Foundation o
 43. Subramanian A, Tamayo P, Mootha VK, et al. Gene set enrichment analysis: a knowledge-based approach for interpreting genome-wide expression profiles. *Proc Natl Acad Sci USA* 2005;102:15545–50.
 44. Liberzon A, Birger C, Thorvaldsdóttir H, et al. The Molecular Signatures Database (MSigDB) hallmark gene set collection. *Cell Syst* 2015;1:417–25.
 45. Laskowski TJ, Biederstädt A, Rezvani K. Natural killer cells in antitumour adoptive cell immunotherapy. *Nat Rev Cancer* 2022;22:557–75.
-46. Bai Z, Feng B, McClory SE, et al. Single-cell CAR T atlas reveals type 2 function in 8-year leukaemia remission. *Nature* 2024;634:702–11. doi:10.1038/s41586-024-07762-w.
-47. Rafei H, Basar R, Acharya S, et al. CREM is a regulatory checkpoint of CAR and IL-15 signalling in NK cells. *Nature* 2025;643:1076–86. doi:10.1038/s41586-025-09087-8.
-48. Sun P, Xu X, Hu B, et al. Targeting NK cell CLEC12B enhances cancer immunotherapy. *Nat Immunol* 2026;27:985–99. doi:10.1038/s41590-026-02471-0.
 
 ---
 

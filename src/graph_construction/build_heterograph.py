@@ -28,7 +28,7 @@ import pandas as pd
 
 warnings.filterwarnings("ignore")
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-from src.common.logging import Logger  # noqa: E402
+from src.common.log_utils import Logger  # noqa: E402
 from src.common.io_utils import ensure_dir, load_table, load_config  # noqa: E402
 from src.common.sst_config import load_sst_modules, get_sst_genes  # noqa: E402
 
@@ -179,7 +179,7 @@ def build_sst_edges(
 
     edges: List[Dict] = []
 
-    # metabolic_crosstalk: tumor_serine_program → nk_topology_state
+    # metabolic_crosstalk: tumor_serine_program 鈫?nk_topology_state
     tumor_serine_genes: List[str] = modules.get("tumor_serine_capacity", {}).get("genes", [])
     nk_topology_genes: List[str] = (
         modules.get("nk_sm_synthesis", {}).get("genes", [])
@@ -254,7 +254,7 @@ def main() -> None:
     # ---- Step 2: Prior network edges ----
     log("\nStep 2: Prior network edges...")
 
-    # PPI (STRING) — high confidence only
+    # PPI (STRING) 鈥?high confidence only
     ppi = load_ppi(os.path.join(prior_dir, "string_ppi_physical.tsv"))
     ppi_filtered = ppi[ppi["weight"] >= 0.7] if len(ppi) > 0 else ppi
     for _, r in ppi_filtered.iterrows():

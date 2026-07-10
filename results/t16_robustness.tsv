@@ -1,0 +1,9 @@
+control	null	r_obs	null_mean	null_p95	n_null	emp_p	verdict
+activation	match0.25	0.2507	0.2429	0.3146	1000	0.4086	not_spec
+activation	match0.5	0.2507	0.2462	0.3136	1000	0.4545	not_spec
+activation	match1.0	0.2507	0.242	0.3128	1000	0.4166	not_spec
+activation	unmatched	0.2507	0.2419	0.3122	1000	0.4196	not_spec
+activation+depth	match0.25	0.1592	0.0555	0.1069	1000	0.002	SPECIFIC
+activation+depth	match0.5	0.1592	0.0623	0.1189	1000	0.006	SPECIFIC
+activation+depth	match1.0	0.1592	0.0613	0.1221	1000	0.006	SPECIFIC
+activation+depth	unmatched	0.1592	0.0611	0.1199	1000	0.006	SPECIFIC

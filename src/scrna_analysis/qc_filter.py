@@ -4,7 +4,7 @@ Standard scRNA QC filtering (methodological hardening).
 PROBLEM
 -------
 Two failure modes existed:
-  - v1 (`run_scrna_pipeline.py`) logged `After QC: 0 cells` — a QC step dropped
+  - v1 (`run_scrna_pipeline.py`) logged `After QC: 0 cells` 鈥?a QC step dropped
     100% of cells (cross-platform NaN in `calculate_qc_metrics`).
   - v2 (`run_scrna_v2.py`) over-corrected: it keeps *all* cells and does NO
     filtering (no min-genes, no mito%, no doublet removal). That is why the NK
@@ -33,8 +33,8 @@ USAGE (run on server)
 Emits `results/tables/scrna_qc_summary.tsv` (per-sample before/after counts).
 
 NOTE: untested on the author's workstation (scanpy not installed here). The
-thresholds are the review-relevant knobs — record whatever you finalize in
-Methods §2.4.
+thresholds are the review-relevant knobs 鈥?record whatever you finalize in
+Methods 搂2.4.
 """
 
 import argparse
@@ -46,7 +46,7 @@ import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-from src.common.logging import Logger
+from src.common.log_utils import Logger
 
 
 def run_qc(adata, args, logger):

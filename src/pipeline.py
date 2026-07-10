@@ -42,6 +42,11 @@ from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
+# Fix Unicode output on Windows (prevents GBK encoding errors)
+if sys.platform == "win32":
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
 # Project root
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
@@ -176,7 +181,8 @@ def resolve_synthetic_path(path: str) -> str:
     return mapping.get(path, path)
 
 
-def run_phase(phase_name: str, synthetic: bool = False, extra_args: Optional[List[str]] = None) -> bool:
+def run_phase(phase_name: str, synthetic: bool = False, force: bool = False,
+              extra_args: Optional[List[str]] = None) -> bool:
     """Execute a single phase.
 
     Returns True if successful (or skipped because already done).
@@ -189,8 +195,8 @@ def run_phase(phase_name: str, synthetic: bool = False, extra_args: Optional[Lis
     label = phase["label"]
     script = phase["script"]
 
-    # Check if already done
-    if check_outputs(phase_name, synthetic):
+    # Check if already done (unless forced)
+    if not force and check_outputs(phase_name, synthetic):
         log(f"{label} — already complete, skipping", "SKIP")
         return True
 
@@ -393,7 +399,7 @@ Examples:
         if args.force:
             log(f"Forcing re-run of phase: {p}", "INFO")
 
-        ok = run_phase(p, synthetic=args.synthetic)
+        ok = run_phase(p, synthetic=args.synthetic, force=args.force)
         results[p] = ok
         if not ok:
             log(f"Phase '{p}' failed — stopping pipeline", "ERR")

@@ -1,0 +1,10 @@
+metric	value
+raw_r	0.3175661613647382
+partial_r_given_activation	0.2507136306090588
+null_mean	0.24420513740097238
+null_sd	0.042153622971538976
+null_p95	0.31713561067556884
+empirical_p	0.42357642357642356
+n_null	1000
+n_cells	8310
+verdict	NOT_SPECIFIC
