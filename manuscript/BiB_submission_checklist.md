@@ -61,17 +61,18 @@
 
 ## E. References & formatting
 - [x] ✅ Anchor + core method references present (16). 
-- [x] ✅ References expanded to [24]; **[17]–[24] verified online** against primary
-  sources (all volume/page/year correct as written, 2026-07-07).
-- [x] ✅ References in BiB numbered Vancouver format [1]–[24]. Verify all against
-  PubMed primary records.
+- [x] ✅ References expanded to [24].
+- [ ] ⬜ Final reference audit: verify [1]–[24] against PubMed/Crossref or primary
+  publisher records before submission, including page ranges, DOI, journal style,
+  and any references added during final editing.
 - [x] ✅ Figures: vector PDFs, ≥300 dpi PNG, self-contained legends.
 - [x] ✅ Supplementary: key tables in `submission_package/02_supplementary_tables/`.
   ⚠️ Add a Supplementary Methods note + index before submission.
 
 ## F. Submission-system items
-- [x] ✅ Cover letter finalized (date July 7, 2026; 3 reviewers with verified emails).
-- [x] ✅ Suggested reviewers (Satu Mustjoki, Fabian J. Theis, Xia Li) with emails.
+- [x] ✅ Cover letter drafted (date July 7, 2026; 3 suggested reviewers included).
+- [ ] ⬜ Suggested reviewer audit: verify current emails, expertise fit, and absence
+  of conflicts before entering them in the submission system.
 - [x] ✅ Author biographies (~30 words each, 7 authors) added to manuscript.
 - [x] ✅ ORCID iD placeholders added (7 authors, [0000-...] template).
 - [x] ✅ Keywords ≤ 6 (condensed from 8).
@@ -96,9 +97,11 @@
 ### The items that actually block submission (updated 2026-07-07)
 1. ~~Table 3 baselines~~ — ✅ **done** (pulled from A100, merged, tested).
 2. ~~External validation~~ — ✅ **done** (GEO remapped on A100; both cohorts replicate).
-3. ~~Publication figures~~ — ✅ Fig 1–4 done.
-4. ~~References, ORCID placeholders, cover letter, author bios, keywords~~ — ✅ all done.
-5. **Public code repository** — the ONLY remaining blocker (push to GitHub).
+3. ~~Publication figures~~ — ✅ Fig 1–4 generated; final PDF/Word visual inspection remains.
+4. **Public code repository** — create/push the public GitHub repository and confirm the URL resolves.
+5. **Author metadata** — fill real ORCID iDs; confirm CRediT roles, grant numbers, corresponding-author details, and all-author approval.
+6. **Submission-system metadata** — verify suggested reviewer emails/conflicts and ScholarOne account details.
+7. **Final quality gate** — check reference details, figure/table citations, character encoding, and absence of internal notes in the submitted files.
 
-All data/analysis/figure/writing blockers cleared. Remaining: push repo to
-GitHub; then each author fills ORCID iD + confirm CRediT/grant numbers.
+All data/analysis blockers are cleared. The remaining blockers are submission
+metadata, public repository release, and final package QA.

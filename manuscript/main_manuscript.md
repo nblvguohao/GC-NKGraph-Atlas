@@ -553,11 +553,16 @@ coupling entirely (H1: 0.239→0.000). When both SST-specific edge types are
 removed, only 9 coexpression edges remain, producing an essentially random
 embedding (modularity 0.017). The `metabolic_crosstalk` edge therefore
 measurably shapes the embedding — the graph design is not cosmetic, and the
-mechanism-grounded edge has a confirmable structural effect beyond what
-generic PPI/ligand–receptor edges provide. This ablation adds empirical
-support to the paper's core architectural claim: the heterogeneous graph's
-value lies in its mechanism-structured embedding, not in raw classification
-accuracy (where the GNN is on par with LightGBM/XGBoost; §3.4). The value of
+mechanism-grounded edge has a confirmable structural effect on the internal
+embedding geometry. In a cross-cohort transfer test (STAD→LIHC), however, the
+`metabolic_crosstalk` edge did not improve held-out NK-state classification over
+the `sm_topology_axis`-only graph (ΔMCC = +0.002, bootstrap p = 0.44, 95% CI
+[-0.054, 0.056]), indicating that its structural contribution is redundant with
+co-expression for the downstream classification task. The heterogeneous graph's
+primary value therefore lies in its mechanism-structured embedding — which
+provides interpretable gene-gene attention grounded in a defined causal chain —
+not in raw classification accuracy (where the GNN is on par with
+LightGBM/XGBoost; §3.4). The value of
 typed ligand–receptor and mechanism-grounded edges over generic co-expression is
 consistent with single-cell studies in which ligand–receptor interaction
 analysis, rather than expression alone, explained how one cell subset regulates

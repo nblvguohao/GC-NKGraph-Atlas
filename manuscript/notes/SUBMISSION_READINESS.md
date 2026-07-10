@@ -1,5 +1,10 @@
 # GC-NKGraph-Atlas — Submission-Readiness Assessment & Remediation Roadmap
 
+> **Status note (2026-07-07 pre-submission audit):** This file began as a
+> historical blocker audit. The current submission-facing action list is
+> `PRE_SUBMISSION_REVISION_PLAN.md`. Sections below are retained for provenance;
+> claims and package language should follow the newer plan and `main_claims.md`.
+
 > Author-facing working document. Prepared 2026-07-07.
 > Purpose: an honest gap analysis mapping every manuscript claim to its current
 > evidence, the specific defect blocking it, and the exact server-side action
@@ -41,15 +46,17 @@ Fixed locally (from result tables present on this machine — no server needed):
   Table 5. TCGA-STAD/LIHC labels untouched (external validation done independently).
 
 **All data/analysis blockers are now cleared.** Remaining before submission
-(no server compute): publication Figures 1–3, public code repository, ORCID/CRediT
-finalization, citation-detail verification. Optional: `qc_filter.py` hardening.
+(no server compute): final visual inspection of figures/PDF output, ORCID/CRediT
+finalization, citation-detail verification, reviewer email/conflict verification,
+and final character-encoding checks. Optional: `qc_filter.py` hardening.
 
 ---
 
-> **Bottom line (original assessment):** the project was **not submittable**. Three
-> pillars — (A) liver positive-control *recovery*, (B) graph-beats-baselines,
-> (C) external validation — were unsupported or contradicted. Blocker A is now
-> resolved via the honest reframe (§0); B and C remain, and need the server.
+> **Bottom line (original assessment, now superseded):** the project was **not
+> submittable** before the fixes. Blocker A has been resolved by the honest
+> partial-recovery reframe, and Blockers B/C have been resolved by the baseline
+> comparison and corrected GEO validation. The remaining work is package hygiene
+> and claim-boundary control.
 
 ---
 
@@ -61,7 +68,7 @@ Status legend: ✅ supported by real output · ⚠️ partial / needs reframing 
 | # | Claim (from `main_claims.md`) | Evidence on disk | Status | Blocker |
 |---|-------------------------------|------------------|--------|---------|
 | R1 | Cell-type-attributed SST-axis proxy defined | `sst_axis.py`, 7 modules/62 genes, spec doc | ✅ | none — this is genuinely done |
-| R2 | **Liver positive control recovers the axis** | `sst_axis_positive_control_liver.tsv` | ❌ | H2 fails (wrong sign), H4 fails (wrong sign), H1 null, H5 unavailable; only H3 passes |
+| R2 | **Liver positive control maps partial axis recovery** | `sst_axis_positive_control_recovery.tsv` | ✅ reframed | Effector arm recovers; metabolic coupling is weak/cell-resolved; physical topology is not recovered |
 | R3 | Mechanism-grounded heterogeneous graph | `data/processed/graph/{nodes,edges}.tsv` | ⚠️ | graph built, but `metabolic_crosstalk` edge sign is meant to be *calibrated on the liver control* — and the control failed, so the calibration source is compromised |
 | R4 | **Graph model improves over baselines** | `gc_nkgraph_internal_results.tsv` only | ❌ | no `baseline_*_results.tsv` exists — there is **no comparison at all**; GNN numbers stand alone |
 | R5 | Gastric extension + tumor-intrinsic target list | `top_candidate_targets.tsv` | ⚠️ | list is **circular**: top hits (NKG7, PRF1, GZMB, GNLY) are the axis's own NK-effector markers with *negative* tumor specificity — not novel tumor-intrinsic druggable targets |
@@ -80,10 +87,9 @@ Status legend: ✅ supported by real output · ⚠️ partial / needs reframing 
 | H4 | topology_permissive → dysfunction | +0.311 | 7e-11 | negative | **FAIL** |
 | H5 | intratumoral < peritumoral NK | — | — | negative | DATA_UNAVAILABLE |
 
-Only 1 of 4 testable hypotheses passes. The manuscript is currently built on
-"Arm A recovers the axis as the credibility anchor." That sentence is not
-supportable as written. **This is the single most important thing to resolve
-before anything else.**
+The original "Arm A recovers the axis as the credibility anchor" framing was not
+supportable. The current manuscript resolves this by treating Arm A as a
+partial-recovery scoping test rather than a full-recovery claim.
 
 **Blocker B — no baseline comparison exists.** Methods §2.7 and Table 2 promise
 XGBoost/LightGBM/RF/ElasticNet/SVM/MLP vs. the GNN. `run_all_baselines.py` is
