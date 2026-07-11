@@ -30,6 +30,13 @@ results/checkpoints/
 results/models/
 results/logs/
 
+# Testing / coverage artifacts
+.coverage
+.coverage.*
+.pytest_cache/
+htmlcov/
+*.log
+
 # Notebooks (serve as scratch)
 notebooks/
 
@@ -63,5 +70,7 @@ Thumbs.db
 # (overrides the *.tsv / results / data rules above for the submission bundle)
 !submission_package/
 !submission_package/**
+!submission_bundle_BiB/
+!submission_bundle_BiB/**
 !requirements.txt
 !manuscript/figures/**

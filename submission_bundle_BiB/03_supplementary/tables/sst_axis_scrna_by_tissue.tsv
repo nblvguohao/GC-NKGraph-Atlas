@@ -1,0 +1,4 @@
+tissue	nk_sm_balance_score	nk_protrusion_machinery_score	nk_topology_permissive_score	nk_synapse_cytotoxicity_outcome_score
+gastric_cancer	0.0414	-0.0785	-0.0186	-0.1944
+healthy_liver	-0.0093	-0.0613	-0.0353	0.061
+liver_metastasis	0.0007	0.1438	0.0723	-0.0352

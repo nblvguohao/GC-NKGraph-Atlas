@@ -428,7 +428,7 @@ class NKStateClassifier:
 
     def __init__(
         self,
-        input_dim: int,
+        input_dim: Optional[int] = None,
         embedding_dim: int = 32,
         hidden_dims: Optional[List[int]] = None,
         num_classes: int = 2,
@@ -436,7 +436,10 @@ class NKStateClassifier:
         learning_rate: float = 1.7e-3,
         weight_decay: float = 5.6e-6,
     ):
-        # Bayesian-optimized defaults (50-trial TPE search, maximizing MCC)
+        # Bayesian-optimized defaults (50-trial TPE search, maximizing MCC).
+        # `input_dim` is accepted for API compatibility but is informational
+        # only: the effective input dimension is derived inside fit() from the
+        # prepared feature matrix (raw expression + graph projection).
         self.input_dim = input_dim
         self.embedding_dim = embedding_dim
         self.hidden_dims = hidden_dims or [256, 128]

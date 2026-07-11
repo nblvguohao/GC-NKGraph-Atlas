@@ -1,0 +1,14 @@
+condition	edge_type_removed	n_edge_types	n_edges_remaining	delta_mcc	Accuracy	MCC	AUROC	data_source
+full_graph	none	6	1552					SYNTHETIC_ABLATION_DEMO
+remove_dysfunction_correlation	dysfunction_correlation	5	1353					SYNTHETIC_ABLATION_DEMO
+remove_ligand_receptor	ligand_receptor	5	1324					SYNTHETIC_ABLATION_DEMO
+remove_metabolic_crosstalk	metabolic_crosstalk	5	1200					SYNTHETIC_ABLATION_DEMO
+remove_ppi	ppi	5	1325					SYNTHETIC_ABLATION_DEMO
+remove_sm_topology_axis	sm_topology_axis	5	1101					SYNTHETIC_ABLATION_DEMO
+remove_tf_target	tf_target	5	1457					SYNTHETIC_ABLATION_DEMO
+only_dysfunction_correlation	dysfunction_correlation	1	199					SYNTHETIC_ABLATION_DEMO
+only_ligand_receptor	ligand_receptor	1	228					SYNTHETIC_ABLATION_DEMO
+only_metabolic_crosstalk	metabolic_crosstalk	1	352					SYNTHETIC_ABLATION_DEMO
+only_ppi	ppi	1	227					SYNTHETIC_ABLATION_DEMO
+only_sm_topology_axis	sm_topology_axis	1	451					SYNTHETIC_ABLATION_DEMO
+only_tf_target	tf_target	1	95					SYNTHETIC_ABLATION_DEMO

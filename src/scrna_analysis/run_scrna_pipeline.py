@@ -338,12 +338,19 @@ def main():
     # ---- Step 8: Save outputs (always executes) ----
     logger.ok("SCRNA", "Step 8: Saving outputs...", script=__file__)
 
+    # Drop the redundant `.raw` copy — a full-size duplicate of the log-normalized
+    # matrix that no downstream phase reads — and write gzip-compressed. Without
+    # this the object is stored as several uncompressed dense copies (X + counts
+    # layer + raw), which for a cohort-scale run bloats the file to ~17 GB.
+    adata.raw = None
+    nk_adata.raw = None
+
     integrated_path = os.path.join(output_dir, "gc_integrated.h5ad")
-    adata.write(integrated_path)
+    adata.write(integrated_path, compression="gzip")
     logger.ok("SCRNA", f"Saved integrated: {integrated_path}", script=__file__)
 
     nk_path = os.path.join(output_dir, "gc_nk_subset.h5ad")
-    nk_adata.write(nk_path)
+    nk_adata.write(nk_path, compression="gzip")
     logger.ok("SCRNA", f"Saved NK subset: {nk_path}", script=__file__)
 
     # Save summary table

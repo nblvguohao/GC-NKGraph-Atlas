@@ -1,0 +1,5 @@
+metric	GC_mean	HL_mean	delta	direction	p_value	significant
+nk_sm_balance_score	0.0414	-0.0093	0.0506	UP	1.0089e-01	False
+nk_protrusion_machinery_score	-0.0785	-0.0613	-0.0172	DOWN	1.4226e-01	False
+nk_topology_permissive_score	-0.0186	-0.0353	0.0167	UP	3.1332e-01	False
+nk_synapse_cytotoxicity_outcome_score	-0.1944	0.061	-0.2554	DOWN	1.3822e-59	True
