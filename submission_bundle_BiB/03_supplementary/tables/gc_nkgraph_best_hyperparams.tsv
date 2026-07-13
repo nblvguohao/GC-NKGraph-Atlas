@@ -1,0 +1,2 @@
+embedding_dim	hidden_dims	dropout	learning_rate	weight_decay	batch_size	edge_weights	best_mcc	best_auroc	best_f1
+32	[256, 128]	0.6	0.0017005551297965044	5.553376411091332e-06	16	{'ppi': 1.0, 'metabolic_crosstalk': 1.0, 'sm_topology_axis': 1.0, 'ligand_receptor': 1.0, 'dysfunction_correlation': 1.0, 'tf_target': 1.0}	0.7277779774007864	0.9509461094461095	0.8597620205898616

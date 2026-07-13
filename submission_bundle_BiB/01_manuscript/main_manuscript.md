@@ -210,15 +210,20 @@ cells×genes), tagged with tissue and tumor/normal condition, and concatenated o
 the intersection of genes (inner join) to avoid cross-platform sparsity artifacts
 (`src/scrna_analysis/run_scrna_v2.py`).
 
-**Quality control.** Cells were filtered on standard criteria
-(`src/scrna_analysis/qc_filter.py`): ≥ 200 and ≤ 6,000 detected genes per cell
-(the upper bound as a multiplet proxy) and ≤ 20% mitochondrial counts; genes
-detected in fewer than 3 cells were removed. Mitochondrial fraction was computed
-with a NaN-robust fallback to handle heterogeneous cross-platform inputs.
-Doublet removal (Scrublet) is applied optionally per sample. The thresholds
-above are fixed in code (`src/scrna_analysis/qc_filter.py`); per-sample
-before/after filtering cell counts were not preserved from the run used in
-this submission.
+**Quality control.** Per-cell QC metrics (detected genes per cell,
+mitochondrial fraction) were computed for all concatenated cells
+(`src/scrna_analysis/run_scrna_v2.py`), with mitochondrial fraction computed
+using a NaN-robust fallback to handle heterogeneous cross-platform inputs.
+Hard per-cell thresholds (e.g. on gene count or mitochondrial fraction) and
+doublet-based exclusion were not applied to the reported dataset; all
+166,829 concatenated cells were retained into normalization and integration.
+The gene space is restricted at two points instead of by a per-cell filter:
+the cross-sample gene intersection at the concatenation step above, and the
+top-3,000-highly-variable-gene selection below. Technical, quality-related
+variance (library size, detected-gene count) is addressed downstream via the
+count-depth residualization diagnostics reported in §3.2, rather than by
+upfront hard-threshold cell exclusion; this is discussed as a limitation in
+§4.3.
 
 **Normalization, integration, and clustering.** Counts were library-size
 normalized to 10⁴ and log1p-transformed; 3,000 highly variable genes were selected
@@ -264,11 +269,11 @@ The heterogeneous gene graph integrates six edge types across multiple node type
 
 The model employs a two-stage architecture:
 
-**Stage 1 — Gene Graph Encoder.** Gene embeddings are learned from the heterogeneous graph via spectral decomposition of the combined normalized adjacency matrix (PPI + LR + TF + SST edges). Each gene is represented as a d-dimensional vector that encodes its multi-relational neighborhood. When `torch_geometric` [41] is available, a heterogeneous graph transformer (HGT) [32] is used instead for learnable message-passing with type-specific projections.
+**Stage 1 — Gene Graph Encoder.** Gene embeddings are learned from the heterogeneous graph via spectral decomposition (truncated SVD) of the combined normalized adjacency matrix (PPI + LR + TF + SST edges, uniformly weighted per edge type). Each gene is represented as a d-dimensional vector that encodes its multi-relational neighborhood. All embeddings reported in this study, including the ablation in §3.7, use this spectral encoder; a learnable, `torch_geometric` [41]-based heterogeneous graph transformer (HGT) [32] would be a natural extension (§4.4) but was not used to produce any result reported here.
 
 **Stage 2 — NK State Classifier.** For each bulk tumor sample with expression vector x ∈ ℝ^{|G|}, the input to the classifier is the concatenation [x, x·E] where E ∈ ℝ^{|G|×d} is the gene embedding matrix. This provides both the raw expression signal and the graph-informed projection. A 2-3 layer MLP with batch normalization and dropout predicts NK immune state (binary: cytotoxic vs rest).
 
-Training uses 5-fold stratified cross-validation with early stopping (patience=30 epochs). The optimizer is Adam (lr=1e-3, weight_decay=1e-5) with CrossEntropy loss.
+Training uses 5-fold stratified cross-validation with early stopping (patience=30 epochs). The optimizer is Adam with CrossEntropy loss; learning rate (1.7×10⁻³), weight decay (5.6×10⁻⁶), and dropout (0.6) were selected via a 100-trial Bayesian (TPE) hyperparameter search maximizing MCC (`results/tables/gc_nkgraph_bayesian_trials.tsv`).
 
 ### 2.7 Baseline methods
 
@@ -1015,6 +1020,7 @@ operationalize a physical mechanism from an indirect molecular readout.
 13. **DepMap essentiality now uses the real, current 26Q1 release.** CERES scores in Table 4 are from a real query of **DepMap Public 26Q1** `CRISPRGeneEffect.csv` and `Model.csv` (35 real gastric/stomach-subtype cell lines), obtained directly from the DepMap portal — newer than the 25Q2 release originally named in Methods, and superseding an earlier pass of this analysis that used the 24Q2 figshare snapshot (the DepMap portal's own interactive download is gated by a Cloudflare bot-verification challenge that cannot be scripted non-interactively; 24Q2 was the most recent release with non-interactive public access at that time). Under the 26Q1 data, NT5E is genuinely non-essential (CERES=+0.005, revised from "weakly essential" under 24Q2); SGMS2, SMPD1, and SMPD3 remain "weakly essential" (CERES −0.02 to −0.16) — still well clear of the pan-essential range (RAC1, MTHFD1; CERES<−0.5) but not strictly non-essential; PSAT1 moved from "weakly essential" to "moderately essential" (CERES=−0.27). Table 4 and §3.5 reflect these real 26Q1 values.
 14. **NK-state DE is underpowered for the dysfunctional group, and external replication gives mixed results.** TCGA-STAD has only n=20 NK-hot-dysfunctional samples vs n=134 NK-hot-cytotoxic. We replicated the directional test in two independent external gastric cohorts (GSE62254, GSE84437; `results/tables/nk_state_de_external_replication_summary.md`), each with an independently-derived NK-state label: 14/16 gene-cohort comparisons (88%) are directionally concordant with TCGA-STAD, including external confirmation that the five downgraded serine-pathway genes and RAC1 are down in dysfunctional tumors (strengthening their exclusion). However, **SGMS2's "up in dysfunctional" TCGA-STAD signal is discordant in both external cohorts** and should not be weighted as independent evidence for its Tier-1 status (§3.5, Table 4); NT5E's concordance is real but remains subject to the label-circularity caveat (item 15 below) in every cohort tested. Replication in a larger cohort with paired scRNA would still strengthen these conclusions.
 15. **The NK-state classification target partly overlaps the classifier's own input features.** A gene-set separation audit (`results/tables/geneset_separation_audit_summary.md`) found that the NK-hot-cytotoxic/dysfunctional label (§2.4) is a thresholding rule on marker genes (NKG7, GNLY, GZMB, PRF1, IFNG among others) that are also present, unmodified, in the full expression vector used as input to every model in §3.4, including the GNN. This is a known property of marker-defined phenotype labels rather than a coding error, but it means the high accuracy of all models (including simple baselines such as the 8-gene NK-marker signature, AUROC=0.849) partly reflects recovering a label from the same genes that define it, and §3.4 should be read accordingly. The same audit found that the SST-axis modules used for the H1–H5 mechanism tests do not reference the NK-state label at all (those tests operate directly on module scores, not on the label), so this concern is confined to §3.4's classification numbers. It also found that NT5E, one of the 37 tumor-intrinsic candidates, is itself part of the label-defining `NK_DYSFUNCTION_GENES` set (§3.5, Table 4).
+16. **No hard per-cell QC threshold was applied to the real scRNA-seq data.** Per-cell QC metrics (detected genes, mitochondrial fraction) were computed but not used to exclude cells (§2.4); all 166,829 concatenated cells were retained into normalization and integration, and doublet-based exclusion was not applied. Technical, quality-related variance is instead addressed downstream through the count-depth residualization diagnostics (item 6 above), which show that library size and detected-gene count explain a substantial share of module-score variance and must be accounted for statistically. A dataset with explicit per-cell hard-threshold filtering applied upstream would provide an additional, independent check on the results in §3.2.
 
 ### 4.4 Future directions
 
@@ -1022,6 +1028,7 @@ operationalize a physical mechanism from an indirect molecular readout.
 - **Additional mechanisms.** The mechanism-card registry (`configs/mechanism_cards/registry.yaml`) is designed to hold multiple cards. Cards for adenosine-mediated NK suppression, TGFβ-driven NK exclusion, stress-ligand shedding (MICA/B-ADAM17), and other NK checkpoint axes (TIGIT/CD96 [47,48]; the CLEC12B–lipoprotein-lipase axis recently shown to restrain tumor NK cells and to synergize with PD-1 blockade [46]) are natural next additions.
 - **Physical topology integration.** When membrane protrusion / microvilli imaging data become available (even for a subset of samples), Layer 14R-B of the SST-axis module can be activated to provide direct phenotype-transcriptome correlation.
 - **Prospective validation cohort.** A dedicated gastric cancer cohort with paired bulk RNA-seq, scRNA-seq, and functional NK assays would provide the strongest validation of the prioritized targets.
+- **Learnable graph encoder.** All embeddings in this study use a spectral (SVD-based) encoder (§2.6); a `torch_geometric`-based heterogeneous graph transformer (HGT) [32] with learnable, type-specific message passing was not implemented for this study and is a natural architectural extension, particularly for tasks where relational structure is more decisive than the binary NK-state classification benchmarked here (§4.3, item 8).
 
 ---
 

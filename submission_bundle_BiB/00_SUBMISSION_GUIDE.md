@@ -82,6 +82,37 @@ The manuscript body commits to no count, so the paper text is unaffected either 
 
 ## 6. Code/data/figure/table alignment audit (2026-07-13)
 
+**Extended pass (same day):** beyond filename existence, checked whether the
+*behavior* described in Methods for each cited script matches what the script
+actually does. This caught two further, more serious mismatches (Methods
+describing something the code does not do / describes different numbers than
+the code's actual defaults), on top of the `scrna_qc_summary.tsv` gap above:
+
+- **RESOLVED:** §2.6 stated "When `torch_geometric` is available, a
+  heterogeneous graph transformer (HGT) is used instead" for the gene
+  embedding. A repo-wide search found no `torch_geometric`/`HGTConv` usage
+  anywhere in `src/`; `src/models/gc_nkgraph_atlas.py` unconditionally uses
+  the spectral (SVD-based) `GeneGraphEncoder` for every real result in this
+  paper, including the §3.7 ablation. A separate `GATEncoder` class exists in
+  the same file but is never instantiated anywhere in the codebase — dead
+  code, not a runtime fallback. §2.6 and §4.4 reworded to state the spectral
+  encoder was used throughout, with HGT named as unimplemented future work.
+- **RESOLVED:** §2.6 stated the classifier optimizer was "Adam (lr=1e-3,
+  weight_decay=1e-5)." The actual `NKStateClassifier` defaults (used
+  unmodified by `pipeline.py`) are `learning_rate=1.7e-3, weight_decay=5.6e-6,
+  dropout=0.6`, explicitly commented in code as selected by a Bayesian (TPE)
+  search. The saved trial log (`gc_nkgraph_bayesian_trials.tsv`) has **100**
+  completed trials, not the "50-trial" figure in the code's own comment — the
+  code comment itself was stale; the manuscript now cites the real trial
+  count from the data file. §2.6 reworded accordingly and the two supporting
+  tables (`gc_nkgraph_bayesian_trials.tsv`, `gc_nkgraph_best_hyperparams.tsv`)
+  added to the supplementary bundle. Note for the authors: the search's
+  recorded `best_mcc` (0.728) does not exactly match Table 3's reported GNN
+  MCC (0.706), while `best_auroc` (0.951) is very close to Table 3's AUROC
+  (0.950) — plausibly the search's best-trial metric versus the final
+  5-fold-mean metric reported in Table 3, but this was not chased further and
+  is worth a second look if you want full numeric reconciliation.
+
 Cross-checked every table/figure filename cited by name in `main_manuscript.md`
 against what actually exists in `results/tables/`, `results/figures/`, and the
 `03_supplementary/` bundle.

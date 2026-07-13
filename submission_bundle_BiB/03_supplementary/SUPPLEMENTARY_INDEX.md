@@ -50,6 +50,7 @@ scVI/Leiden settings (§2.4); (iv) the paired-test protocol for model comparison
 | `nk_state_de_external_replication.tsv` / `nk_state_de_external_concordance.tsv` / `nk_state_de_external_replication_summary.md` | §3.5 | External replication of the NK-state DE test in GSE62254/GSE84437 and directional concordance with TCGA-STAD. |
 | `trivial_baseline_comparison.tsv` / `trivial_baseline_overlap.tsv` / `trivial_baseline_summary.md` | §3.5 | Comparison of the five-dimension target-scoring against a mechanism-card-membership-only trivial baseline. |
 | `geneset_separation_audit.tsv` / `geneset_separation_audit_summary.md` | §4.3 (Limitations item 15) | Gene-set overlap audit between the NK-state classification label, the SST-axis modules, and the 37-gene candidate list (label-leakage / circularity check). |
+| `gc_nkgraph_bayesian_trials.tsv` / `gc_nkgraph_best_hyperparams.tsv` | §2.6 | 100-trial Bayesian (TPE) hyperparameter search log and selected configuration (learning rate, weight decay, dropout, edge weights) for the NK-state classifier. |
 
 *Note:* the interactive web playground (`web/index.html`, also hosted via GitHub
 Pages) lets reviewers browse the mechanism cards and the candidate list with the
