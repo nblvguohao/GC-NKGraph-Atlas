@@ -912,8 +912,8 @@ blanket claim of recovery. Three findings anchor it:
    a cautionary benchmark against over-interpreting transcriptional proxies for
    physical phenotypes in immune-evasion research, and identifies the
    post-transcriptional membrane-recruitment layer as the critical gap for
-   future experimental work (see companion experimental program,
-   `plan_NatImmunol_wetlab/WETLAB_PROGRAM.md`).
+   future experimental work; a companion wet-lab validation program targeting
+   this gap is in preparation.
 
 Together these delineate which layers a transcriptome can and cannot reach — a
 result of direct use to any lab extending a physical immune-evasion mechanism to
