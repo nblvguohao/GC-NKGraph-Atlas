@@ -101,10 +101,27 @@ def load_reactome(path: str) -> pd.DataFrame:
 
 
 def load_chea_tf(path: str) -> pd.DataFrame:
-    """Load ChEA TF-target relationships."""
+    """Load ChEA TF-target relationships.
+
+    Enrichr's ChEA gene-set-library export is ragged (one TF per line, with a
+    variable number of target genes), so it cannot be read with
+    `pd.read_csv` under a fixed column count. Parse it line by line instead:
+    column 0 becomes the TF symbol (first whitespace token of the
+    description field) and columns 1..N become that TF's target genes,
+    NaN-padded to a rectangular frame for the caller's `iterrows()` loop.
+    """
     log(f"  Loading TF-target from {path}...")
     try:
-        df = pd.read_csv(path, sep="\t")
+        rows = []
+        with open(path, encoding="utf-8") as f:
+            for line in f:
+                parts = line.rstrip("\n").split("\t")
+                if not parts or not parts[0].strip():
+                    continue
+                tf = parts[0].split()[0].strip()
+                targets = [t.strip() for t in parts[1:] if t.strip()]
+                rows.append([tf] + targets)
+        df = pd.DataFrame(rows)
         log(f"    {len(df)} TF-target edges")
         return df
     except Exception as e:

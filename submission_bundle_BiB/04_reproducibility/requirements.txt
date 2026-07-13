@@ -48,3 +48,4 @@ pytest-cov
 #
 # Optional (trajectory / reference mapping / spatial):
 # cellrank  scarches  squidpy
+requests

@@ -55,7 +55,7 @@
 - A **mechanism-card** formalism converts published wet-lab immune-evasion mechanisms into scalable transcriptome-based target-discovery runs (demonstrated on one card; multi-card reuse is a design aspiration).
 - A **two-arm design** (liver positive control + gastric extension) produces a **scoping result**: the *effector arm* (protrusion→cytotoxicity) is robustly recoverable in bulk transcriptomes and generalizes to gastric cancer in three independent bulk cohorts; at single-cell resolution the same coupling is pseudoreplication-corrected but does not survive count-depth/latent-structure residualization or a module-permutation baseline, so we anchor the effector-arm claim on the bulk evidence. The *metabolic arm* (SM-balance→protrusion) is not statistically significant after correction (p=0.20).
 - **Transcription does not proxy the physical topology phenotype:** intratumoral NK cells exhibit *higher* protrusion-machinery transcript levels while their physical membrane protrusions are collapsed — a fundamental disconnect that defines the natural boundary of transcriptome-based reconstruction for membrane-lipid mechanisms.
-- The heterogeneous graph introduces a **mechanism-grounded `metabolic_crosstalk` edge** (tumor serine program → NK topology state) justified by biology, not generic priors.
+- The heterogeneous graph is used as a **probe, not a predictor**: encoding the mechanism's metabolic coupling as a `metabolic_crosstalk` edge and ablating it gives an independent, architecture-based confirmation that this coupling is transcriptionally absent — the edge imposes the coupling on the embedding yet yields no cross-cohort predictive value, converging with the null correlation result.
 - The framework outputs a **de-circularized, putative tumor-intrinsic candidate target list** (37 genes, led by druggable serine/SM enzymes) kept strictly separate from the NK-side axis readout, each with a recommended wet-lab validation assay — presented as a hypothesis-generation shortlist for experimental follow-up.
 
 ---
@@ -113,7 +113,11 @@ CellPhoneDB [23] and NicheNet [24] infer ligand–receptor signaling between cel
 types, and scFEA [25] estimates metabolic flux from single-cell expression. We
 borrow the ligand–receptor edge concept for the heterogeneous graph but add a
 mechanism-specific `metabolic_crosstalk` edge grounded in one published
-serine→sphingomyelin relationship, rather than a generic communication prior.
+serine→sphingomyelin relationship. Rather than assuming this edge improves
+prediction, we use it as a diagnostic: structurally encoding the mechanism's
+upstream metabolic coupling and asking whether the transcriptome corroborates
+it — a question the correlation analyses (§3.2) and the graph ablation (§3.7)
+answer convergently.
 
 **Trajectory and dysfunction-state modeling.** CytoTRACE [26] and related
 pseudotime methods order cells along differentiation or dysfunction gradients;
@@ -129,15 +133,19 @@ our candidate prioritization currently inherits this surface/metabolic-gene bias
 multi-omics integration (e.g. MOGONET [31]) and to molecular-interaction networks
 for outcome prediction, and heterogeneous graph transformers [32] provide
 type-specific message passing over multi-relational graphs. Existing applications
-typically treat the graph as a generic prior (a PPI or co-expression network). Our
-contribution is a graph whose *every edge type carries an explicit biological
-justification*, including one edge derived directly from the mechanism under
-study, so that the heterogeneous architecture has a principled reason to exist for
-this problem.
+typically treat the graph as a generic prior (a PPI or co-expression network) and
+report a predictive gain. Our use of the graph is different in intent: on top of
+standard priors (STRING protein–protein interactions, CellChatDB ligand–receptor
+pairs) we add one edge type derived directly from the mechanism under study, and
+then ask — rather than assume — whether that mechanism-grounded structure is
+transcriptionally supported and predictively useful. As we show (§3.4, §3.7),
+the graph does not beat simpler baselines on accuracy; its value is as a
+*mechanism-structured probe* whose ablation behavior independently corroborates
+which layer of the axis the transcriptome can and cannot reach.
 
 To our knowledge, no prior tool converts a single published wet-lab immune-evasion
 mechanism into a machine-readable card that drives cell-type-attributed proxy
-construction, mechanism-grounded graph learning, and de-circularized target
+construction, a mechanism-structured graph probe, and de-circularized target
 prioritization, while explicitly measuring — rather than assuming — how much of
 the mechanism the transcriptome can reach.
 
@@ -187,7 +195,7 @@ The serine–sphingomyelin–topology axis is operationalized as seven gene modu
 | `nk_sm_synthesis` | NK | SGMS1, SGMS2 (2) | ↑ = more topology-permissive |
 | `nk_sm_catabolism` | NK | SMPD1–4 (4) | ↑ = less topology-permissive |
 | `nk_denovo_sphingolipid` | NK | SPTLC1–3, SPTSSA, CERS2/4/5/6, DEGS1 (9) | Context-dependent |
-| `nk_protrusion_machinery` | NK | ERM family, Arp2/3 complex, WASP/WAVE, Rho GTPases, formins, BAR domain (25) | ↑ = more topology-permissive |
+| `nk_protrusion_machinery` | NK | ERM family, Arp2/3 complex, WASP/WAVE, Rho GTPases, formins, BAR domain (24) | ↑ = more topology-permissive |
 | `nk_synapse_cytotoxicity_outcome` | NK | NKG7, GNLY, GZMB, PRF1, IFNG, LCP2, LAT, VAV1, TLN1, ITGAL, ITGB2 (11) | Axis-positive correlate |
 | `checkpoint_link` | NK | HAVCR2 (1) | ↑ = less topology-permissive |
 
@@ -252,18 +260,48 @@ These states are projected onto bulk samples via scRNA-anchored scoring (mean z-
 
 ### 2.5 Heterogeneous graph construction
 
-The heterogeneous gene graph integrates six edge types across multiple node types:
+The graph is deliberately **axis-centered**: nodes are the 100 genes of the SST-axis
+modules (§2.3), curated NK receptors, and the candidate pool. Onto this gene set we
+lay standard prior-network edges plus two mechanism-grounded edge types and one
+data-driven co-expression edge. The realized edge counts (from the built graph,
+`data/processed/graph/edges.tsv`) are:
 
-| Edge type | Source → Target | Source database | Weight |
-|-----------|-----------------|-----------------|--------|
-| `ppi` | gene ↔ gene | STRING v12 (score ≥ 700) | normalized score / 1000 |
-| `ligand_receptor` | gene → gene | CellChatDB | 0.9 |
-| `tf_target` | TF gene → target gene | ChEA 2022 | 0.8 |
-| `metabolic_crosstalk` | tumor_serine gene → NK topology gene | Zheng 2023 | 0.5 |
-| `sm_topology_axis` | NK axis gene ↔ NK axis gene | Zheng 2023 | 0.3 |
-| `dysfunction_correlation` | gene → NK state node | Bulk correlation | abs(corr) |
+| Edge type | Source → Target | Source database | Weight | Edges (this panel) |
+|-----------|-----------------|-----------------|--------|--------------------|
+| `ppi` | gene ↔ gene | STRING v12 (score ≥ 700) | score / 1000 | 474 |
+| `ligand_receptor` | gene → gene | CellChatDB (via OmniPath) | 0.9 | 12 |
+| `tf_target` | TF gene → target gene | ChEA 2022 | 0.8 | 0 (see note) |
+| `metabolic_crosstalk` | tumor_serine gene → NK topology gene | Zheng 2023 | 0.5 | 300 |
+| `sm_topology_axis` | NK axis gene ↔ NK axis gene | Zheng 2023 | 0.3 | 820 |
+| `coexpression` | axis gene ↔ axis gene | NK scRNA (|r|>0.3) | abs(r) | 6 |
 
-**Key design choice — `metabolic_crosstalk` edge.** This edge type connects tumor-side serine metabolism genes (PHGDH, PSAT1, etc.) to NK-side SM/topology genes (SGMS1, SMPD1, EZR, etc.). Unlike generic co-expression edges, this edge is specifically justified by the Zheng 2023 mechanism. We audited the implementation (`src/graph_construction/build_heterograph.py::build_sst_edges`) to confirm exactly what is and is not calibrated (`src/topology/h3_edge_sign_calibration_audit.py`, `results/tables/mc_edge_sign_calibration_audit.tsv`): the edge *weight* (0.5) is a fixed structural prior applied uniformly to every tumor-serine-gene → NK-topology-gene pair — it is not fit to any cohort and therefore cannot leak information between the liver calibration and gastric test data. A separate quantity, the *sign* of the tumor_serine_capacity term in the descriptive `sst_axis_score` composite (Methods §2.3, `src/topology/sst_axis_validation.py`), is determined from the observed H1 (tumor_serine_capacity ~ nk_sm_balance) correlation on the liver cohort; this sign calibration does not feed back into the graph edge weight above, and in any case H1 is null at both resolutions (§3.2), so the calibrated sign carries little information. We correct our earlier, imprecise description of this design choice accordingly.
+**Note on `tf_target`.** ChEA 2022 is integrated by the pipeline, but because the
+graph is intentionally restricted to the ~100 axis-centered genes, no ChEA
+transcription-factor→target pair falls entirely within this panel, so this edge
+type contributes zero edges to the realized graph. We report it explicitly rather
+than omitting it: the generic priors that actually connect these genes are
+protein–protein interactions (STRING) and ligand–receptor pairs (CellChatDB),
+which together form the non-mechanistic background against which the
+mechanism-grounded edges are compared in the ablation (§3.7). A prior
+`dysfunction_correlation` edge type from bulk correlations to NK-state nodes was
+part of the original design but is not used in the analyses reported here.
+
+**Key design choice — `metabolic_crosstalk` edge.** This edge connects tumor-side
+serine metabolism genes (PHGDH, PSAT1, etc.) to NK-side SM/topology genes (SGMS1,
+SMPD1, EZR, etc.), encoding the Zheng 2023 upstream metabolic coupling as graph
+structure. Its purpose is diagnostic, not predictive: it lets us ask whether
+hard-coding this coupling helps downstream tasks, and §3.7 shows it does not — in
+a way that converges with the null transcriptional correlation for the same
+coupling (H1, §3.2). The edge *weight* (0.5) is a fixed structural prior applied
+uniformly to every tumor-serine-gene → NK-topology-gene pair
+(`src/graph_construction/build_heterograph.py::build_sst_edges`); it is not fit to
+any cohort and therefore cannot leak information between the liver calibration and
+gastric test data. A separate quantity, the *sign* of the tumor_serine_capacity
+term in the descriptive `sst_axis_score` composite (§2.3,
+`src/topology/sst_axis_validation.py`), is determined from the observed H1
+correlation on the liver cohort; this sign calibration does not feed back into the
+graph edge weight, and in any case H1 is null at both resolutions (§3.2), so the
+calibrated sign carries little information.
 
 ### 2.6 Graph neural network model
 
@@ -555,7 +593,7 @@ and hot-dysfunctional (20).
 **External validation in two independent gastric cohorts.** The external
 microarray cohorts initially failed NK scoring because probe IDs were not mapped
 to gene symbols; after platform-annotation remapping (GSE62254→GPL570, 54,675
-probes→22,880 genes, NK markers 6/7; GSE84437→GPL6947, 49,576→25,159 genes, NK
+probes→22,880 genes, NK markers 6/7; GSE84437→GPL6947, 49,576→18,903 genes, NK
 markers 7/7; `run_geo_external_validation.py`), the recovered effector coupling
 replicates in **both** cohorts: protrusion-machinery→cytotoxicity-output
 correlates at r=0.42 (p=1.4×10⁻¹⁴) in GSE62254 (n=300) and r=0.62 (p=3.3×10⁻⁵³)
@@ -589,7 +627,16 @@ graph-informed model attains accuracy 0.864, balanced accuracy 0.856,
 macro-F1 0.850, MCC 0.706, AUROC 0.950, AUPRC 0.910. The six tabular baselines
 were evaluated on the *identical* seed-42 folds (Table 3), and we report paired
 Wilcoxon/t-tests of the GNN against each baseline on MCC and AUROC
-(`model_comparison_stats.tsv`).
+(`model_comparison_stats.tsv`). Table 3 reports one internally consistent
+evaluation in which the GNN and all baselines were run on the identical seed-42
+folds. The GNN itself is robust to the graph-edge enrichment described in §2.5:
+rebuilding the graph with the real STRING/CellChatDB priors moves its
+5-fold-mean MCC by less than 0.01 (0.706→0.716) and its AUROC by less than
+0.002, within one fold-standard-deviation. Absolute baseline metrics vary
+modestly across independent re-runs of the harness; the qualitative ranking used
+below — GNN on par with the gradient-boosting baselines and above the linear,
+kernel, and shallow-network ones — is stable, and is the only comparison our
+conclusions rely on.
 
 The comparison yields a clear result: the graph-informed model
 is **statistically on par with the strongest gradient-boosting baselines** —
@@ -618,12 +665,12 @@ interpretation of the GNN's contribution: the mechanism card's gene modules
 already capture the bulk of the discriminative signal for NK state
 classification when combined with logistic regression, and the heterogeneous
 graph does not significantly improve discriminative accuracy beyond this
-no-graph alternative. The GNN's primary value therefore lies not in
-classification accuracy — where it is on par with both SST-module logistic
-regression and gradient-boosted trees — but in the **mechanism-structured
-gene embedding** it produces for the axis recovery analyses (Arm A/B) and
-target prioritization, which neither the SST-module baseline nor the tabular
-models can provide.
+no-graph alternative. We therefore do not claim the graph as a predictive
+advance. Its role in this study is instead diagnostic: the
+mechanism-structured embedding is used as a *probe* whose ablation behavior
+independently maps which layer of the axis the transcriptome can reach (§3.7),
+not as a source of classification gain that the SST-module or tabular baselines
+lack.
 
 We note that a full comparison with established deconvolution tools
 (CIBERSORTx, quanTIseq) and phenotype-genotype association methods (Scissor)
@@ -633,12 +680,13 @@ these comparisons is provided in
 These tools require an R environment not available in the current local setup.
 
 We therefore do not claim state-of-the-art
-accuracy; the graph model matches top tree ensembles and the SST-module
-signature baseline on this binary task while
-providing a mechanism-structured gene embedding (used for the axis analyses and
-target prioritization) that the tabular and signature baselines do not. This
-"comparable accuracy, added interpretability" position is the straightforward
-reading of the numbers.
+accuracy, nor a predictive advantage for the graph: it matches top tree
+ensembles and the SST-module signature baseline on this binary task. What the
+graph uniquely provides is a mechanism-structured embedding that can be
+*ablated* — removing the edge that encodes the mechanism's metabolic coupling
+and observing the effect — which is what turns it into a probe of transcriptional
+reach (§3.7) rather than a black-box classifier. This "comparable accuracy,
+diagnostic value" position is the straightforward reading of the numbers.
 
 **NK-state classification (TCGA-STAD, 5-fold CV; mean over folds).**
 
@@ -840,38 +888,61 @@ target score. (c) Category composition of the 37-gene pool.
 
 ---
 
-### 3.7 Graph-edge ablation
+### 3.7 The graph as a convergent probe of transcriptional reach
 
-To test whether the mechanism-specific `metabolic_crosstalk` edge contributes
-structure beyond generic network priors, we compared three graph variants by
-their spectral gene embedding quality (Methods §2.6, Stage 1):
+The heterogeneous graph is not offered as a predictive advance — it matches
+simpler baselines on accuracy (§3.4). Instead we use it as an independent,
+architecture-based test of the same question the correlation analyses ask: is the
+mechanism's *upstream metabolic coupling* (tumor serine program → NK SM/topology)
+present in the transcriptome? We hard-code that coupling as the
+`metabolic_crosstalk` edge and ask what removing it does. Three graph variants
+were compared on their spectral gene embeddings (§2.6, Stage 1), built on the
+enriched real graph (STRING PPI + CellChatDB LR + mechanism edges + scRNA
+co-expression):
 
-| Variant | Edges | Modularity | H2 (SM↔protrusion) | H1 (serine↔SM) |
-|---------|-------|------------|---------------------|-----------------|
-| FULL (all edges) | 1,129 | 0.380 | 0.591 | 0.239 |
-| −MC (without `metabolic_crosstalk`) | 829 | 0.159 | 0.487 | 0.000 |
-| −SST (without all SST edges) | 9 | 0.017 | 0.000 | 0.000 |
+| Variant | Edges | Modularity | H1 embedding-coupling (serine↔SM) | H2 embedding-coupling (SM↔protrusion) |
+|---------|-------|------------|------------------------------------|----------------------------------------|
+| FULL (all edges) | 1,612 | 0.362 | 0.140 | 0.245 |
+| −MC (without `metabolic_crosstalk`) | 1,312 | 0.354 | −0.001 | 0.202 |
+| −SST (mechanism edges removed; generic priors only) | 492 | 0.287 | −0.002 | −0.000 |
 
-Removing the `metabolic_crosstalk` edge (300 edges, weight 0.5) reduces
-modularity by 2.4-fold (Δ=−0.222) and eliminates the tumor-serine↔NK-SM
-coupling entirely (H1: 0.239→0.000). When both SST-specific edge types are
-removed, only 9 coexpression edges remain, producing an essentially random
-embedding (modularity 0.017). The `metabolic_crosstalk` edge therefore
-measurably shapes the embedding — the graph design is not cosmetic, and the
-mechanism-grounded edge has a confirmable structural effect on the internal
-embedding geometry. In a cross-cohort transfer test (STAD→LIHC), however, the
-`metabolic_crosstalk` edge did not improve held-out NK-state classification over
-the `sm_topology_axis`-only graph (ΔMCC = +0.002, bootstrap p = 0.44, 95% CI
-[-0.054, 0.056]), indicating that its structural contribution is redundant with
-co-expression for the downstream classification task. The heterogeneous graph's
-primary value therefore lies in its mechanism-structured embedding — which
-provides interpretable gene-gene attention grounded in a defined causal chain —
-not in raw classification accuracy (where the GNN is on par with
-LightGBM/XGBoost; §3.4). The value of
-typed ligand–receptor and mechanism-grounded edges over generic co-expression is
-consistent with single-cell studies in which ligand–receptor interaction
-analysis, rather than expression alone, explained how one cell subset regulates
-another [21].
+Two observations, both pointing the same way.
+
+**First, the edge does exactly what it is designed to do — and that is the
+problem.** Removing `metabolic_crosstalk` abolishes the tumor-serine↔NK-SM
+coupling in the embedding (H1 embedding-coupling 0.140→−0.001), confirming that
+this single edge is what imposes the hypothesized upstream coupling on the
+geometry. But that coupling is one the transcriptome itself does not exhibit: the
+corresponding H1 correlation is null at both bulk and single-cell resolution
+(§3.2). The edge faithfully encodes the mechanism; the data simply do not
+corroborate it. (We do not lean on the modularity column: because it is measured
+on the mechanism's own gene modules, adding mechanism edges necessarily raises it,
+so the mechanism edges' collective lift over generic priors alone — 0.287→0.362,
+carried mainly by the within-axis `sm_topology_axis` edges — is expected rather
+than independent evidence.)
+
+**Second, hard-coding this non-transcriptional coupling does not help — and
+modestly hurts — generalization.** In a cross-tissue transfer test (train
+TCGA-STAD gastric → test TCGA-LIHC liver), the FULL graph including
+`metabolic_crosstalk` gave a held-out MCC of 0.416 versus 0.509 for the −MC graph
+(Δ=−0.093, 1,000-sample bootstrap 95% CI [−0.153, −0.043]). This is a single
+transfer direction and the absolute effect is modest, so we read it conservatively
+as *the edge provides no cross-cohort predictive value and if anything degrades
+it* — precisely the behavior expected of a structural prior that asserts a
+relationship absent from the transcriptome.
+
+Together, the ablation is a third, methodologically independent line of evidence
+for the paper's central boundary: the **effector layer** of the axis is
+transcriptionally present (the within-axis `sm_topology_axis` edges organize the
+embedding; the bulk effector correlations recover, §3.2–3.3), whereas the
+**upstream metabolic coupling** is not — it is null as a correlation (H1/H2,
+§3.2), inert-to-detrimental as an imposed graph edge (here), and, per the anchor
+study, resolvable only by single-cell mass spectrometry. The graph does not fail
+as a predictor so much as succeed as a probe, returning the same answer as every
+other instrument in this study. The utility of typed, mechanism-grounded edges as
+interpretable structure — as opposed to a predictive gain — is consistent with
+single-cell work in which ligand–receptor interaction analysis, rather than
+expression alone, explained how one cell subset regulates another [21].
 
 ---
 
@@ -896,19 +967,24 @@ blanket claim of recovery. Three findings anchor it:
    dataset (permutation *P*=0.97 with an expression-matched scoring method;
    §3.2). We therefore do not treat the single-cell number as an independent
    replication and anchor this finding on the bulk result.
-2. **The metabolic coupling is not transcriptionally detectable after
-   pseudoreplication correction.** The SM-balance→protrusion coupling is
-   invisible in bulk and, crucially, is **not statistically significant** in
-   single NK cells after correcting for within-sample dependence (corrected
-   r=0.029, *P*=0.20, I²=73%). This is a stronger and more informative result
-   than our initial "detectable but negligible": it empirically confirms that
-   serine→SM crosstalk operates at the metabolite level, not the transcript
-   level, consistent with the anchor paper's requirement for single-cell mass
-   spectrometry. The `metabolic_crosstalk` edge's design premise — that
-   metabolic coupling exists biologically — thus finds support in the
-   mechanism card's logic but not in the transcriptome, which is precisely
-   the kind of boundary the card's "gated physical ground-truth" section
-   was designed to mark.
+2. **The metabolic coupling is not transcriptionally detectable — by two
+   independent methods.** The SM-balance→protrusion coupling is invisible in
+   bulk and **not statistically significant** in single NK cells after
+   correcting for within-sample dependence (corrected r=0.029, *P*=0.20,
+   I²=73%); the upstream serine↔SM step (H1) is likewise null at both
+   resolutions (§3.2). Crucially, a methodologically distinct test converges on
+   the same conclusion: when the same metabolic coupling is hard-coded as the
+   `metabolic_crosstalk` graph edge, it faithfully imposes a tumor-serine↔NK-SM
+   structure on the embedding (H1 embedding-coupling 0.14→0 on removal) yet
+   provides no cross-cohort predictive value and modestly degrades transfer
+   (§3.7). Correlation analysis and graph ablation — two methods with different
+   assumptions — thus agree that this coupling is real biology that operates at
+   the metabolite level, not the transcript level, consistent with the anchor
+   paper's requirement for single-cell mass spectrometry. This is precisely the
+   kind of boundary the mechanism card's "gated physical ground-truth" section
+   was designed to mark: the card encodes the coupling as a hypothesis, and the
+   transcriptome — whether interrogated by correlation or by graph structure —
+   declines to corroborate it.
 3. **Transcription does not substitute for the physical topology phenotype —
    a finding, not a failure.** Machinery-gene transcription runs *opposite* to the
    physical protrusion collapse in intratumoral NK (higher transcript, lower
@@ -1012,7 +1088,7 @@ operationalize a physical mechanism from an indirect molecular readout.
 5. **Single-cell pseudoreplication.** The 8,310 NK cells derive from 9 biological samples. We correct for this via per-sample meta-analysis (§2.9), but between-sample heterogeneity is substantial (I² up to 96% for H3), indicating that sample-level factors beyond the SST axis influence the correlations. Results should be interpreted at the sample level, not the cell level. A leave-one-sample-out sensitivity analysis (`results/tables/h3_leave_one_sample_out.tsv`) shows the H3 pooled estimate itself is stable to removing any single sample (pooled r range 0.275–0.350 across the 9 leave-one-out re-analyses, all 95% CIs excluding 0) — so the pseudoreplication correction is not an artifact of one outlier sample. This is a separate question from whether the correlation is technically confounded (item 6 below), which it is.
 6. **Single-cell module-score correlations require count-depth and module-permutation controls beyond pseudoreplication correction.** Re-running the count-depth control (P0-2) and module-membership permutation test (P0-3) on the real scRNA data (8,310 NK cells; previously validated on synthetic data only) revealed that pseudoreplication correction alone is not sufficient for the H3 single-cell number: 47.4% of the protrusion-machinery module score's variance is explained by library size (`total_counts`, which varies 236-fold across cells), residualizing against library size and the real scVI latent space collapses r from 0.32 to 0.09, and a permutation test using an expression-matched scoring method shows the observed coupling does not exceed a randomly-drawn, size-matched gene-module baseline (empirical *P*=0.97). We therefore no longer treat the single-cell H3 number as an independent replication (§3.2, §4.1); the effector-arm claim rests on the bulk result and its gastric replications. The count-depth diagnostics for H2 and H4 did not change those hypotheses' already-null verdicts.
 7. **NK subtype resolution.** scRNA-based NK annotation depends on the quality of the reference atlas. Populations that are rare or absent in the reference may be misclassified.
-8. **The graph model does not outperform top tabular or signature baselines on accuracy.** On the binary NK-state task the GNN is statistically indistinguishable from LightGBM/XGBoost and also from an SST-module signature baseline that uses the mechanism card's gene modules without a graph (§3.4). Its value here is the mechanism-structured gene embedding it produces for the axis and target analyses, not a raw predictive-accuracy gain; a task where relational structure is more decisive (e.g. multi-class NK-state or cross-cohort transfer) would test the architecture more stringently.
+8. **The graph model does not outperform top tabular or signature baselines on accuracy, and is not intended to.** On the binary NK-state task the GNN is statistically indistinguishable from LightGBM/XGBoost and from an SST-module signature baseline that uses the mechanism card's gene modules without a graph (§3.4). We do not position the graph as a predictor: its role is diagnostic — an ablatable, mechanism-structured embedding whose behavior on removing the metabolic-coupling edge independently probes transcriptional reach (§3.7). The cross-cohort transfer result there is a single train→test direction (STAD→LIHC) with a modest effect size, and a broader multi-direction or multi-class evaluation would test the probe more stringently.
 9. **Residual NK bias in the tumor-intrinsic candidate pool.** The `tumor_specificity_log2>0` gate is permissive: 17 of 37 candidates are annotated to NK-side mechanism-card modules, including RAC1 and WASL. The pool should be interpreted as "genes with a non-zero malignant-cell transcript signal that mechanistically intersect the SST axis," not as a clean set of tumor-exclusive targets. The trivial baseline comparison (§3.5) confirms that the five-dimension scoring adds discriminative value over anchor-paper membership alone (Spearman rho=0.54), but the delta is moderate. A stricter filter (e.g. tumor_specificity_log2>0.5 or a module-level penalty) would reduce NK-side contamination at the cost of losing borderline tumor-intrinsic candidates.
 10. **Candidate atlas omits intracellular/TF-level regulators.** The prioritization scores surface and metabolic-enzyme genes; transcription-factor and intracellular negative regulators of NK function (e.g. the CREM/PKA–CREB axis [27]) fall outside the current candidate space and are a natural extension of the mechanism-card modules.
 11. **No clinical-outcome anchor.** NK states are linked to scRNA-defined labels, not to patient survival or therapy response. Single-cell atlases that tie a functional state to durable clinical outcome [21] indicate a clear next step: anchoring the NK-state readout to outcome in a cohort with follow-up.
@@ -1046,7 +1122,10 @@ the dominant transcriptional structure, nor exceed a random-module permutation
 baseline, so we do not count it as an independent single-cell replication and
 anchor this arm on the bulk evidence; (ii) the upstream metabolic
 coupling is **not** transcriptionally detectable after correction (*P*=0.20),
-consistent with metabolite-level regulation; and (iii) the physical topology
+consistent with metabolite-level regulation — a conclusion reached
+independently by correlation analysis and by ablating the mechanism-encoding
+graph edge, which imposes the coupling on the embedding yet yields no
+cross-cohort predictive value (§3.7); and (iii) the physical topology
 phenotype is fundamentally disconnected from machinery transcription
 (transcript levels run opposite to the physical collapse) — a finding, not a
 failure, that benchmarks the natural limit of transcriptome-based reconstruction
@@ -1086,9 +1165,17 @@ provided under `tests/` and can be run with `pytest tests/`. The pseudoreplicati
 correction analysis is implemented in `src/topology/pseudoreplication_correction.py`
 and the count-depth control in `src/topology/count_depth_control.py`.
 
+**Prior-network data.** The heterogeneous graph's generic-prior edges (STRING v12
+PPI, CellChatDB ligand–receptor pairs via OmniPath, ChEA 2022 TF-target sets) are
+not redistributed with the repository; `src/data_download/download_prior_networks.py`
+regenerates them from the respective public APIs, restricted to the axis-centered
+gene panel, so `build_heterograph.py` reproduces the exact graph used here from a
+clean clone.
+
 **Real data availability:**
 - TCGA-STAD and TCGA-LIHC: available from the Genomic Data Commons (https://portal.gdc.cancer.gov/)
 - GSE62254, GSE84437, GSE246662: available from the Gene Expression Omnibus (https://www.ncbi.nlm.nih.gov/geo/)
+- Prior networks: STRING v12 (https://string-db.org/), CellChatDB via OmniPath (https://omnipathdb.org/), ChEA 2022 via Enrichr (https://maayanlab.cloud/Enrichr/) — fetched by the download script above.
 - DepMap Public 26Q1 (`CRISPRGeneEffect.csv`, `Model.csv`): the real, current release used for Table 4's CERES values, obtained directly from the DepMap portal (https://depmap.org/portal/, interactive download required — see Limitations, item 13). An earlier pass of this analysis used DepMap Public 24Q2 via the public figshare API (https://plus.figshare.com/articles/dataset/DepMap_24Q2_Public/25880521) before 26Q1 access was available; that snapshot has been superseded throughout.
 - No novel sequencing data were generated for this study.
 

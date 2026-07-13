@@ -31,8 +31,8 @@ scVI/Leiden settings (§2.4); (iv) the paired-test protocol for model comparison
 | `model_comparison.tsv` | Table 3 / Fig 4 | Per-fold metrics for all methods (GNN + baselines). |
 | `model_comparison_summary.tsv` | Table 3 | Mean ± SD summary across folds. |
 | `model_comparison_stats.tsv` | §3.4 | Paired significance tests (GNN vs each baseline; t-test + Wilcoxon). |
-| `ablation_edge_types.tsv` | Table / §3.7 | Edge-type ablation: performance with each heterograph edge type removed. |
-| `ablation_results.tsv` | §3.7 | Full ablation metrics per configuration. |
+| `ablation_results.tsv` | Table (§3.7) | Graph ablation on the enriched real graph (FULL / −MC / −SST): edge counts, embedding-coupling H1/H2, and modularity. |
+| `t17_edge_external_value.tsv` | §3.7 | Cross-tissue transfer test (train STAD → test LIHC) of the `metabolic_crosstalk` edge: FULL vs −MC held-out MCC/AUROC with bootstrap CI. |
 | `tumor_intrinsic_candidates.tsv` | Table 4 / Fig 3 | De-circularized tumor-intrinsic candidate list (n=37): rank, gene, category, score, tumor-specificity, druggability stage, recommended assay. |
 | `candidate_evidence_matrix.tsv` | Fig 3 | Multi-dimensional evidence matrix underlying candidate scoring (DepMap / DrugBank / Open Targets). |
 | `label_definition.md` | §2.5 | NK-state label definitions. |
