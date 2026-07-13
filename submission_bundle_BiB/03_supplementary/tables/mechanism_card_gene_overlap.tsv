@@ -1,0 +1,7 @@
+card_1	card_2	card_1_n_genes	card_2_n_genes	overlap_n	jaccard	shared_genes
+adenosine_nk_suppression	nkg2d_micab_shedding	41	40	13	0.1912	CD96, GNLY, GZMB, HAVCR2, IFNG, KLRC1, KLRD1, LAG3, NKG7, PDCD1, PRF1, TIGIT, VAV1
+adenosine_nk_suppression	tgfb_nk_exclusion	41	59	11	0.1236	GNLY, GZMB, IFNG, ITGAL, ITGB2, LAT, LCP2, NKG7, PRF1, TLN1, VAV1
+adenosine_nk_suppression	zheng_nk_sm_topology	41	61	12	0.1333	GNLY, GZMB, HAVCR2, IFNG, ITGAL, ITGB2, LAT, LCP2, NKG7, PRF1, TLN1, VAV1
+nkg2d_micab_shedding	tgfb_nk_exclusion	40	59	7	0.0761	GNLY, GZMB, IFNG, KLRK1, NKG7, PRF1, VAV1
+nkg2d_micab_shedding	zheng_nk_sm_topology	40	61	7	0.0745	GNLY, GZMB, HAVCR2, IFNG, NKG7, PRF1, VAV1
+tgfb_nk_exclusion	zheng_nk_sm_topology	59	61	11	0.1009	GNLY, GZMB, IFNG, ITGAL, ITGB2, LAT, LCP2, NKG7, PRF1, TLN1, VAV1

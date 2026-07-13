@@ -1,7 +1,7 @@
 # Supplementary Information — Index
 
-Manuscript: *Mapping the Transcriptional Reach of the Serine–Sphingomyelin–
-Membrane-Topology Axis of NK-Cell Immune Evasion* (GC-NKGraph-Atlas).
+Manuscript: *Transcriptional Reach of the Serine–Sphingomyelin–
+Membrane-Topology Axis in NK-Cell Immune Evasion* (GC-NKGraph-Atlas).
 
 All supplementary tables are tab-separated (`.tsv`) unless noted. Column meanings
 follow the manuscript Methods (§2). Values are the final results reported in the
@@ -37,6 +37,19 @@ scVI/Leiden settings (§2.4); (iv) the paired-test protocol for model comparison
 | `candidate_evidence_matrix.tsv` | Fig 3 | Multi-dimensional evidence matrix underlying candidate scoring (DepMap / DrugBank / Open Targets). |
 | `label_definition.md` | §2.5 | NK-state label definitions. |
 | `nk_state_thresholds.json` | §2.5 | Numeric thresholds used to assign NK states. |
+| `h3_scoring_method_diagnostic.tsv` / `h3_scoring_method_diagnostic_summary.md` | §3.2 | H3 count-depth/scVI-latent residualization and expression-matched permutation-null diagnostics (the "does the single-cell H3 number survive confound control" analysis). |
+| `h3_activation_control.tsv` / `h3_activation_matched_subset.tsv` | §3.2 | Generic NK-activation partialling and activation-matched-quintile control for the single-cell H3 coupling. |
+| `h3_module_permutation_test.tsv` | §3.2 | 10,000-draw random-gene-module permutation null for H3 (naive mean-zscore version). |
+| `h3_leave_one_sample_out.tsv` | §4.3 (Limitations item 5) | Leave-one-sample-out sensitivity analysis for the pooled H3 meta-analytic estimate. |
+| `sst_axis_count_depth_control.tsv` | §3.2 | Per-cell library-size / detected-gene-count covariates underlying the count-depth residualization. |
+| `sst_axis_pseudoreplication_corrected.tsv` | §2.9 / Table 2 | Naive per-cell values retained for transparency alongside the corrected meta-analytic values reported in-text. |
+| `mc_edge_sign_calibration_audit.tsv` | §2.5 | Audit distinguishing the fixed `metabolic_crosstalk` edge weight (uncalibrated) from the separately-calibrated `sst_axis_score` sign term. |
+| `mechanism_card_comparison.tsv` / `mechanism_card_gene_overlap.tsv` | §4.2 | Cross-card comparison and pairwise gene-set Jaccard overlap for the four registered mechanism cards. |
+| `domain_baselines_per_fold.tsv` / `domain_baselines_summary.tsv` / `domain_baselines_tests.tsv` | §3.4 | NK-marker-signature and SST-module-signature baselines (per-fold results, summary, and paired significance tests against the GNN). |
+| `target_validation_depmap.tsv` / `target_validation_nk_state_de.tsv` / `target_validation_v2_merged.tsv` | §3.5 / Table 4 | DepMap 26Q1 CERES essentiality, NK-state DE results, and the merged evidence table underlying the evidence-tiered candidate list. |
+| `nk_state_de_external_replication.tsv` / `nk_state_de_external_concordance.tsv` / `nk_state_de_external_replication_summary.md` | §3.5 | External replication of the NK-state DE test in GSE62254/GSE84437 and directional concordance with TCGA-STAD. |
+| `trivial_baseline_comparison.tsv` / `trivial_baseline_overlap.tsv` / `trivial_baseline_summary.md` | §3.5 | Comparison of the five-dimension target-scoring against a mechanism-card-membership-only trivial baseline. |
+| `geneset_separation_audit.tsv` / `geneset_separation_audit_summary.md` | §4.3 (Limitations item 15) | Gene-set overlap audit between the NK-state classification label, the SST-axis modules, and the 37-gene candidate list (label-leakage / circularity check). |
 
 *Note:* the interactive web playground (`web/index.html`, also hosted via GitHub
 Pages) lets reviewers browse the mechanism cards and the candidate list with the

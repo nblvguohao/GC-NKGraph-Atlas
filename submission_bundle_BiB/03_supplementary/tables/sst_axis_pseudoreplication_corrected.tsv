@@ -1,0 +1,6 @@
+hypothesis	test	resolution	naive_r	naive_p	naive_n	corrected_r	corrected_p	corrected_n_effective	method	I2_pct	tau2	k_samples	outcome
+H1	serine_capacity ~ sm_balance	bulk	-0.016	0.743	423	-0.016	0.743	423	unchanged (already per-patient bulk)			1	reported (null)
+H1	serine_capacity ~ sm_balance	single-cell NK	0.012	0.273	8310	0.012	0.273	8310	unchanged (per-sample mean aggregation)			9	reported (null)
+H2	nk_sm_balance ~ nk_protrusion_machinery	single-cell NK	0.03	0.006	8310	0.0293	0.19513900239803073	1956	dersimonian-laird	72.7	0.003	9	WEAKER after correction (see note)
+H3	nk_protrusion_machinery ~ cytotoxicity_outcome	single-cell NK	0.318	5e-194	8310	0.3128	3.9312843004623565e-08	291	dersimonian-laird	96.2	0.0292	9	ROBUST after correction
+H4	nk_topology_permissive ~ checkpoint(HAVCR2)	single-cell NK	0.051	4e-06	8310	0.0364	0.0009057190246263957	8286	dersimonian-laird	0.0	0.0	9	NOT_RECOVERED (wrong sign)

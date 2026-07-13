@@ -1,0 +1,67 @@
+set_1	set_2	n_set_1	n_set_2	n_overlap	jaccard	overlap_genes
+label:NK_MARKERS (infiltration)	label:NK_CYTOTOXICITY_GENES	15	8	8	0.5333	CCL5,GNLY,GZMB,IFNG,NKG7,PRF1,XCL1,XCL2
+sst_axis:tumor_serine_capacity	target_37:tumor_intrinsic_candidates	10	37	8	0.2051	MTHFD1,MTHFD1L,PHGDH,PSAT1,PSPH,SHMT1,SHMT2,SLC1A5
+sst_axis:nk_protrusion_machinery	target_37:tumor_intrinsic_candidates	24	37	7	0.1296	BAIAP2,DIAPH3,PACSIN2,RAC1,WASF1,WASF3,WASL
+sst_axis:nk_denovo_sphingolipid	target_37:tumor_intrinsic_candidates	9	37	5	0.122	CERS2,CERS6,SPTLC1,SPTLC3,SPTSSA
+label:NK_CYTOTOXICITY_GENES	sst_axis:nk_synapse_cytotoxicity_outcome	8	11	5	0.3571	GNLY,GZMB,IFNG,NKG7,PRF1
+label:NK_MARKERS (infiltration)	sst_axis:nk_synapse_cytotoxicity_outcome	15	11	5	0.2381	GNLY,GZMB,IFNG,NKG7,PRF1
+sst_axis:nk_sm_catabolism	target_37:tumor_intrinsic_candidates	4	37	4	0.1081	SMPD1,SMPD2,SMPD3,SMPD4
+label:CAF_ECM_TGFB_GENES (exclusion)	target_37:tumor_intrinsic_candidates	11	37	4	0.0909	COL1A1,COL1A2,FAP,FN1
+label:NK_DYSFUNCTION_GENES	label:CAF_ECM_TGFB_GENES (exclusion)	10	11	1	0.05	TGFB1
+label:NK_DYSFUNCTION_GENES	sst_axis:checkpoint_link	10	1	1	0.1	HAVCR2
+label:NK_DYSFUNCTION_GENES	target_37:tumor_intrinsic_candidates	10	37	1	0.0217	NT5E
+sst_axis:nk_sm_synthesis	target_37:tumor_intrinsic_candidates	2	37	1	0.0263	SGMS2
+sst_axis:nk_protrusion_machinery	sst_axis:checkpoint_link	24	1	0	0.0	
+sst_axis:nk_sm_synthesis	sst_axis:nk_sm_catabolism	2	4	0	0.0	
+sst_axis:tumor_serine_capacity	sst_axis:nk_sm_synthesis	10	2	0	0.0	
+sst_axis:tumor_serine_capacity	sst_axis:nk_sm_catabolism	10	4	0	0.0	
+sst_axis:tumor_serine_capacity	sst_axis:nk_denovo_sphingolipid	10	9	0	0.0	
+sst_axis:tumor_serine_capacity	sst_axis:nk_protrusion_machinery	10	24	0	0.0	
+sst_axis:nk_denovo_sphingolipid	sst_axis:nk_synapse_cytotoxicity_outcome	9	11	0	0.0	
+sst_axis:nk_denovo_sphingolipid	sst_axis:nk_protrusion_machinery	9	24	0	0.0	
+sst_axis:tumor_serine_capacity	sst_axis:nk_synapse_cytotoxicity_outcome	10	11	0	0.0	
+sst_axis:tumor_serine_capacity	sst_axis:checkpoint_link	10	1	0	0.0	
+sst_axis:nk_synapse_cytotoxicity_outcome	target_37:tumor_intrinsic_candidates	11	37	0	0.0	
+sst_axis:nk_sm_synthesis	sst_axis:nk_denovo_sphingolipid	2	9	0	0.0	
+sst_axis:nk_sm_catabolism	sst_axis:checkpoint_link	4	1	0	0.0	
+sst_axis:nk_sm_synthesis	sst_axis:nk_protrusion_machinery	2	24	0	0.0	
+sst_axis:nk_denovo_sphingolipid	sst_axis:checkpoint_link	9	1	0	0.0	
+sst_axis:nk_sm_synthesis	sst_axis:nk_synapse_cytotoxicity_outcome	2	11	0	0.0	
+sst_axis:nk_sm_synthesis	sst_axis:checkpoint_link	2	1	0	0.0	
+sst_axis:nk_synapse_cytotoxicity_outcome	sst_axis:checkpoint_link	11	1	0	0.0	
+label:CAF_ECM_TGFB_GENES (exclusion)	sst_axis:checkpoint_link	11	1	0	0.0	
+sst_axis:nk_sm_catabolism	sst_axis:nk_denovo_sphingolipid	4	9	0	0.0	
+sst_axis:nk_sm_catabolism	sst_axis:nk_protrusion_machinery	4	24	0	0.0	
+sst_axis:nk_sm_catabolism	sst_axis:nk_synapse_cytotoxicity_outcome	4	11	0	0.0	
+sst_axis:nk_protrusion_machinery	sst_axis:nk_synapse_cytotoxicity_outcome	24	11	0	0.0	
+label:CAF_ECM_TGFB_GENES (exclusion)	sst_axis:nk_denovo_sphingolipid	11	9	0	0.0	
+label:CAF_ECM_TGFB_GENES (exclusion)	sst_axis:nk_synapse_cytotoxicity_outcome	11	11	0	0.0	
+label:CAF_ECM_TGFB_GENES (exclusion)	sst_axis:nk_protrusion_machinery	11	24	0	0.0	
+label:NK_MARKERS (infiltration)	label:CAF_ECM_TGFB_GENES (exclusion)	15	11	0	0.0	
+label:NK_MARKERS (infiltration)	sst_axis:tumor_serine_capacity	15	10	0	0.0	
+label:NK_MARKERS (infiltration)	sst_axis:nk_sm_synthesis	15	2	0	0.0	
+label:NK_MARKERS (infiltration)	sst_axis:nk_sm_catabolism	15	4	0	0.0	
+label:NK_MARKERS (infiltration)	sst_axis:nk_denovo_sphingolipid	15	9	0	0.0	
+label:NK_MARKERS (infiltration)	sst_axis:nk_protrusion_machinery	15	24	0	0.0	
+label:NK_MARKERS (infiltration)	sst_axis:checkpoint_link	15	1	0	0.0	
+label:NK_MARKERS (infiltration)	target_37:tumor_intrinsic_candidates	15	37	0	0.0	
+label:NK_CYTOTOXICITY_GENES	label:NK_DYSFUNCTION_GENES	8	10	0	0.0	
+label:NK_CYTOTOXICITY_GENES	label:CAF_ECM_TGFB_GENES (exclusion)	8	11	0	0.0	
+label:NK_CYTOTOXICITY_GENES	sst_axis:tumor_serine_capacity	8	10	0	0.0	
+label:NK_CYTOTOXICITY_GENES	sst_axis:nk_sm_synthesis	8	2	0	0.0	
+label:NK_CYTOTOXICITY_GENES	sst_axis:nk_sm_catabolism	8	4	0	0.0	
+label:NK_CYTOTOXICITY_GENES	sst_axis:nk_denovo_sphingolipid	8	9	0	0.0	
+label:NK_CYTOTOXICITY_GENES	sst_axis:nk_protrusion_machinery	8	24	0	0.0	
+label:NK_CYTOTOXICITY_GENES	sst_axis:checkpoint_link	8	1	0	0.0	
+label:NK_CYTOTOXICITY_GENES	target_37:tumor_intrinsic_candidates	8	37	0	0.0	
+label:NK_DYSFUNCTION_GENES	sst_axis:tumor_serine_capacity	10	10	0	0.0	
+label:NK_DYSFUNCTION_GENES	sst_axis:nk_sm_synthesis	10	2	0	0.0	
+label:NK_DYSFUNCTION_GENES	sst_axis:nk_sm_catabolism	10	4	0	0.0	
+label:NK_DYSFUNCTION_GENES	sst_axis:nk_denovo_sphingolipid	10	9	0	0.0	
+label:NK_DYSFUNCTION_GENES	sst_axis:nk_protrusion_machinery	10	24	0	0.0	
+label:NK_DYSFUNCTION_GENES	sst_axis:nk_synapse_cytotoxicity_outcome	10	11	0	0.0	
+label:CAF_ECM_TGFB_GENES (exclusion)	sst_axis:tumor_serine_capacity	11	10	0	0.0	
+label:CAF_ECM_TGFB_GENES (exclusion)	sst_axis:nk_sm_synthesis	11	2	0	0.0	
+label:CAF_ECM_TGFB_GENES (exclusion)	sst_axis:nk_sm_catabolism	11	4	0	0.0	
+label:NK_MARKERS (infiltration)	label:NK_DYSFUNCTION_GENES	15	10	0	0.0	
+sst_axis:checkpoint_link	target_37:tumor_intrinsic_candidates	1	37	0	0.0	

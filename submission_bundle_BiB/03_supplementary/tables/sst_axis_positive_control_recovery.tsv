@@ -1,10 +1,16 @@
 hypothesis	test	resolution	r	p	expected	outcome	note
-H2	nk_sm_balance ~ nk_protrusion_machinery	bulk	-0.0173	7.23e-01	positive	NOT_RECOVERED	null in bulk (infiltration-mixed)
-H2	nk_sm_balance ~ nk_protrusion_machinery	single_cell_NK	0.0301	6.00e-03	positive	RECOVERED	significant + when cell-type-resolved
+H1	serine_capacity ~ sm_balance	bulk	-0.016	0.7431770250717615	calibrated	reported	
+H1	serine_capacity ~ sm_balance	single-cell NK	0.012	0.2728506139268361	calibrated	reported	
+H1	serine_capacity ~ sm_balance	bulk	-0.016	0.7431770250717615	calibrated	reported	
+H1	serine_capacity ~ sm_balance	single-cell NK	0.012	0.2728506139268361	calibrated	reported	
+H1	serine_capacity ~ sm_balance	bulk	-0.016	0.7431770250717615	calibrated	reported	
+H1	serine_capacity ~ sm_balance	single-cell NK	0.012	0.2728506139268361	calibrated	reported	
+H2	nk_sm_balance ~ nk_protrusion_machinery	bulk	-0.0173	0.723	positive	NOT_RECOVERED	null in bulk (infiltration-mixed)
+H2	nk_sm_balance ~ nk_protrusion_machinery	single_cell_NK	0.0301	0.006	positive	RECOVERED	significant + when cell-type-resolved
 H3	nk_protrusion_machinery ~ cytotoxicity_outcome	bulk	0.5512	5.51e-35	positive	RECOVERED	strong
-H3	nk_protrusion_machinery ~ cytotoxicity_outcome	single_cell_NK	0.3176	4.58e-194	positive	RECOVERED	strong, all tissues
+H3	nk_protrusion_machinery ~ cytotoxicity_outcome	single_cell_NK	0.3176	4.58e-194	positive	FLAGGED	pseudorep-corrected but collapses under count-depth/scVI-latent residualization (r->0.09) and does not exceed a random-module permutation baseline (P=0.97); not distinguishable from technical background (see Methods S2.9, Results S3.2)
 H4	nk_topology_permissive ~ nk_dysfunction	bulk	0.3106	6.53e-11	negative	NOT_RECOVERED	wrong sign
 H4	nk_topology_permissive ~ checkpoint(HAVCR2)	single_cell_NK	0.0505	4.18e-06	negative	NOT_RECOVERED	wrong sign, weak
 H5	intratumoral vs normal NK: cytotoxicity_outcome	single_cell_NK	-0.1414	5.93e-52	tumor<normal	RECOVERED	tumor=-0.080 normal=+0.061
 H5	intratumoral vs normal NK: protrusion_machinery	single_cell_NK	0.142	3.03e-91	tumor<normal	NOT_RECOVERED	tumor=+0.081 normal=-0.061
-H5	intratumoral vs normal NK: sm_balance	single_cell_NK	0.0215	5.99e-01	tumor<normal	INCONCLUSIVE	tumor=+0.012 normal=-0.009
+H5	intratumoral vs normal NK: sm_balance	single_cell_NK	0.0215	0.599	tumor<normal	INCONCLUSIVE	tumor=+0.012 normal=-0.009

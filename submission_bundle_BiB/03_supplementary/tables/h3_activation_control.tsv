@@ -1,0 +1,6 @@
+resolution	test	r	r2	p	n	activation_genes_used
+single-cell NK (real, n=8310)	raw protrusion~cytotox	0.3175669312477112	0.10084875582208852	4.582689575017074e-194	8310	16
+single-cell NK (real, n=8310)	partial(|activation, linear)	0.2507130456914023	0.06285703127985917	2.6529645367406784e-119	8310	16
+single-cell NK (real, n=8310)	activation_component (r2)	0.1949146596391081	0.03799172454222935		8310	16
+single-cell NK (real, n=8310)	activation-matched subset (mean of 5 bins)	0.24230000000000002	0.058709290000000004		8310	16
+single-cell NK (real, n=8310)	scVI(30)+counts residualization	0.09169784425282083	0.008408494640614586	5.49923983637422e-17	8310	16

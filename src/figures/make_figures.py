@@ -12,6 +12,7 @@ import pandas as pd
 import matplotlib as mpl
 mpl.use("Agg")
 import matplotlib.pyplot as plt
+from matplotlib.patches import FancyBboxPatch, FancyArrowPatch
 from scipy import stats
 
 T = "results/tables/"
@@ -22,7 +23,7 @@ os.makedirs(OUT, exist_ok=True)
 OK = dict(black="#000000", orange="#E69F00", sky="#56B4E9", green="#009E73",
           yellow="#F0E442", blue="#0072B2", verm="#D55E00", purple="#CC79A7",
           grey="#8C8C8C")
-REC, NOT, WEAK = OK["green"], OK["verm"], OK["grey"]
+REC, NOT, WEAK, FLAG = OK["green"], OK["verm"], OK["grey"], OK["orange"]
 
 mpl.rcParams.update({
     "figure.dpi": 300, "savefig.dpi": 300, "savefig.bbox": "tight",
@@ -46,6 +47,46 @@ def panel(ax, letter):
             fontweight="bold", va="top", ha="left")
 
 
+def flow_box(ax, x, y, w, h, label, color, sub=None, fc_alpha=0.18, fontsize=7.6):
+    """One rounded box for a schematic panel: bold label + optional small sub-line."""
+    ax.add_patch(FancyBboxPatch((x, y), w, h, boxstyle="round,pad=0.02",
+                                 fc=color, ec=color, lw=1.3, alpha=fc_alpha))
+    ax.add_patch(FancyBboxPatch((x, y), w, h, boxstyle="round,pad=0.02",
+                                 fc="none", ec=color, lw=1.3))
+    ty = y + h / 2 + (0.10 if sub else 0)
+    ax.text(x + w / 2, ty, label, ha="center", va="center", fontsize=fontsize,
+            fontweight="bold", color=OK["black"])
+    if sub:
+        ax.text(x + w / 2, y + h / 2 - 0.14, sub, ha="center", va="center",
+                fontsize=fontsize - 1.1, color=OK["black"])
+
+
+def flow_arrow(ax, xy0, xy1, color=None, lw=1.2, rad=0.0):
+    ax.add_patch(FancyArrowPatch(xy0, xy1, arrowstyle="-|>", mutation_scale=11,
+                                  color=color or OK["black"], lw=lw,
+                                  connectionstyle=f"arc3,rad={rad}"))
+
+
+def schematic_axes(fig, gs_slice):
+    ax = fig.add_subplot(gs_slice)
+    ax.set_xlim(0, 1); ax.set_ylim(0, 1); ax.axis("off")
+    panel(ax, "a")
+    return ax
+
+
+ASSETS = "src/figures/assets/"
+
+
+def image_panel(fig, gs_slice, image_path, label=None):
+    """Embed an externally-designed schematic (e.g. a BioRender-style panel) as a figure panel."""
+    ax = fig.add_subplot(gs_slice)
+    ax.imshow(plt.imread(image_path), aspect="auto")
+    ax.axis("off")
+    if label:
+        panel(ax, label)
+    return ax
+
+
 def tcga_cond(bc):
     try:
         return "tumor" if int(str(bc).split("-")[3][:2]) < 10 else "normal"
@@ -59,10 +100,15 @@ def figure1():
     sc = pd.read_csv(T + "sst_axis_scores_single_cell.tsv", sep="\t")
     rec = pd.read_csv(T + "sst_axis_positive_control_recovery.tsv", sep="\t")
 
-    fig, axes = plt.subplots(2, 2, figsize=(9, 8))
+    fig = plt.figure(figsize=(9.5, 11))
+    gs = fig.add_gridspec(3, 2, height_ratios=[1, 1, 1], hspace=0.4, wspace=0.32)
 
-    # A: bulk LIHC H3 scatter protrusion vs cytotoxicity
-    ax = axes[0, 0]; panel(ax, "A")
+    # a: schematic — bulk vs single-cell confound-control logic for H2/H3
+    # (externally designed BioRender-style panel; already carries its own "a" label and title)
+    image_panel(fig, gs[0, :], ASSETS + "fig1_panel_a_schematic.png")
+
+    # b: bulk LIHC H3 scatter protrusion vs cytotoxicity
+    ax = fig.add_subplot(gs[1, 0]); panel(ax, "b")
     x = liver["nk_protrusion_machinery_score"]; y = liver["nk_synapse_cytotoxicity_outcome_score"]
     ax.scatter(x, y, s=10, c=OK["blue"], alpha=0.5, edgecolors="none")
     b, a = np.polyfit(x, y, 1); xs = np.linspace(x.min(), x.max(), 50)
@@ -73,8 +119,8 @@ def figure1():
     ax.text(0.04, 0.95, f"r = {r:.2f}\np = {p:.0e}", transform=ax.transAxes,
             va="top", fontsize=9, bbox=dict(boxstyle="round", fc="white", ec="#CCC"))
 
-    # B: H2/H3 bulk vs single-cell r
-    ax = axes[0, 1]; panel(ax, "B")
+    # c: H2/H3 bulk vs single-cell r
+    ax = fig.add_subplot(gs[1, 1]); panel(ax, "c")
     def getr(h, res):
         v = rec[(rec.hypothesis == h) & (rec.resolution == res)]["r"]
         return float(v.iloc[0]) if len(v) else np.nan
@@ -90,8 +136,8 @@ def figure1():
     ax.legend(loc="upper left")
     ax.annotate("bulk ≈ 0", (0 - w/2, 0.02), fontsize=7, ha="center", color=OK["verm"])
 
-    # C: intratumoral vs normal NK, two modules
-    ax = axes[1, 0]; panel(ax, "C")
+    # d: intratumoral vs normal NK, two modules
+    ax = fig.add_subplot(gs[2, 0]); panel(ax, "d")
     mods = [("nk_synapse_cytotoxicity_outcome_score", "cytotoxicity\noutput"),
             ("nk_protrusion_machinery_score", "protrusion\nmachinery")]
     data, poss, cols, ticks = [], [], [], []
@@ -111,8 +157,8 @@ def figure1():
     ax.legend(handles=[Patch(fc=OK["sky"], alpha=0.7, label="normal NK"),
                        Patch(fc=OK["verm"], alpha=0.7, label="intratumoral NK")], loc="upper right")
 
-    # D: forest plot of H2-H5
-    ax = axes[1, 1]; panel(ax, "D")
+    # e: forest plot of H2-H5
+    ax = fig.add_subplot(gs[2, 1]); panel(ax, "e")
     rr = rec[rec["r"].astype(str).str.replace(".", "", 1).str.replace("-", "", 1).str.isdigit()].copy()
     rr["rv"] = rr["r"].astype(float)
     def mklab(row):
@@ -123,21 +169,25 @@ def figure1():
         return f"{row.hypothesis} ({res})"
     rr["lab"] = rr.apply(mklab, axis=1)
     rr = rr.iloc[::-1].reset_index(drop=True)
-    cmap = {"RECOVERED": REC, "INCONCLUSIVE": WEAK}
+    cmap = {"RECOVERED": REC, "INCONCLUSIVE": WEAK, "FLAGGED": FLAG}
     cols = [cmap.get(o, NOT) for o in rr["outcome"]]
-    ax.scatter(rr["rv"], range(len(rr)), c=cols, s=55, zorder=3, edgecolors="white", linewidths=0.8)
+    markers = ["^" if o == "FLAGGED" else "o" for o in rr["outcome"]]
+    for xi, yi, ci, mi in zip(rr["rv"], range(len(rr)), cols, markers):
+        ax.scatter([xi], [yi], c=[ci], s=55, zorder=3, edgecolors="white",
+                   linewidths=0.8, marker=mi)
     ax.axvline(0, color=OK["black"], lw=0.8, ls="--")
     ax.set_yticks(range(len(rr))); ax.set_yticklabels(rr["lab"], fontsize=7)
     ax.set_xlabel("r  (or Δ for H5)"); ax.set_title("Pre-registered hypotheses (H2–H5)")
     from matplotlib.lines import Line2D
     ax.legend(handles=[Line2D([0],[0],marker="o",ls="",mfc=REC,mec="w",label="recovered"),
                        Line2D([0],[0],marker="o",ls="",mfc=NOT,mec="w",label="not recovered"),
-                       Line2D([0],[0],marker="o",ls="",mfc=WEAK,mec="w",label="inconclusive")],
-              loc="lower right")
+                       Line2D([0],[0],marker="o",ls="",mfc=WEAK,mec="w",label="inconclusive"),
+                       Line2D([0],[0],marker="^",ls="",mfc=FLAG,mec="w",
+                              label="flagged: not distinguishable\nfrom technical background")],
+              loc="lower right", fontsize=6.5)
 
-    fig.suptitle("Arm A — partial recovery of the SST axis in liver",
-                 fontsize=12, fontweight="bold", y=1.00)
-    fig.tight_layout()
+    # No fig.suptitle: panel (a)'s schematic image already carries the figure title.
+    fig.tight_layout(rect=(0, 0, 1, 0.995))
     save(fig, "fig1_armA_positive_control")
 
 
@@ -148,10 +198,28 @@ def figure2():
     ext = pd.read_csv(T + "external_validation_results.tsv", sep="\t")
     sc = pd.read_csv(T + "sst_axis_scores_single_cell.tsv", sep="\t")
 
-    fig, axes = plt.subplots(1, 3, figsize=(13.5, 4.4))
+    fig = plt.figure(figsize=(13.5, 8.2))
+    gs = fig.add_gridspec(2, 3, height_ratios=[0.36, 1], hspace=0.32, wspace=0.34)
 
-    # A: three tissues × 4 modules grouped bars
-    ax = axes[0]; panel(ax, "A")
+    # a: schematic — external-validation design
+    axs = schematic_axes(fig, gs[0, :])
+    flow_box(axs, 0.01, 0.30, 0.16, 0.5, "Arm B\ndiscovery", OK["verm"], "gastric scRNA")
+    flow_box(axs, 0.22, 0.30, 0.20, 0.5, "TCGA-STAD\nbulk (n=450)", OK["sky"], "NK-state calling")
+    flow_arrow(axs, (0.17, 0.55), (0.22, 0.55))
+    flow_box(axs, 0.49, 0.55, 0.20, 0.32, "GSE62254\n(bulk, n indep.)", OK["green"], fontsize=7.0)
+    flow_box(axs, 0.49, 0.12, 0.20, 0.32, "GSE84437\n(bulk, n indep.)", OK["green"], fontsize=7.0)
+    flow_arrow(axs, (0.42, 0.55), (0.49, 0.71))
+    flow_arrow(axs, (0.42, 0.55), (0.49, 0.28))
+    flow_box(axs, 0.76, 0.30, 0.22, 0.5, "Effector coupling\nreplicated\nindependently", OK["blue"], fontsize=7.2)
+    flow_arrow(axs, (0.69, 0.71), (0.76, 0.58))
+    flow_arrow(axs, (0.69, 0.28), (0.76, 0.42))
+    axs.text(0.5, 0.98, "Two fully independent external gastric cohorts, "
+             "never used for module definition, test whether the bulk "
+             "effector-arm coupling generalizes beyond TCGA-LIHC",
+             ha="center", va="top", fontsize=7.4, style="italic", transform=axs.transAxes)
+
+    # b: three tissues × 4 modules grouped bars
+    ax = fig.add_subplot(gs[1, 0]); panel(ax, "b")
     modcols = ["nk_sm_balance_score", "nk_protrusion_machinery_score",
                "nk_topology_permissive_score", "nk_synapse_cytotoxicity_outcome_score"]
     short = ["SM balance", "protrusion", "topology-perm", "cytotoxicity"]
@@ -165,8 +233,8 @@ def figure2():
     ax.set_ylabel("mean NK module z-score"); ax.set_title("NK axis modules by tissue (scRNA)")
     ax.legend()
 
-    # B: TCGA-STAD NK state distribution
-    ax = axes[1]; panel(ax, "B")
+    # c: TCGA-STAD NK state distribution
+    ax = fig.add_subplot(gs[1, 1]); panel(ax, "c")
     stad = lab[lab.dataset == "TCGA-STAD"]["nk_immune_state"].value_counts()
     order = ["NK-hot-cytotoxic", "NK-cold/excluded", "NK-intermediate", "NK-hot-dysfunctional"]
     stad = stad.reindex([o for o in order if o in stad.index])
@@ -177,23 +245,26 @@ def figure2():
     for i, v in enumerate(stad.values): ax.text(v + 3, i, str(v), va="center", fontsize=8)
     ax.set_xlabel("samples"); ax.set_title("NK states in TCGA-STAD (n=450)")
 
-    # C: effector coupling across cohorts (protrusion~cytotoxicity r)
-    ax = axes[2]; panel(ax, "C")
+    # d: effector coupling across cohorts (protrusion~cytotoxicity r)
+    ax = fig.add_subplot(gs[1, 2]); panel(ax, "d")
     gc_sc = sc[sc.tissue == "gastric_cancer"]
     r_gc, _ = stats.pearsonr(gc_sc["nk_protrusion_machinery_score"], gc_sc["nk_synapse_cytotoxicity_outcome_score"])
     e = ext[ext.test == "protrusion~cytotoxicity"].set_index("dataset")["r"].astype(float)
-    names = ["TCGA-LIHC\n(bulk)", "GC scRNA\n(single cell)", "GSE62254\n(bulk)", "GSE84437\n(bulk)"]
+    names = ["TCGA-LIHC\n(bulk)", "GC scRNA\n(single cell)*", "GSE62254\n(bulk)", "GSE84437\n(bulk)"]
     vals = [0.55, r_gc, e.get("gse62254", np.nan), e.get("gse84437", np.nan)]
-    cols = [OK["sky"], OK["purple"], OK["green"], OK["green"]]
+    cols = [OK["sky"], OK["orange"], OK["green"], OK["green"]]
     ax.bar(range(4), vals, color=cols)
     for i, v in enumerate(vals): ax.text(i, v + 0.01, f"{v:.2f}", ha="center", fontsize=8)
     ax.set_xticks(range(4)); ax.set_xticklabels(names, fontsize=7.5)
     ax.set_ylabel("protrusion~cytotoxicity  r"); ax.set_ylim(0, 0.72)
     ax.set_title("Effector coupling replicates (4 cohorts)")
+    ax.text(0.5, 0.95, "*not re-verified vs the Arm A (§3.2)\ntechnical confound; bulk = primary evidence",
+            transform=ax.transAxes, fontsize=6, color=OK["verm"], va="top", ha="center",
+            bbox=dict(boxstyle="round", fc="white", ec=OK["verm"], alpha=0.9))
 
     fig.suptitle("Arm B — gastric extension and independent external validation",
-                 fontsize=12, fontweight="bold", y=1.03)
-    fig.tight_layout()
+                 fontsize=12, fontweight="bold", y=0.995)
+    fig.tight_layout(rect=(0, 0, 1, 0.97))
     save(fig, "fig2_armB_extension")
 
 
@@ -204,8 +275,8 @@ def figure3():
 
     fig, axes = plt.subplots(1, 3, figsize=(14, 4.6))
 
-    # A: tumor specificity vs NK dysfunction assoc, tumor-intrinsic pool highlighted
-    ax = axes[0]; panel(ax, "A")
+    # a: tumor specificity vs NK dysfunction assoc, tumor-intrinsic pool highlighted
+    ax = axes[0]; panel(ax, "a")
     neg = ev[ev.tumor_specificity_log2 <= 0]; pos = ev[ev.tumor_specificity_log2 > 0]
     ax.scatter(neg.tumor_specificity_log2, neg.nk_dysfunction_correlation, s=14,
                c=OK["grey"], alpha=0.5, edgecolors="none", label="NK-side / depleted")
@@ -223,8 +294,8 @@ def figure3():
     ax.set_ylabel("NK dysfunction correlation"); ax.set_title("Candidate evidence landscape")
     ax.legend(loc="upper left")
 
-    # B: top 15 tumor-intrinsic by score
-    ax = axes[1]; panel(ax, "B")
+    # b: top 15 tumor-intrinsic by score
+    ax = axes[1]; panel(ax, "b")
     top = ti.sort_values("target_score_v2", ascending=False).head(15).iloc[::-1]
     catcol = {"metabolic_suppression": OK["blue"], "sst_axis_nk_sm_synthesis": OK["green"],
               "sst_axis_nk_sm_catabolism": OK["green"], "sst_axis_tumor_serine_capacity": OK["sky"],
@@ -236,8 +307,8 @@ def figure3():
     ax.set_yticks(range(len(top))); ax.set_yticklabels(top.gene, fontsize=8)
     ax.set_xlabel("tumor-intrinsic target score"); ax.set_title("Top-15 tumor-intrinsic candidates")
 
-    # C: category composition of the 37-gene pool
-    ax = axes[2]; panel(ax, "C")
+    # c: category composition of the 37-gene pool
+    ax = axes[2]; panel(ax, "c")
     cc = ti.target_category.value_counts()
     clean = [c.replace("sst_axis_", "").replace("_", " ") for c in cc.index]
     ax.barh(range(len(cc)), cc.values, color=[catcol.get(c, OK["grey"]) for c in cc.index])
@@ -259,7 +330,9 @@ def figure4():
     summ = summ.sort_values("MCC_m")
     gnn = "GC-NKGraph-Atlas(GNN)"
     fig, axes = plt.subplots(1, 2, figsize=(11, 4.4))
-    for ax, (m, s, ttl, lo) in zip(axes, [("MCC_m", "MCC_s", "MCC", 0), ("AUR_m", "AUR_s", "AUROC", 0.5)]):
+    for ax, letter, (m, s, ttl, lo) in zip(axes, ["a", "b"],
+            [("MCC_m", "MCC_s", "MCC", 0), ("AUR_m", "AUR_s", "AUROC", 0.5)]):
+        panel(ax, letter)
         cols = [OK["verm"] if x == gnn else OK["sky"] for x in summ.method]
         ax.barh(range(len(summ)), summ[m], xerr=summ[s], color=cols,
                 error_kw=dict(lw=0.8, ecolor=OK["black"], capsize=2))

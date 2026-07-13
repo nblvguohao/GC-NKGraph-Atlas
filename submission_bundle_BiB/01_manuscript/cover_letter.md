@@ -5,9 +5,9 @@ Date: July 12, 2026
 
 Dear Editors,
 
-We are pleased to submit our manuscript, **"Mapping the Transcriptional Reach of
-the Serine–Sphingomyelin–Membrane-Topology Axis of NK-Cell Immune Evasion: A
-Single-Cell-Informed Heterogeneous Graph Framework from Liver to Gastric Cancer,"**
+We are pleased to submit our manuscript, **"Transcriptional Reach of the
+Serine–Sphingomyelin–Membrane-Topology Axis in NK-Cell Immune Evasion: A
+Single-Cell Heterogeneous Graph Framework from Liver to Gastric Cancer,"**
 for consideration as a Problem Solving Protocol in *Briefings in Bioinformatics*.
 
 **The problem.** A landmark wet-lab study (Zheng et al., *Nature Immunology* 2023)
@@ -31,12 +31,19 @@ extension) yields a **precise scoping result** that we believe is the paper's mo
 useful and honest contribution:
 
 - The **effector layer** of the axis (protrusion-machinery → cytotoxicity)
-  reproduces robustly from independent public liver transcriptomes (r = 0.55)
-  and from 8,310 single NK cells (r = 0.32), and generalizes to gastric cancer.
-- The **upstream metabolic coupling** is recoverable *only when cell type is
-  resolved* — invisible in bulk, significant in single NK cells — a concrete
-  demonstration of why single-cell attribution, not bulk deconvolution, is
-  required for this class of mechanism.
+  reproduces robustly from independent public bulk transcriptomes — liver
+  (r = 0.55) and two external gastric cohorts (r = 0.42, 0.62) — and
+  generalizes to gastric cancer. The same coupling is nominally present in
+  8,310 single NK cells after pseudoreplication correction, but we found this
+  single-cell number does not survive further technical-confound controls
+  (count-depth/latent-structure residualization; a random-gene-module
+  permutation baseline), so we anchor the effector-arm claim on the bulk
+  evidence alone, not on the single-cell number.
+- The **upstream metabolic coupling** is undetectable in bulk and, after the
+  same pseudoreplication correction, is **not** statistically significant in
+  single NK cells either (corrected r = 0.029, P = 0.20) — an empirical
+  demonstration that this coupling operates at the metabolite level rather
+  than the transcript level, consistent with the anchor mechanism.
 - The **physical membrane-topology phenotype** is demonstrably *not* captured by
   machinery-gene transcription, which we show and quantify rather than assume —
   delineating the honest boundary of any transcriptome-based reconstruction.
@@ -52,7 +59,10 @@ SGMS2, SMPD3/1) — each paired with a recommended wet-lab validation assay, and
 kept strictly separate from the NK-side axis readout. The recovered effector
 coupling further replicates in two fully independent gastric microarray cohorts
 (GSE62254, r=0.42; GSE84437, r=0.62; both p≪10⁻¹³), so the reproducible layer of
-the axis is confirmed across one single-cell and two bulk gastric datasets.
+the axis is confirmed across three independent bulk datasets (liver plus two
+gastric cohorts); the single-cell gastric subset shares the same technical
+confound diagnosed in the liver arm and is not treated as an independent
+confirmation.
 
 **Why *Briefings in Bioinformatics*.** The manuscript is a methods-and-benchmarking
 contribution aimed squarely at computational-biology readers: a transferable

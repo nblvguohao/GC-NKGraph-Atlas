@@ -1,0 +1,88 @@
+gene	target_category	sst_axis_membership	in_sst_axis	in_axis_core	tumor_specificity_log2	nk_dysfunction_correlation	nk_cytotoxicity_correlation	axis_direction_consistent	druggability_category	druggability_stage	gold_standard	tumor_specificity_score	target_score	rank	current_rank	trivial_score	trivial_rank	rank_delta	category
+NKG7	sst_axis_nk_synapse_cytotoxicity_outcome	nk_synapse_cytotoxicity_outcome	1	1	-0.4824	-0.4102	0.5262	True			0	1.0	0.78204	1	1	1.0	36	35	promoted (5-dim better)
+GNLY	sst_axis_nk_synapse_cytotoxicity_outcome	nk_synapse_cytotoxicity_outcome	1	1	-0.1602	-0.6909	0.8566	True			0	0.332089552238806	0.6378068656716417	2	2	1.0	25	23	promoted (5-dim better)
+PRF1	sst_axis_nk_synapse_cytotoxicity_outcome	nk_synapse_cytotoxicity_outcome	1	1	-0.2146	-0.4602	0.6519	True			0	0.4448590381426203	0.6254977114427861	3	3	1.0	38	35	promoted (5-dim better)
+GZMB	sst_axis_nk_synapse_cytotoxicity_outcome	nk_synapse_cytotoxicity_outcome	1	1	-0.1476	-0.6572	0.8337	True			0	0.3059701492537313	0.6232310447761193	4	4	1.0	26	22	promoted (5-dim better)
+IFNG	sst_axis_nk_synapse_cytotoxicity_outcome	nk_synapse_cytotoxicity_outcome	1	1	-0.2559	-0.203	0.1625	True			0	0.5304726368159204	0.5997417910447761	5	5	1.0	27	22	promoted (5-dim better)
+ITGB2	sst_axis_nk_synapse_cytotoxicity_outcome	nk_synapse_cytotoxicity_outcome	1	1	-0.1772	-0.0877	0.1539	True			0	0.3673300165837479	0.5277390049751244	6	6	1.0	29	23	promoted (5-dim better)
+ARPC2	sst_axis_nk_protrusion_machinery	nk_protrusion_machinery	1	1	-0.1374	-0.1903	0.2671	True			0	0.2848258706467662	0.5235077611940299	7	7	1.0	10	3	similar
+SMPD3	sst_axis_nk_sm_catabolism	nk_sm_catabolism	1	1	0.0021	0.1001	-0.1156	True	Sphingomyelinase inhibitor	Preclinical (Zheng 2023)	1	0.0043532338308457	0.5213259701492537	8	8	1.5	6	-2	similar
+SMPD1	sst_axis_nk_sm_catabolism	nk_sm_catabolism	1	1	0.0038	0.019	-0.0085	True	Sphingomyelinase inhibitor	Preclinical (Zheng 2023)	1	0.0078772802653399	0.5061631840796019	9	9	1.5	5	-4	similar
+SGMS1	sst_axis_nk_sm_synthesis	nk_sm_synthesis	1	1	-0.0041	0.0156	-0.0182	False	SM synthase	Preclinical	1	0.0084991708126036	0.5056697512437811	10	10	1.5	4	-6	demoted (trivial better)
+MSN	sst_axis_nk_protrusion_machinery	nk_protrusion_machinery	1	1	-0.1363	-0.0587	0.1095	True			0	0.2825456053067993	0.4965036815920398	11	11	1.0	32	21	promoted (5-dim better)
+TLN1	sst_axis_nk_synapse_cytotoxicity_outcome	nk_synapse_cytotoxicity_outcome	1	1	-0.1239	0.0211	0.0133	False			0	0.2568407960199005	0.4812722388059701	12	12	1.0	54	42	promoted (5-dim better)
+ARPC1B	sst_axis_nk_protrusion_machinery	nk_protrusion_machinery	1	1	-0.1077	-0.0601	0.106	True			0	0.2232587064676617	0.4789976119402984	13	13	1.0	9	-4	similar
+ARPC3	sst_axis_nk_protrusion_machinery	nk_protrusion_machinery	1	1	-0.0897	-0.1018	0.1575	True			0	0.1859452736318408	0.4761435820895522	14	14	1.0	11	-3	similar
+WIPF1	sst_axis_nk_protrusion_machinery	nk_protrusion_machinery	1	1	-0.0865	0.1056	-0.0756	False			0	0.1793117744610281	0.4749135323383084	15	15	1.0	61	46	promoted (5-dim better)
+ITGAL	sst_axis_nk_synapse_cytotoxicity_outcome	nk_synapse_cytotoxicity_outcome	1	1	-0.0918	-0.0047	0.0176	True			0	0.1902985074626866	0.4580295522388059	16	16	1.0	28	12	promoted (5-dim better)
+WAS	sst_axis_nk_protrusion_machinery	nk_protrusion_machinery	1	1	-0.0801	-0.0141	0.0407	True			0	0.166044776119403	0.4526334328358209	17	17	1.0	56	39	promoted (5-dim better)
+ACTR2	sst_axis_nk_protrusion_machinery	nk_protrusion_machinery	1	1	-0.0773	-0.0146	0.0463	True			0	0.1602404643449419	0.4509921393034826	18	18	1.0	7	-11	demoted (trivial better)
+RAC1	sst_axis_nk_protrusion_machinery	nk_protrusion_machinery	1	1	0.0675	0.0123	0.0119	False			0	0.1399253731343283	0.4444376119402985	19	19	1.0	40	21	promoted (5-dim better)
+RHOA	sst_axis_nk_protrusion_machinery	nk_protrusion_machinery	1	1	-0.0568	-0.0415	0.0753	True			0	0.1177446102819237	0.4436233830845771	20	20	1.0	42	22	promoted (5-dim better)
+ACTR3	sst_axis_nk_protrusion_machinery	nk_protrusion_machinery	1	1	-0.0624	-0.0009	0.0346	True			0	0.1293532338308457	0.4389859701492536	21	21	1.0	8	-13	demoted (trivial better)
+WASF2	sst_axis_nk_protrusion_machinery	nk_protrusion_machinery	1	1	-0.0526	-0.02	0.0515	True			0	0.1090381426202321	0.4367114427860696	22	22	1.0	58	36	promoted (5-dim better)
+ARPC4	sst_axis_nk_protrusion_machinery	nk_protrusion_machinery	1	1	-0.0391	-0.0534	0.0945	True			0	0.0810530679933665	0.4349959203980099	23	23	1.0	12	-11	demoted (trivial better)
+ARPC5	sst_axis_nk_protrusion_machinery	nk_protrusion_machinery	1	1	-0.0367	-0.0602	0.1041	True			0	0.076077943615257	0.434863383084577	24	24	1.0	13	-11	demoted (trivial better)
+HAVCR2	sst_axis_checkpoint_link	checkpoint_link	1	0	-0.0489	0.0089	0.2376		Checkpoint inhibitor	FDA approved (lung, liver)	1	0.1013681592039801	0.432190447761194	25	25	1.5	1	-24	demoted (trivial better)
+DIAPH1	sst_axis_nk_protrusion_machinery	nk_protrusion_machinery	1	1	-0.0152	-0.078	0.103	True			0	0.0315091210613598	0.425052736318408	26	26	1.0	21	-5	similar
+FMNL1	sst_axis_nk_protrusion_machinery	nk_protrusion_machinery	1	1	-0.0159	-0.0706	0.1199	True			0	0.0329601990049751	0.4240080597014926	27	27	1.0	24	-3	similar
+CDC42	sst_axis_nk_protrusion_machinery	nk_protrusion_machinery	1	1	-0.0213	0.0517	-0.0016	False			0	0.0441542288557213	0.4235862686567164	28	28	1.0	15	-13	demoted (trivial better)
+BAIAP2	sst_axis_nk_protrusion_machinery	nk_protrusion_machinery	1	1	0.0326	0.0149	-0.0191	False			0	0.0675787728026534	0.423253631840796	29	29	1.0	14	-15	demoted (trivial better)
+PHGDH	sst_axis_tumor_serine_capacity	tumor_serine_capacity	1	0	0.03	-0.0118	0.0241		Serine metabolism	Phase 1/2 (breast cancer)	1	0.0621890547263681	0.4210167164179104	30	30	1.5	2	-28	demoted (trivial better)
+WASL	sst_axis_nk_protrusion_machinery	nk_protrusion_machinery	1	1	0.0276	0.0016	-0.0016	False			0	0.0572139303482587	0.4174841791044775	31	31	1.0	60	29	promoted (5-dim better)
+EZR	sst_axis_nk_protrusion_machinery	nk_protrusion_machinery	1	1	-0.0154	0.0308	-0.0473	False			0	0.0319237147595356	0.4157371144278606	32	32	1.0	23	-9	demoted (trivial better)
+LCP2	sst_axis_nk_synapse_cytotoxicity_outcome	nk_synapse_cytotoxicity_outcome	1	1	-0.0085	0.0457	-0.042	False			0	0.0176202321724709	0.4144260696517413	33	33	1.0	31	-2	similar
+SGMS2	sst_axis_nk_sm_synthesis	nk_sm_synthesis	1	1	0.0158	-0.0103	-0.003	True	SM synthase	Preclinical	0	0.0327529021558872	0.4118858706467662	34	34	1.0	43	9	promoted (5-dim better)
+RDX	sst_axis_nk_protrusion_machinery	nk_protrusion_machinery	1	1	-0.0031	0.0455	-0.0499	False			0	0.0064262023217247	0.4110278606965174	35	35	1.0	41	6	promoted (5-dim better)
+PSAT1	sst_axis_tumor_serine_capacity	tumor_serine_capacity	1	0	0.0098	-0.02	0.0367		Serine metabolism	Preclinical	1	0.0203150912106136	0.4100945273631841	36	36	1.5	3	-33	demoted (trivial better)
+VAV1	sst_axis_nk_synapse_cytotoxicity_outcome	nk_synapse_cytotoxicity_outcome	1	1	-0.0139	-0.0072	0.0236	True			0	0.0288142620232172	0.4100842786069651	37	37	1.0	55	18	promoted (5-dim better)
+WASF1	sst_axis_nk_protrusion_machinery	nk_protrusion_machinery	1	1	0.0035	0.0314	-0.0136	False			0	0.0072553897180762	0.4084566169154229	38	38	1.0	57	19	promoted (5-dim better)
+PACSIN2	sst_axis_nk_protrusion_machinery	nk_protrusion_machinery	1	1	0.0087	0.0094	-0.0016	False			0	0.0180348258706467	0.407290447761194	39	39	1.0	37	-2	similar
+SMPD2	sst_axis_nk_sm_catabolism	nk_sm_catabolism	1	1	-0.0	0.0342	-0.0268	True			0	0.0	0.40684	40	40	1.0	48	8	promoted (5-dim better)
+LAT	sst_axis_nk_synapse_cytotoxicity_outcome	nk_synapse_cytotoxicity_outcome	1	1	-0.0043	-0.0182	0.0327	True			0	0.0089137645107794	0.4063141293532338	41	41	1.0	30	-11	demoted (trivial better)
+WASF3	sst_axis_nk_protrusion_machinery	nk_protrusion_machinery	1	1	0.0038	0.0158	-0.0157	False			0	0.0078772802653399	0.405523184079602	42	42	1.0	59	17	promoted (5-dim better)
+DIAPH3	sst_axis_nk_protrusion_machinery	nk_protrusion_machinery	1	1	0.0018	0.0099	0.0101	False			0	0.003731343283582	0.4030994029850746	43	43	1.0	22	-21	demoted (trivial better)
+SMPD4	sst_axis_nk_sm_catabolism	nk_sm_catabolism	1	1	0.0004	-0.0032	0.0003	False			0	0.0008291873963515	0.4008887562189055	44	44	1.0	49	5	similar
+CERS6	sst_axis_nk_denovo_sphingolipid	nk_denovo_sphingolipid	1	0	0.0112	0.1073	-0.0896				0	0.0232172470978441	0.3284251741293532	45	45	1.0	19	-26	demoted (trivial better)
+DEGS1	sst_axis_nk_denovo_sphingolipid	nk_denovo_sphingolipid	1	0	-0.0156	0.0687	-0.0653				0	0.0323383084577114	0.3234414925373134	46	46	1.0	20	-26	demoted (trivial better)
+SPTLC3	sst_axis_nk_denovo_sphingolipid	nk_denovo_sphingolipid	1	0	-0.0025	0.1029	-0.0926				0	0.0051824212271973	0.3221347263681592	47	47	1.0	52	5	similar
+SLC1A5	sst_axis_tumor_serine_capacity	tumor_serine_capacity	1	0	0.0295	-0.0093	0.0096				0	0.0611525704809286	0.3202057711442786	48	48	1.0	47	-1	similar
+SPTLC2	sst_axis_nk_denovo_sphingolipid	nk_denovo_sphingolipid	1	0	-0.01	0.0543	-0.0381				0	0.0207296849087893	0.3170789054726368	49	49	1.0	51	2	similar
+MTHFD2	sst_axis_tumor_serine_capacity	tumor_serine_capacity	1	0	0.0159	-0.0334	0.0558				0	0.0329601990049751	0.3165680597014925	50	50	1.0	35	-15	demoted (trivial better)
+CERS2	sst_axis_nk_denovo_sphingolipid	nk_denovo_sphingolipid	1	0	0.0071	-0.05	0.0597				0	0.0147180762852404	0.3144154228855721	51	51	1.0	16	-35	demoted (trivial better)
+MTHFD1L	sst_axis_tumor_serine_capacity	tumor_serine_capacity	1	0	0.0043	0.0522	-0.0459				0	0.0089137645107794	0.3131141293532338	52	52	1.0	34	-18	demoted (trivial better)
+SHMT2	sst_axis_tumor_serine_capacity	tumor_serine_capacity	1	0	0.0118	0.0264	-0.0045				0	0.0244610281923714	0.3126183084577114	53	53	1.0	45	-8	demoted (trivial better)
+CERS4	sst_axis_nk_denovo_sphingolipid	nk_denovo_sphingolipid	1	0	-0.0093	0.0333	-0.017				0	0.0192786069651741	0.3124435820895522	54	54	1.0	17	-37	demoted (trivial better)
+SPTSSA	sst_axis_nk_denovo_sphingolipid	nk_denovo_sphingolipid	1	0	0.0133	0.0021	0.0053				0	0.0275704809286898	0.3086911442786069	55	55	1.0	53	-2	similar
+PSPH	sst_axis_tumor_serine_capacity	tumor_serine_capacity	1	0	0.0044	0.0287	-0.0209		Serine metabolism	Preclinical	0	0.0091210613598673	0.3084763184079602	56	56	1.0	39	-17	demoted (trivial better)
+SHMT1	sst_axis_tumor_serine_capacity	tumor_serine_capacity	1	0	-0.0006	0.0364	-0.0326				0	0.0012437810945273	0.3076531343283582	57	57	1.0	44	-13	demoted (trivial better)
+MTHFD1	sst_axis_tumor_serine_capacity	tumor_serine_capacity	1	0	0.0034	0.0219	-0.0097				0	0.0070480928689883	0.3064944278606965	58	58	1.0	33	-25	demoted (trivial better)
+CERS5	sst_axis_nk_denovo_sphingolipid	nk_denovo_sphingolipid	1	0	-0.0049	-0.0172	0.0282				0	0.0101575456053068	0.306487263681592	59	59	1.0	18	-41	demoted (trivial better)
+SPTLC1	sst_axis_nk_denovo_sphingolipid	nk_denovo_sphingolipid	1	0	0.0047	0.0122	-0.0059				0	0.009742951907131	0.3053628855721393	60	60	1.0	50	-10	demoted (trivial better)
+SLC1A4	sst_axis_tumor_serine_capacity	tumor_serine_capacity	1	0	-0.0003	-0.0012	0.0183				0	0.0006218905472636	0.3004265671641791	61	61	1.0	46	-15	demoted (trivial better)
+HLA-E	nk_inhibitory_ligand		0	0	-0.1845	-0.1957	0.2308				0	0.3824626865671642	0.1538788059701492	62	62	0.0	75	13	promoted (5-dim better)
+MICB	stress_ligand_shedding		0	0	-0.0084	-0.0023	0.0097		Stress ligand	Preclinical	1	0.017412935323383	0.1056838805970149	63	63	0.5	65	2	similar
+ADAM10	stress_ligand_shedding		0	0	-0.0062	-0.0072	0.0242		Protease inhibitor	Phase 1/2 clinical	1	0.0128524046434494	0.1052957213930348	64	64	0.5	62	-2	similar
+MICA	stress_ligand_shedding		0	0	0.0008	-0.0224	0.043		Stress ligand	Preclinical	1	0.0016583747927031	0.1049775124378109	65	65	0.5	64	-1	similar
+ADAM17	stress_ligand_shedding		0	0	-0.0021	-0.0073	0.0134		Protease inhibitor	Phase 1/2 clinical	1	0.0043532338308457	0.1027659701492537	66	66	0.5	63	-3	similar
+COL1A1	caf_ecm_exclusion		0	0	0.0946	0.0636	-0.0302				0	0.1961028192371476	0.0715508457711442	67	67	0.0	68	1	similar
+COL1A2	caf_ecm_exclusion		0	0	0.0919	0.0115	0.0038				0	0.1905058043117744	0.0594517412935323	68	68	0.0	69	1	similar
+ENTPD1	adenosine_pathway		0	0	0.0018	0.2514	-0.1511		Adenosine (CD39)	Phase 1/2 clinical	0	0.003731343283582	0.0513994029850746	69	69	0.0	70	1	similar
+NECTIN2	nk_inhibitory_ligand		0	0	0.0639	0.013	-0.0171				0	0.1324626865671641	0.0423388059701492	70	70	0.0	78	8	promoted (5-dim better)
+SLC16A3	metabolic_suppression		0	0	0.0302	0.1164	-0.0743				0	0.0626036484245439	0.0420610945273631	71	71	0.0	82	11	promoted (5-dim better)
+LDHA	metabolic_suppression		0	0	0.0475	0.0554	-0.0287		Metabolic	Preclinical	0	0.0984660033167495	0.0406198009950248	72	72	0.0	76	4	similar
+ERBB2	gastric_cancer_target		0	0	0.0232	-0.094	0.1263				0	0.0480928689883913	0.0332278606965174	73	73	0.0	71	-2	similar
+CA9	metabolic_suppression		0	0	0.0373	-0.0211	0.0306				0	0.0773217247097844	0.0274165174129353	74	74	0.0	67	-7	demoted (trivial better)
+TGFBR1	caf_ecm_exclusion		0	0	-0.0194	-0.0459	0.0454				0	0.0402155887230514	0.0212446766169154	75	75	0.0	83	8	promoted (5-dim better)
+FN1	caf_ecm_exclusion		0	0	0.026	0.0245	-0.014				0	0.0538971807628524	0.0210691542288557	76	76	0.0	74	-2	similar
+TGFBR2	caf_ecm_exclusion		0	0	0.0013	0.0722	-0.0845				0	0.0026948590381426	0.0152484577114427	77	77	0.0	84	7	promoted (5-dim better)
+FGFR2	gastric_cancer_target		0	0	0.0233	0.0036	-0.0057				0	0.0483001658374792	0.0152100497512437	78	78	0.0	73	-5	similar
+MET	gastric_cancer_target		0	0	0.0149	0.0197	-0.0179				0	0.0308872305140961	0.0132061691542288	79	79	0.0	77	-2	similar
+SLC16A1	metabolic_suppression		0	0	0.0127	0.0204	-0.036				0	0.0263266998341625	0.0119780099502487	80	80	0.0	81	1	similar
+FAP	caf_ecm_exclusion		0	0	0.0072	0.013	-0.0091				0	0.0149253731343283	0.0070776119402985	81	81	0.0	72	-9	demoted (trivial better)
+PVR	nk_inhibitory_ligand		0	0	0.0091	0.005	-0.0106				0	0.0188640132669983	0.0066592039800995	82	82	0.0	80	-2	similar
+ULBP2	stress_ligand_shedding		0	0	-0.0074	-0.0063	0.003		Stress ligand	Preclinical	0	0.0153399668325041	0.0058619900497512	83	83	0.0	86	3	similar
+ULBP1	stress_ligand_shedding		0	0	0.0005	0.0199	-0.0172		Stress ligand	Preclinical	0	0.0010364842454394	0.0042909452736318	84	84	0.0	85	1	similar
+NT5E	adenosine_pathway		0	0	0.0041	0.0044	-0.0044		Adenosine (CD73)	Phase 1/2 clinical	0	0.0084991708126036	0.003429751243781	85	85	0.0	79	-6	demoted (trivial better)
+ADORA2A	adenosine_pathway		0	0	0.0001	-0.0154	0.0071		Adenosine receptor	Phase 2 clinical	0	0.0002072968490878	0.0031421890547263	86	86	0.0	66	-20	demoted (trivial better)
+ULBP3	stress_ligand_shedding		0	0	-0.0004	0.0077	-0.008				0	0.0008291873963515	0.0017887562189054	87	87	0.0	87	0	similar

@@ -48,7 +48,11 @@ NK_ACTIVATION_GENES = [
 
 # --- 2. Load scRNA data ---
 sc = pd.read_csv(T + "sst_axis_scores_single_cell.tsv", sep="\t")
-nk = sc[sc["cell_type"] == "NK"].copy()
+if "cell_type" in sc.columns:
+    nk = sc[sc["cell_type"] == "NK"].copy()
+else:
+    # Table already NK-only (produced by sst_axis.py on a pre-subset NK h5ad)
+    nk = sc.copy()
 print(f"scNK cells: {len(nk)}")
 
 # Identify columns for protrusion and cytotoxicity scores

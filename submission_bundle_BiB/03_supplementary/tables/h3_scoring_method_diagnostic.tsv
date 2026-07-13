@@ -1,0 +1,16 @@
+test	value	note
+A: universe size (>=50% detected)	314.0	of 22728 total genes
+A: median detection rate, universe	0.665	
+A: median detection rate, protrusion module	0.3803	n=24 genes
+A: median detection rate, cytotoxicity module	0.3321	n=11 genes
+A: mean gene-total_counts r, protrusion genes	0.1598	
+A: mean gene-total_counts r, cytotoxicity genes	0.0289	
+A: mean gene-total_counts r, random universe draws	0.1674	n_draws=500, SD=0.0169
+B: H3 raw r, mean-zscore (manuscript method)	0.3176	from count_depth_control.py real-data run
+B: H3 raw r, scanpy score_genes (control-set-matched)	0.088575	p=6.01e-16
+B: H3 r after count-depth residualization, score_genes	0.04107	p=1.80e-04
+B: R2_tech protrusion, score_genes	0.2804	
+B: R2_tech cytotoxicity, score_genes	0.1204	
+B: permutation null mean, score_genes	0.3539	N=200, SD=0.1341
+B: permutation null 95th pct, score_genes	0.5596	
+B: empirical P (score_genes null)	0.97	one-sided, fraction of null >= observed

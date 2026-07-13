@@ -13,6 +13,7 @@ Usage:
 
 from __future__ import annotations
 
+import argparse
 import os
 import sys
 import time
@@ -139,8 +140,15 @@ def main() -> None:
     log("SST Axis Analysis (Phase 14R)")
     log("=" * 50)
 
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--h5ad-path", default="data/processed/scrna/gc_nk_subset.h5ad",
+        help="Path to NK-subset h5ad (default: data/processed/scrna/gc_nk_subset.h5ad)",
+    )
+    args = parser.parse_args()
+
     # Config
-    nk_path = "data/processed/scrna/gc_nk_subset.h5ad"
+    nk_path = args.h5ad_path
     out_dir = "results/tables"
     fig_dir = "results/figures"
     os.makedirs(out_dir, exist_ok=True)
