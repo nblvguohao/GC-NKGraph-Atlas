@@ -91,30 +91,25 @@ against what actually exists in `results/tables/`, `results/figures/`, and the
   bulk pipeline internals). None of these 31 excluded files are cited by name
   anywhere in the manuscript text — the authors already correctly kept them out
   of the reader-facing supplementary bundle. No action needed.
-- **Every supplementary file cited by name in the manuscript is present in the
-  bundle, with one exception:** `results/tables/scrna_qc_summary.tsv`, cited in
+- **RESOLVED (2026-07-13):** `results/tables/scrna_qc_summary.tsv` was cited in
   Methods §2.4 ("QC thresholds are logged and reported in
-  `results/tables/scrna_qc_summary.tsv`"), **does not exist anywhere in this
-  repository.** The script that produces it
-  (`src/scrna_analysis/qc_filter.py`) is explicitly marked in its own docstring
-  as "untested on the author's workstation (scanpy not installed here)" and
-  requires `data/processed/scrna/gc_integrated.h5ad` (the full 166,829-cell
-  pre-QC integrated object) as input — that file is also not present locally;
-  only the already-QC'd NK subset (`gc_nk_subset_remote.h5ad`) is. This table
-  was evidently produced on a remote/server run and never brought back into
-  this repo. **This is a genuine, unresolved gap between what the manuscript
-  claims exists and what is currently reproducible/verifiable — flagged for the
-  authors to either (a) retrieve the original file from wherever the remote QC
-  run was performed, (b) re-run QC filtering remotely and commit the output, or
-  (c) soften the Methods §2.4 sentence if the table cannot be recovered.**
-- **Two other filenames cited in-text are not in `03_supplementary/` by
-  design, not by omission:** `manuscript/notes/SUBMISSION_READINESS.md`
-  (referenced only in the manuscript's own internal version-changelog block,
-  which itself should be removed before formal submission — see the
-  nature-reviewer assessment, Reviewer 3) and
-  `plan_NatImmunol_wetlab/WETLAB_PROGRAM.md` (referenced in Discussion §4.1 as
-  a companion future-work document, not a supplementary data file). Neither
-  needs to be added to the supplementary bundle.
+  `results/tables/scrna_qc_summary.tsv`") but did not exist anywhere in this
+  repository's git history (checked across all branches, including the two
+  since deleted from origin) — it was evidently never brought back from
+  whatever remote/server environment ran the real QC step, and
+  `results/tables/` is gitignored by policy in any case. Since it could not be
+  retrieved, Methods §2.4 has been reworded to stop asserting the file exists:
+  it now states the thresholds are fixed in `src/scrna_analysis/qc_filter.py`
+  and that per-sample before/after counts were not preserved for this
+  submission. If the original file later turns up, it can be added to
+  `03_supplementary/tables/` and the sentence restored.
+- **RESOLVED (2026-07-13):** the internal version-changelog block referencing
+  `manuscript/notes/SUBMISSION_READINESS.md` has been removed from
+  `main_manuscript.md` (it was also interrupting the numbered reference list).
+  The Discussion §4.1 reference to the private
+  `plan_NatImmunol_wetlab/WETLAB_PROGRAM.md` path has been reworded to
+  describe the companion wet-lab program generically, since that file is
+  intentionally staying out of the public repo.
 - **Figures:** `01_manuscript/figures/` (LaTeX source) and `02_figures/`
   (upload bundle) now both contain `fig0_workflow` through `fig4` consistently
   (fig0's PDF was missing from `02_figures/` before this pass — added). Note

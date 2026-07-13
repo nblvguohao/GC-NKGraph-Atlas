@@ -215,8 +215,10 @@ the intersection of genes (inner join) to avoid cross-platform sparsity artifact
 (the upper bound as a multiplet proxy) and ≤ 20% mitochondrial counts; genes
 detected in fewer than 3 cells were removed. Mitochondrial fraction was computed
 with a NaN-robust fallback to handle heterogeneous cross-platform inputs.
-Doublet removal (Scrublet) is applied optionally per sample. QC thresholds are
-logged and reported in `results/tables/scrna_qc_summary.tsv`.
+Doublet removal (Scrublet) is applied optionally per sample. The thresholds
+above are fixed in code (`src/scrna_analysis/qc_filter.py`); per-sample
+before/after filtering cell counts were not preserved from the run used in
+this submission.
 
 **Normalization, integration, and clustering.** Counts were library-size
 normalized to 10⁴ and log1p-transformed; 3,000 highly variable genes were selected
