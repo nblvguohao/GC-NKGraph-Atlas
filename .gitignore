@@ -12,6 +12,10 @@ build/
 data/raw/
 data/interim/
 data/processed/
+# Downloaded third-party release snapshots (e.g. DepMap quarterly releases;
+# multi-GB, redistribution not ours to grant) -- data/<release-name>/, not
+# just data/raw|interim|processed/.
+data/26Q1/
 *.h5ad
 *.h5
 *.parquet

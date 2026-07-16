@@ -1,0 +1,16 @@
+cohort	hypothesis	expected	r	p	passed	note
+TCGA-STAD	H2 nk_tgfb_signaling~nk_activating_receptors	-	0.318	3.65e-11	False	
+TCGA-STAD	H3 nk_activating_receptors~nk_cytolytic_machinery	+	0.884	7.03e-138	True	
+TCGA-STAD	H4 caf_ecm_program~nk_cytolytic_machinery	-	0.402	1.50e-17	False	
+TCGA-STAD	H5 ilc1~cytolytic	-	-0.393	8.82e-17	True	
+TCGA-STAD	H3 purity-controlled (lineage)	+	0.789	6.69e-89	True	zero-order 0.884 -> partial 0.789; lineage 3/3
+GSE62254	H2 nk_tgfb_signaling~nk_activating_receptors	-	0.09	1.22e-01	False	
+GSE62254	H3 nk_activating_receptors~nk_cytolytic_machinery	+	0.747	7.40e-55	True	
+GSE62254	H4 caf_ecm_program~nk_cytolytic_machinery	-	0.331	4.30e-09	False	
+GSE62254	H5 ilc1~cytolytic	-	-0.378	1.24e-11	True	
+GSE62254	H3 purity-controlled (lineage)	+	0.655	5.50e-38	True	zero-order 0.747 -> partial 0.655; lineage 3/3
+GSE84437	H2 nk_tgfb_signaling~nk_activating_receptors	-	0.781	2.63e-100	False	
+GSE84437	H3 nk_activating_receptors~nk_cytolytic_machinery	+	0.764	1.43e-93	True	
+GSE84437	H4 caf_ecm_program~nk_cytolytic_machinery	-	0.425	1.25e-22	False	
+GSE84437	H5 ilc1~cytolytic	-	0.098	3.05e-02	False	
+GSE84437	H3 purity-controlled (lineage)	+	0.493	6.27e-31	True	zero-order 0.764 -> partial 0.493; lineage 3/3

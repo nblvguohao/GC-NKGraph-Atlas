@@ -1,0 +1,4 @@
+cohort	n	scoring	lineage_genes	r_zeroorder	p_zeroorder	r_partial_lineage	ci_low	ci_high	p_partial_lineage	attenuation_pct	note
+TCGA-LIHC	369	fillna	7/7	0.5514	9.670e-31	0.2458	0.1473	0.3395	1.819e-06	55.4	zero-order matches manuscript H3 bulk (0.55); primary bulk positive control
+GSE62254	300	skipna	6/7	0.4904	1.467e-19	0.2334	0.1233	0.3379	4.579e-05	52.4	zero-order recomputed on current gene-level matrix=0.490; Table 5 reports 0.425 from the original probe-collapse run; difference is collapse-version only and does not affect the ~50% attenuation
+GSE84437	483	skipna	7/7	0.6225	3.741e-53	-0.0726	-0.1609	0.0168	1.113e-01	111.7	zero-order matches Table 5 (0.62) exactly
