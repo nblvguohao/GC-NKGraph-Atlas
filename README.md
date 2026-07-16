@@ -29,9 +29,9 @@ Repo: `https://github.com/nblvguohao/GC-NKGraph-Atlas`
 
 ## Highlights
 
-- **4 mechanism cards** (serine–SM–topology, adenosine–A2AR, TGFβ–SMAD–ECM, NKG2D–MICA/B shedding) demonstrating reusable formalism — one (serine–SM–topology) executed end-to-end, the others authored to demonstrate the format
+- **8 mechanism cards** (serine–SM–topology, adenosine–A2AR, TGFβ–SMAD–ECM, NKG2D–MICA/B shedding, CD155/CD112–TIGIT, HLA-E–NKG2A, kynurenine–AHR, lactate–NFAT) demonstrating reusable formalism — two (serine–SM–topology, TGFβ–SMAD–ECM) executed end-to-end, the others authored to demonstrate the format
 - **37 tumor-intrinsic candidate targets** with DepMap/DrugBank/Open Targets cross-validation
-- **Edge-type ablation study** quantifying each graph edge's contribution to model performance
+- **Edge-type ablation study** testing whether the mechanism-grounded graph edge imposes structure the transcriptome doesn't otherwise support — used as a diagnostic probe, not a claim of predictive gain
 - **Two-arm design** (liver positive control + gastric cancer extension) with pre-registered hypotheses
 - **Interactive web playground** (`web/index.html`) — browse cards and targets without installing anything
 

@@ -1,0 +1,132 @@
+mechanism_card:
+  id: lactate_nk_suppression
+  version: 0.1.0
+  status: ACTIVE
+  one_line: >
+    Tumor LDHA-dependent aerobic glycolysis exports lactic acid, and the
+    resulting extracellular acidity blunts NK NFAT activation, IFN-gamma
+    production, and survival.
+
+  origin:
+    paper_title: "LDHA-Associated Lactic Acid Production Blunts Tumor Immunosurveillance by T and NK Cells"
+    authors: "Brand A, Singer K, Koehl GE, et al."
+    journal: "Cell Metabolism"
+    year: 2016
+    doi: "10.1016/j.cmet.2016.08.011"
+    pmid: "27641098"
+    lab: "Kreutz/Oefner, University of Regensburg"
+    notes: >
+      Primary evidence is from melanoma models; the original study also shows
+      the effect is on extracellular acidity from lactic acid specifically
+      (not lactate anion alone, and not glucose depletion), which the
+      transcriptional proxy below cannot distinguish.
+
+  biology:
+    phenotype: "Reduced NK NFAT activation, IFN-gamma production, survival, and tumor control under acidic, lactate-rich conditions"
+    cell_type_affected: "NK cells (and T cells; this card scopes to the NK arm only)"
+    tissue_context: "melanoma primary evidence; gastric/pan-cancer tumor-context evaluation is prospective"
+    mechanistic_chain:
+      - step: 1
+        actor_cell_type: tumor
+        molecular_event: "LDHA-dependent aerobic glycolysis (Warburg effect) upregulated; MCT1/MCT4 lactate transporters export lactic acid"
+      - step: 2
+        actor_cell_type: extracellular
+        molecular_event: "extracellular lactic acid accumulates, lowering local pH in the tumor microenvironment"
+      - step: 3
+        actor_cell_type: nk
+        molecular_event: "acidic, lactate-rich conditions prevent NFAT nuclear translocation/upregulation in NK cells"
+      - step: 4
+        actor_cell_type: nk
+        molecular_event: "reduced NFAT activity lowers IFN-gamma production and impairs NK survival and tumor control"
+
+  transcriptional_proxy:
+    status: ACTIVE
+    claim_boundary: >
+      Transcriptional expression of LDHA and MCT1/MCT4 (SLC16A1/SLC16A3)
+      captures tumor glycolytic/export capacity, not measured extracellular
+      lactate concentration or pH, which requires targeted metabolite assay
+      or pH microelectrode measurement. NFAT pathway transcripts capture
+      pathway capacity, not the acid-sensitive post-translational block on
+      NFAT nuclear translocation that the source mechanism describes.
+    modules:
+      - name: tumor_glycolytic_capacity
+        role: tumor_side
+        cell_type_attribution: malignant
+        genes: [LDHA, SLC16A1, SLC16A3, HK2, PKM, SLC2A1]
+        expected_direction: higher_is_more_evasive
+      - name: nk_nfat_program
+        role: immune_side
+        cell_type_attribution: nk
+        genes: [NFATC1, NFATC2, PPP3CA, PPP3CB]
+        expected_direction: higher_is_more_cytotoxic
+      - name: nk_cytotoxicity_readout
+        role: outcome_anchor
+        cell_type_attribution: nk
+        genes: [NKG7, GNLY, GZMB, PRF1, IFNG]
+        expected_direction: axis_positive_correlate
+      - name: checkpoint_link
+        role: therapeutic_hook
+        cell_type_attribution: nk
+        genes: [HAVCR2, LAG3, PDCD1, TIGIT]
+        expected_direction: higher_is_less_cytotoxic
+    derived_scores:
+      tumor_glycolytic_score: "mean_zscore(tumor_glycolytic_capacity | malignant)"
+      nk_nfat_score: "mean_zscore(nk_nfat_program | nk)"
+      lactate_axis_score: "integrated(tumor_glycolytic_score, nk_nfat_score, outcome)"
+    attribution:
+      require_celltype_resolution_before_claim: true
+      method: scrna_anchored
+      unresolved_flag: MIXED_UNRESOLVED
+    caveats:
+      - "The source mechanism attributes the effect specifically to extracellular acidity from lactic acid, not lactate anion or glucose depletion alone; the transcriptional proxy cannot distinguish these."
+      - "NFAT nuclear translocation is a post-translational, acid-sensitive event; NFATC1/NFATC2 transcript level does not capture translocation status."
+      - "LDHA/glycolysis genes are also elevated by hypoxia and proliferation broadly, so tumor-specificity requires cell-type resolution, not transcript level alone."
+
+  physical_ground_truth:
+    status: GATED
+    data_modality: ["extracellular pH / lactate assay (co-culture supernatant)", "NFAT nuclear translocation imaging", "NK-tumor co-culture cytotoxicity ± LDHA inhibitor or pH buffering"]
+    targets: [extracellular_lactate_mM, extracellular_pH, NFAT_nuclear_fraction]
+    availability: UNAVAILABLE
+    mock_policy:
+      allow_mock_for_code_test_only: true
+      mock_file_pattern: "*_MOCK_*"
+      real_loader_missing_data_behavior: raise_clear_error
+      mock_excluded_from_claims: true
+
+  graph_integration:
+    new_node_types: [tumor_metabolic_program, nk_signaling_state]
+    new_edge_types: [metabolic_crosstalk]
+    rules:
+      - "metabolic_crosstalk edges connect tumor_glycolytic_capacity genes to nk_nfat_program genes (indirect, metabolite/pH-mediated)"
+      - "no edge derived from external-validation labels"
+
+  validation:
+    positive_control:
+      purpose: "recover the lactate-NFAT axis in melanoma public cohorts (matches the source mechanism's primary evidence)"
+      cohort: SEARCH_REQUIRED
+      scrna_dataset: SEARCH_REQUIRED
+      prereg_hypotheses:
+        - "H1 tumor_glycolytic_score (+) nk_dysfunction_score"
+        - "H2 tumor_glycolytic_score (-) nk_nfat_score"
+        - "H3 nk_nfat_score (+) cytotoxicity_outcome"
+      recovery_definition: "H1-H3 pass in pre-registered direction"
+    extension:
+      purpose: "test the lactate-NFAT axis in gastric cancer (a highly glycolytic tumor type) as an additional mechanism-card demonstration"
+      cohort_group: gastric_cancer
+    gold_standard_genes: [LDHA, SLC16A1, SLC16A3, NFATC1, NFATC2]
+
+  therapeutic_hook:
+    intervention: "LDHA inhibitor or MCT1/4 transporter inhibitor (e.g. AZD3965-class), or systemic buffering"
+    combination: "LDHA/MCT inhibition + checkpoint blockade or adoptive NK therapy"
+    patient_stratification_readout: "in-silico tumor glycolytic / NK NFAT-program score"
+    validation_assays:
+      - "NK-tumor co-culture cytotoxicity assay +/- LDHA inhibitor or extracellular pH buffering"
+      - "Extracellular lactate and pH measurement in co-culture supernatant"
+      - "NFAT nuclear translocation imaging in NK cells under acidic vs neutral conditions"
+
+  provenance:
+    created_by: "GC-NKGraph-Atlas mechanism-card engine"
+    created_date: "2026-07-17"
+    calibration_status: PENDING
+    change_log:
+      - "0.1.0 initial card from Brand et al. Cell Metabolism 2016, authored to demonstrate format reuse for a tumor-metabolic (non-ligand-receptor) NK-suppression mechanism"

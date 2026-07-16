@@ -26,6 +26,46 @@
         "gastric_tgfb_targets"
       ],
       "gold_standard_recovery": "PENDING"
+    },
+    "nkg2d_micab_shedding": {
+      "description": "NKG2D-MICA/B shedding axis (Groh et al., Nature 2002) — complement to SST metabolic axis",
+      "status": "ACTIVE",
+      "arms": [
+        "gastric_nkg2d_targets"
+      ],
+      "gold_standard_recovery": "PENDING"
+    },
+    "cd155_tigit_inhibition": {
+      "description": "CD155/CD112→TIGIT (vs CD226) NK checkpoint axis (Stanietsky et al., PNAS 2009)",
+      "status": "ACTIVE",
+      "arms": [
+        "gastric_checkpoint_targets"
+      ],
+      "gold_standard_recovery": "PENDING"
+    },
+    "hlae_nkg2a_inhibition": {
+      "description": "HLA-E→CD94/NKG2A (vs NKG2C) NK checkpoint axis (Braud et al., Nature 1998)",
+      "status": "ACTIVE",
+      "arms": [
+        "gastric_checkpoint_targets"
+      ],
+      "gold_standard_recovery": "PENDING"
+    },
+    "kynurenine_nk_suppression": {
+      "description": "Tryptophan→kynurenine→AHR NK suppression axis (Della Chiesa et al., Blood 2006)",
+      "status": "ACTIVE",
+      "arms": [
+        "gastric_metabolic_targets"
+      ],
+      "gold_standard_recovery": "PENDING"
+    },
+    "lactate_nk_suppression": {
+      "description": "LDHA→lactic acid→NFAT NK suppression axis (Brand et al., Cell Metab 2016)",
+      "status": "ACTIVE",
+      "arms": [
+        "gastric_metabolic_targets"
+      ],
+      "gold_standard_recovery": "PENDING"
     }
   },
   "rules": [
