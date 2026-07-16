@@ -20,6 +20,20 @@ so the STRING file already reflects the score>=700 threshold and the panel
 restriction. ChEA is downloaded whole; build_heterograph.py restricts it to the
 panel at graph-build time (and, because the panel is ~100 axis genes, no ChEA
 pair currently falls entirely within it -- see Methods 2.5).
+
+Optional (--include-go-msigdb, off by default): two additional generic-prior
+sources, added as an exploratory robustness check on whether GO/MSigDB
+co-membership edges can substitute for the ChEA edge type that currently
+contributes 0 edges within the axis panel:
+  - GO Biological Process 2023 (Enrichr gene-set-library export, same ragged
+    format as ChEA) -- mirrors TreeNet's "GO-prior" edge-augmentation idea.
+  - MSigDB C2 (curated pathways) gene x gene-set membership matrix, reused
+    verbatim from github.com/nblvguohao/CANOPY-Router (data/msigdb/), a
+    separate unpublished project by the same author -- NOT an independent
+    external source, just a convenient pre-packaged MSigDB C2 snapshot.
+These are experimental additions, not part of the graph reported in the
+manuscript; build_heterograph.py only uses them when explicitly enabled via
+--enable-go-prior / --enable-msigdb-prior.
 """
 import os
 import sys
@@ -111,13 +125,63 @@ def download_chea() -> None:
     log(f"ChEA: wrote {n_sets} TF sets -> {dest}")
 
 
+def download_go_bp() -> None:
+    """GO Biological Process 2023 gene sets from the Enrichr gene-set library.
+
+    Same ragged text format as ChEA (download_chea); build_heterograph.py
+    restricts it to the gene panel and derives GO-prior similarity edges from
+    term co-membership.
+    """
+    log("GO_Biological_Process_2023 (Enrichr): downloading library...")
+    url = (
+        "https://maayanlab.cloud/Enrichr/geneSetLibrary"
+        "?mode=text&libraryName=GO_Biological_Process_2023"
+    )
+    r = requests.get(url, timeout=180)
+    r.raise_for_status()
+    dest = OUT_DIR / "go_bp_2023.txt"
+    dest.write_text(r.text, encoding="utf-8")
+    n_terms = sum(1 for line in r.text.splitlines() if line.strip())
+    log(f"GO_BP: wrote {n_terms} terms -> {dest}")
+
+
+def download_msigdb_c2() -> None:
+    """MSigDB C2 (curated pathways) gene x gene-set matrix.
+
+    Reused as-is from github.com/nblvguohao/CANOPY-Router (a separate,
+    unpublished project by the same author) rather than re-derived from raw
+    MSigDB, purely as a convenient pre-packaged snapshot. Treat as an internal
+    convenience resource, not an independently sourced external dataset.
+    """
+    base = "https://raw.githubusercontent.com/nblvguohao/CANOPY-Router/main/data/msigdb"
+    log("MSigDB C2 (via CANOPY-Router bundle): downloading...")
+    for fname in ("c2_GenesetsMatrix.npz", "geneList.csv"):
+        r = requests.get(f"{base}/{fname}", timeout=120)
+        r.raise_for_status()
+        dest = OUT_DIR / fname
+        dest.write_bytes(r.content)
+        log(f"  wrote {len(r.content)} bytes -> {dest}")
+
+
 def main() -> None:
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--include-go-msigdb", action="store_true",
+        help="Also fetch GO_BP_2023 and MSigDB C2 (off by default; not part "
+             "of the reported manuscript graph, see module docstring).",
+    )
+    args = parser.parse_args()
+
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     genes = gene_panel()
     log(f"Gene panel: {len(genes)} genes")
     download_string(genes)
     download_cellchatdb(genes)
     download_chea()
+    if args.include_go_msigdb:
+        download_go_bp()
+        download_msigdb_c2()
     log("Prior-network download complete.")
 
 

@@ -155,6 +155,91 @@ def load_cellchatdb(path: str) -> pd.DataFrame:
         return pd.DataFrame()
 
 
+def load_go_bp(path: str) -> pd.DataFrame:
+    """Load GO Biological Process 2023 gene sets (Enrichr export).
+
+    Same ragged one-term-per-line format as ChEA; reuses that parser.
+    """
+    log(f"  Loading GO_BP from {path}...")
+    return load_chea_tf(path)
+
+
+def build_geneset_membership(
+    library_df: pd.DataFrame,
+    panel_genes: Set[str],
+) -> Dict[str, Set[str]]:
+    """Invert a ragged term->genes table into gene->{terms} for panel genes only.
+
+    `library_df` has one row per term: column 0 is the term id/name, remaining
+    columns (NaN-padded) are member genes.
+    """
+    gene_terms: Dict[str, Set[str]] = {g: set() for g in panel_genes}
+    for _, row in library_df.iterrows():
+        vals = [str(v).strip() for v in row.values if str(v) != "nan"]
+        if len(vals) < 2:
+            continue
+        term_id, genes = vals[0], vals[1:]
+        for g in genes:
+            gu = g.upper().strip()
+            if gu in gene_terms:
+                gene_terms[gu].add(term_id)
+    return gene_terms
+
+
+def load_msigdb_c2(npz_path: str, genelist_path: str, panel_genes: Set[str]) -> Dict[str, Set[int]]:
+    """Load the MSigDB C2 gene x gene-set sparse matrix, restricted to panel genes.
+
+    Returns gene -> set of gene-set column indices the gene belongs to.
+    """
+    log(f"  Loading MSigDB C2 from {npz_path}...")
+    try:
+        from scipy import sparse
+        mat = sparse.load_npz(npz_path).tocsr()
+        with open(genelist_path, encoding="utf-8") as f:
+            gene_list = [line.strip() for line in f if line.strip()]
+        gene_sets: Dict[str, Set[int]] = {}
+        for gene, row_idx in zip(gene_list, range(mat.shape[0])):
+            gu = gene.upper().strip()
+            if gu in panel_genes:
+                gene_sets[gu] = set(mat.indices[mat.indptr[row_idx]:mat.indptr[row_idx + 1]].tolist())
+        log(f"    {len(gene_sets)}/{len(panel_genes)} panel genes found in MSigDB C2 ({mat.shape[1]} gene sets)")
+        return gene_sets
+    except Exception as e:
+        log(f"    MSigDB C2 load failed: {e}")
+        return {}
+
+
+def build_jaccard_edges(
+    gene_sets: Dict[str, Set],
+    edge_type: str,
+    evidence: str,
+    all_nodes: Dict,
+    jaccard_threshold: float = 0.05,
+    weight: float = 0.2,
+) -> List[Dict]:
+    """Build similarity edges between genes sharing >= jaccard_threshold of their sets.
+
+    Mirrors TreeNet's GO-prior edge augmentation: a fixed conservative edge
+    weight (default 0.2) is used regardless of similarity magnitude, so the
+    prior nudges message passing without dominating mechanism-grounded edges.
+    Genes with empty sets (no annotation found in the library) are skipped.
+    """
+    edges: List[Dict] = []
+    genes = sorted(g for g, s in gene_sets.items() if s)
+    for i in range(len(genes)):
+        si = gene_sets[genes[i]]
+        for j in range(i + 1, len(genes)):
+            sj = gene_sets[genes[j]]
+            union = len(si | sj)
+            if union == 0:
+                continue
+            jac = len(si & sj) / union
+            if jac >= jaccard_threshold:
+                _add_edge(edges, genes[i], genes[j], edge_type, weight,
+                           f"{evidence}_jaccard{jac:.3f}", all_nodes)
+    return edges
+
+
 # ---------------------------------------------------------------------------
 # Edge builders
 # ---------------------------------------------------------------------------
@@ -226,11 +311,25 @@ def build_sst_edges(
 # ---------------------------------------------------------------------------
 
 def main() -> None:
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--out-dir", default="data/processed/graph",
+                         help="Output directory (default: data/processed/graph, "
+                              "the graph the manuscript reports). Use a separate "
+                              "directory for exploratory variants.")
+    parser.add_argument("--enable-go-prior", action="store_true",
+                         help="Add GO Biological Process co-membership edges "
+                              "(experimental, off by default; see Methods 2.5).")
+    parser.add_argument("--enable-msigdb-prior", action="store_true",
+                         help="Add MSigDB C2 co-membership edges "
+                              "(experimental, off by default; see Methods 2.5).")
+    args = parser.parse_args()
+
     log("=" * 60)
     log("HETEROGENEOUS GRAPH CONSTRUCTION (Phase 8)")
     log("=" * 60)
 
-    out_dir = ensure_dir("data/processed/graph")
+    out_dir = ensure_dir(args.out_dir)
     prior_dir = "data/raw/prior_networks"
 
     all_nodes: Dict[str, Dict] = {}
@@ -313,6 +412,41 @@ def main() -> None:
                         })
                         tf_edges += 1
         log(f"    {tf_edges} TF-target edges")
+
+    # GO-prior / MSigDB-prior co-membership edges (experimental, opt-in) --
+    # panel = all gene / nk_receptor nodes registered so far (Step 1).
+    panel_genes = {
+        nid for nid, props in all_nodes.items()
+        if props["node_type"] in ("gene", "nk_receptor")
+    }
+
+    if args.enable_go_prior:
+        go_path = os.path.join(prior_dir, "go_bp_2023.txt")
+        if os.path.exists(go_path):
+            go_lib = load_go_bp(go_path)
+            gene_terms = build_geneset_membership(go_lib, panel_genes)
+            go_edges = build_jaccard_edges(
+                gene_terms, "go_prior", "GO_BP_2023", all_nodes,
+                jaccard_threshold=0.05, weight=0.2,
+            )
+            all_edges.extend(go_edges)
+            log(f"    {len(go_edges)} GO-prior edges")
+        else:
+            log(f"    GO_BP file not found at {go_path} (run download_prior_networks.py --include-go-msigdb)")
+
+    if args.enable_msigdb_prior:
+        npz_path = os.path.join(prior_dir, "c2_GenesetsMatrix.npz")
+        genelist_path = os.path.join(prior_dir, "geneList.csv")
+        if os.path.exists(npz_path) and os.path.exists(genelist_path):
+            gene_sets = load_msigdb_c2(npz_path, genelist_path, panel_genes)
+            msigdb_edges = build_jaccard_edges(
+                gene_sets, "msigdb_prior", "MSigDB_C2", all_nodes,
+                jaccard_threshold=0.05, weight=0.2,
+            )
+            all_edges.extend(msigdb_edges)
+            log(f"    {len(msigdb_edges)} MSigDB-prior edges")
+        else:
+            log(f"    MSigDB C2 files not found (run download_prior_networks.py --include-go-msigdb)")
 
     # ---- Step 3: SST-axis edges (from shared config) ----
     log("\nStep 3: SST-axis edges...")
