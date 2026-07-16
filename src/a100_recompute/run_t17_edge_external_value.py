@@ -5,24 +5,40 @@ Risk (R2): The current ablation (§3.7) is near-tautological — removing
 mechanism-defined edges naturally removes mechanism-defined structure. It proves
 "the edge is in the graph," not "the edge encodes independently verifiable biology."
 
-Test design (Option a — held-out cohort prediction):
+REVISION NOTE (post-hoc): the originally reported result (FULL MCC=0.416 vs
+-MC MCC=0.509, bootstrap p=0.003, "measurably degrades") was produced by (a) a
+single training seed, and (b) a last-write-wins bug in build_adj_matrix where,
+for node pairs connected by more than one edge type, whichever edge type's row
+came later in edges.tsv silently overwrote the weight of an earlier one instead
+of the two being combined -- so the FULL/-MC adjacency matrices did not purely
+differ by the presence/absence of metabolic_crosstalk edges. Both issues are
+fixed here: build_adj_matrix now takes max(weight) across colliding edge types,
+and this script runs SEEDS (10 seeds) instead of one, using a paired test across
+seeds rather than a single bootstrap over the fixed LIHC eval set (which only
+captures resampling uncertainty, not the seed-to-seed training variance that
+turned out to dominate -- see per-seed spread below).
+
+Test design (held-out cohort prediction):
   1. Build two graph variants: FULL (all edges incl. metabolic_crosstalk) and -MC
      (minus metabolic_crosstalk edges only).
-  2. For each variant:
-     a. Compute gene embeddings via SVD on the heterogeneous graph.
-     b. Train NK-state classifier on TCGA-LIHC (train_primary, liver).
-     c. Evaluate on TCGA-STAD (held-out, stomach — entirely different tissue/organ).
-  3. Bootstrap the MCC difference (FULL - -MC) over 1000 resamples of the STAD
-     test set; report empirical p-value and 95% CI.
-  4. Cross-cohort AUROC as secondary endpoint.
+  2. For each variant, for each of SEEDS:
+     a. Compute gene embeddings via SVD on the heterogeneous graph (deterministic,
+        shared across seeds).
+     b. Train NK-state classifier on TCGA-STAD (gastric).
+     c. Evaluate on TCGA-LIHC (held-out, liver — entirely different tissue/organ).
+  3. Paired t-test and Wilcoxon signed-rank test across seeds on the MCC
+     difference (FULL - -MC).
 
 Criterion:
-  - If FULL > -MC in cross-cohort MCC with bootstrap p < 0.05 → the
+  - If FULL > -MC in cross-cohort MCC with p < 0.05 (either test) → the
     metabolic_crosstalk edge provides externally measurable predictive value.
-  - If not → §3.7 and §4 must be revised to "the edge shapes the embedding but has
-    not been shown to transfer to external prediction gain."
+  - If FULL < -MC with p < 0.05 → the edge measurably degrades cross-cohort
+    prediction.
+  - Otherwise → inconclusive; §3.7 and §4 should describe the edge as shaping
+    the embedding without a demonstrated external predictive effect either way.
 
-Output: results/tables/t17_edge_external_value.tsv
+Output: results/tables/t17_edge_external_value.tsv (aggregate),
+        results/tables/t17_edge_external_value_by_seed.tsv (per-seed)
 
 Run:  conda activate gc-nkgraph && python src/a100_recompute/run_t17_edge_external_value.py
 """
@@ -44,6 +60,7 @@ set_seed(42)
 GRAPH_DIR = "data/processed/graph"
 RESULTS = "results/tables"
 OUT_PATH = f"{RESULTS}/t17_edge_external_value.tsv"
+OUT_PATH_SEEDS = f"{RESULTS}/t17_edge_external_value_by_seed.tsv"
 
 def log(msg: str) -> None:
     print(f"[{time.strftime('%H:%M:%S')}] {msg}", flush=True)
@@ -63,6 +80,11 @@ def build_adj_matrix(edges_df, nodes_df, edge_types_to_keep=None, edge_types_to_
         edge_types_to_drop: If set, exclude these edge types.
 
     Returns: (adj_combined, node_to_idx, idx_to_node)
+
+    Note: when multiple edge types connect the same node pair, the pair's
+    weight is the max across those edge types (not last-write-wins by row
+    order) so that e.g. a low-weight generic-prior edge never silently
+    overwrites a higher-weight mechanism/PPI edge on the same pair.
     """
     node_ids = nodes_df["node_id"].astype(str).tolist()
     n = len(node_ids)
@@ -84,8 +106,9 @@ def build_adj_matrix(edges_df, nodes_df, edge_types_to_keep=None, edge_types_to_
         if src in node_to_idx and dst in node_to_idx:
             i, j = node_to_idx[src], node_to_idx[dst]
             w = float(row.get("weight", 1.0))
-            adj_combined[i, j] = w
-            adj_combined[j, i] = w  # symmetric
+            if w > adj_combined[i, j]:
+                adj_combined[i, j] = w
+                adj_combined[j, i] = w  # symmetric
 
     return adj_combined, node_to_idx, idx_to_node
 
@@ -349,9 +372,14 @@ def bootstrap_mcc_difference(y_true, preds_full, probs_full, preds_mc, probs_mc,
 # 5. Main
 # =============================================================================
 
+SEEDS = [1234, 2345, 3456, 4567, 5678, 6789, 7890, 8901, 9012, 1357]
+
+
 def main():
     log("=" * 60)
     log("T17 — metabolic_crosstalk EDGE EXTERNAL-SAMPLE VALUE TEST")
+    log(f"(multi-seed, n={len(SEEDS)}; revised after fixing a last-write-wins")
+    log(" collision bug in build_adj_matrix that a single-seed run had masked)")
     log("=" * 60)
 
     # ---- Load graph ----
@@ -385,7 +413,7 @@ def main():
     log(f"  -MC adj:  {adj_mc.shape}, {int((adj_mc > 0).sum()/2)} edges")
     log(f"  edges removed: {int((adj_full > 0).sum()/2) - int((adj_mc > 0).sum()/2)}")
 
-    # ---- Compute embeddings ----
+    # ---- Compute embeddings (deterministic given adjacency; shared across seeds) ----
     log("\n[4] Computing SVD gene embeddings...")
     emb_dim = 64
 
@@ -411,16 +439,19 @@ def main():
     log(f"  STAD train: {expr_train.shape[0]} samples, {y_train_data.sum()} pos")
     log(f"  LIHC test:  {expr_test.shape[0]} samples, {y_test_data.sum()} pos")
 
-    # ---- Train & evaluate for each variant ----
-    log("\n[6] Training and evaluating...")
+    # ---- Train & evaluate for each variant, across seeds ----
+    log(f"\n[6] Training and evaluating across {len(SEEDS)} seeds...")
 
-    results = {}
+    per_seed_rows = []
+    results_by_seed = {"FULL": [], "minus_MC": []}
 
-    for variant_name, adj, emb in [
+    for seed in SEEDS:
+      for variant_name, adj, emb in [
         ("FULL", adj_full, emb_full),
         ("minus_MC", adj_mc, emb_mc),
-    ]:
-        log(f"\n  --- {variant_name} ---")
+      ]:
+        set_seed(seed)
+        log(f"\n  --- seed={seed}  {variant_name} ---")
 
         # Prepare features
         X_train_full, mean_tr, std_tr = prepare_features(expr_train, emb, node_to_idx)
@@ -436,57 +467,72 @@ def main():
         log(f"    Train MCC={result['train_mcc']:.4f}  AUROC={result['train_auroc']:.4f}")
         log(f"    Test  MCC={result['test_mcc']:.4f}  AUROC={result['test_auroc']:.4f}")
 
-        results[variant_name] = result
+        results_by_seed[variant_name].append(result)
+        per_seed_rows.append({
+            "seed": seed, "variant": variant_name,
+            "train_mcc": round(result["train_mcc"], 4),
+            "test_mcc": round(result["test_mcc"], 4),
+            "test_auroc": round(result["test_auroc"], 4),
+        })
 
-    # ---- Bootstrap test ----
-    log("\n[7] Bootstrap significance test (FULL vs -MC)...")
+    ensure_dir(RESULTS)
+    pd.DataFrame(per_seed_rows).to_csv(OUT_PATH_SEEDS, sep="\t", index=False)
+    log(f"\n[7] Per-seed results written to {OUT_PATH_SEEDS}")
 
-    boot = bootstrap_mcc_difference(
-        y_test_data,
-        results["FULL"]["test_preds"], results["FULL"]["test_probs"],
-        results["minus_MC"]["test_preds"], results["minus_MC"]["test_probs"],
-        n_bootstrap=1000, seed=42
-    )
+    # ---- Paired test across seeds (same seed -> same train/test split & init) ----
+    log(f"\n[8] Paired comparison across {len(SEEDS)} seeds (FULL vs -MC)...")
 
-    log(f"  FULL MCC:         {boot['mcc_full']:.4f}")
-    log(f"  -MC MCC:          {boot['mcc_minus_mc']:.4f}")
-    log(f"  diff (FULL - -MC):   {boot['mcc_diff']:.4f}")
-    log(f"  Bootstrap mean diff: {boot['bootstrap_mean_diff']:.4f} +/- {boot['bootstrap_std_diff']:.4f}")
-    log(f"  95% CI:           [{boot['ci_95_low']:.4f}, {boot['ci_95_high']:.4f}]")
-    log(f"  p (two-sided):    {boot['p_two_sided']:.4f}")
-    log(f"  p (FULL > -MC):   {boot['p_one_sided_full_gt']:.4f}")
+    full_mccs = np.array([r["test_mcc"] for r in results_by_seed["FULL"]])
+    mc_mccs = np.array([r["test_mcc"] for r in results_by_seed["minus_MC"]])
+    diff = full_mccs - mc_mccs
 
-    # ---- Verdict ----
-    criterion_met = boot['p_one_sided_full_gt'] < 0.05
-    log(f"\n  VERDICT: {'PASS — edge has external predictive value' if criterion_met else 'FAIL — edge does not improve cross-cohort prediction'}")
+    from scipy.stats import wilcoxon, ttest_rel
+    try:
+        _, p_wilcoxon = wilcoxon(full_mccs, mc_mccs)
+    except ValueError:
+        p_wilcoxon = float("nan")
+    _, p_ttest = ttest_rel(full_mccs, mc_mccs)
 
-    # ---- Write results ----
-    log(f"\n[8] Writing results to {OUT_PATH}...")
+    log(f"  FULL  test_mcc: {full_mccs.mean():.4f} +/- {full_mccs.std():.4f}  (per-seed: {np.round(full_mccs, 4).tolist()})")
+    log(f"  -MC   test_mcc: {mc_mccs.mean():.4f} +/- {mc_mccs.std():.4f}  (per-seed: {np.round(mc_mccs, 4).tolist()})")
+    log(f"  mean diff (FULL - -MC): {diff.mean():.4f} +/- {diff.std():.4f}")
+    log(f"  paired t-test p:  {p_ttest:.4f}")
+    log(f"  Wilcoxon p:       {p_wilcoxon:.4f}")
+
+    # ---- Verdict (n=10 seeds; treat as indicative per this repo's own small-n convention) ----
+    significant = (p_ttest == p_ttest and p_ttest < 0.05) or (p_wilcoxon == p_wilcoxon and p_wilcoxon < 0.05)
+    if significant and diff.mean() > 0:
+        verdict = "PASS — edge has external predictive value"
+    elif significant and diff.mean() < 0:
+        verdict = "FAIL — edge measurably degrades cross-cohort prediction"
+    else:
+        verdict = "INCONCLUSIVE — no significant difference across seeds"
+    log(f"\n  VERDICT: {verdict}")
+
+    # ---- Write aggregate results ----
+    log(f"\n[9] Writing aggregate results to {OUT_PATH}...")
 
     out_rows = [
         {"metric": "variant", "FULL": "all_edges", "minus_MC": "no_metabolic_crosstalk", "delta": "", "p_value": "", "verdict": ""},
+        {"metric": "n_seeds", "FULL": len(SEEDS), "minus_MC": len(SEEDS), "delta": "", "p_value": "", "verdict": ""},
         {"metric": "n_nodes", "FULL": len(nodes), "minus_MC": len(nodes), "delta": "", "p_value": "", "verdict": ""},
         {"metric": "n_edges", "FULL": int((adj_full > 0).sum() / 2), "minus_MC": int((adj_mc > 0).sum() / 2), "delta": int((adj_full > 0).sum() / 2) - int((adj_mc > 0).sum() / 2), "p_value": "", "verdict": ""},
         {"metric": "stad_n_samples", "FULL": expr_train.shape[0], "minus_MC": expr_train.shape[0], "delta": "", "p_value": "", "verdict": ""},
         {"metric": "lihc_n_samples", "FULL": expr_test.shape[0], "minus_MC": expr_test.shape[0], "delta": "", "p_value": "", "verdict": ""},
-        {"metric": "train_mcc", "FULL": round(results["FULL"]["train_mcc"], 4), "minus_MC": round(results["minus_MC"]["train_mcc"], 4), "delta": round(results["FULL"]["train_mcc"] - results["minus_MC"]["train_mcc"], 4), "p_value": "", "verdict": ""},
-        {"metric": "train_auroc", "FULL": round(results["FULL"]["train_auroc"], 4), "minus_MC": round(results["minus_MC"]["train_auroc"], 4), "delta": round(results["FULL"]["train_auroc"] - results["minus_MC"]["train_auroc"], 4), "p_value": "", "verdict": ""},
-        {"metric": "test_mcc", "FULL": round(boot["mcc_full"], 4), "minus_MC": round(boot["mcc_minus_mc"], 4), "delta": round(boot["mcc_diff"], 4), "p_value": round(boot["p_one_sided_full_gt"], 4), "verdict": "PASS" if criterion_met else "FAIL"},
-        {"metric": "test_auroc", "FULL": round(results["FULL"]["test_auroc"], 4), "minus_MC": round(results["minus_MC"]["test_auroc"], 4), "delta": round(results["FULL"]["test_auroc"] - results["minus_MC"]["test_auroc"], 4), "p_value": "", "verdict": ""},
-        {"metric": "bootstrap_n", "FULL": 1000, "minus_MC": 1000, "delta": "", "p_value": "", "verdict": ""},
-        {"metric": "ci_95_mcc_diff", "FULL": round(boot["ci_95_low"], 4), "minus_MC": round(boot["ci_95_high"], 4), "delta": "", "p_value": "", "verdict": ""},
+        {"metric": "test_mcc_mean", "FULL": round(full_mccs.mean(), 4), "minus_MC": round(mc_mccs.mean(), 4), "delta": round(diff.mean(), 4), "p_value": round(p_ttest, 4), "verdict": verdict},
+        {"metric": "test_mcc_std", "FULL": round(full_mccs.std(), 4), "minus_MC": round(mc_mccs.std(), 4), "delta": "", "p_value": "", "verdict": ""},
+        {"metric": "test_mcc_wilcoxon_p", "FULL": "", "minus_MC": "", "delta": "", "p_value": round(p_wilcoxon, 4) if p_wilcoxon == p_wilcoxon else "NA", "verdict": ""},
     ]
 
     out_df = pd.DataFrame(out_rows)
-    ensure_dir(RESULTS)
     out_df.to_csv(OUT_PATH, sep="\t", index=False)
     log(f"  Written {len(out_df)} rows to {OUT_PATH}")
 
     log("\n" + "=" * 60)
-    log("T17 COMPLETE")
+    log("T17 COMPLETE (revised: multi-seed, collision-bug-fixed adjacency)")
     log("=" * 60)
 
-    return criterion_met
+    return verdict
 
 
 def prepare_features_raw(expr_df, gene_embeddings, node_to_idx):

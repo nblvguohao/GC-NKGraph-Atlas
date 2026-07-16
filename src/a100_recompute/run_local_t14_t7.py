@@ -165,7 +165,8 @@ def build_adj(edges_df, nodes_df):
         if s in n2i and d in n2i:
             i, j = n2i[s], n2i[d]
             w = float(r.get("weight", 1.0))
-            adj[i,j] = w; adj[j,i] = w
+            if w > adj[i, j]:
+                adj[i,j] = w; adj[j,i] = w
     deg = adj.sum(axis=1); deg = np.where(deg > 0, deg, 1.0)
     deg_is = np.diag(1.0 / np.sqrt(deg))
     return deg_is @ adj @ deg_is, n2i
