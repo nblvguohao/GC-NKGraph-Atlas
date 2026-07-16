@@ -324,7 +324,12 @@ def figure3():
 
 # ==================== FIGURE 4 — model comparison (Table 3) ====================
 def figure4():
-    comp = pd.read_csv(T + "model_comparison.tsv", sep="\t")
+    # domain_baselines_per_fold.tsv is the complete per-fold table backing
+    # Table 3 (9 methods incl. the SST-module/NK-marker signature baselines);
+    # model_comparison.tsv is a stale partial export (7 methods, missing the
+    # two domain-knowledge signatures) that previously left fig4 out of sync
+    # with Table 3 and its own caption -- use the complete table instead.
+    comp = pd.read_csv(T + "domain_baselines_per_fold.tsv", sep="\t")
     summ = comp.groupby("method").agg(MCC_m=("MCC", "mean"), MCC_s=("MCC", "std"),
                                       AUR_m=("AUROC", "mean"), AUR_s=("AUROC", "std")).reset_index()
     summ = summ.sort_values("MCC_m")
