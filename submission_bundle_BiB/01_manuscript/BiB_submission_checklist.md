@@ -2,7 +2,10 @@
 
 > ✅ done · ⚠️ verify · ⬜ author action. Re-check every item against BiB's live
 > *Instructions to Authors* at submission — Oxford updates them.
-> Last updated: **2026-07-12** (supersedes the 2026-07-07 checklist).
+> Last updated: **2026-07-16** (supersedes the 2026-07-12 checklist; see
+> `00_SUBMISSION_GUIDE.md` §7 for what changed in this pass — two new
+> citations added, one unsupportable ablation sub-claim retracted after a
+> code bug was found and fixed).
 
 ## A. Article type & scope
 - [x] ✅ Type: **Problem Solving Protocol** (original method + benchmarking). ⚠️ confirm vs. Research Article at submission.
@@ -18,21 +21,21 @@
 ## C. Results completeness
 - [x] ✅ Table 1 datasets; Table 2 positive-control recovery; Table 3 GNN + baselines (paired tests); Table 4 candidates (n=37); Table 5 external validation (0.42/0.62).
 - [x] ✅ Figures 1–4 (vector PDF + 300-dpi PNG); numbers read from result tables.
-- [x] ✅ **Ablation (§3.7)** — done. Edge-type ablation table included in supplementary (`ablation_edge_types.tsv`, `ablation_results.tsv`). *(This was the last "partial" item on the old checklist — now closed.)*
-- [x] ✅ All headline stats re-verified against result tables (2026-07-12).
+- [x] ✅ **Ablation (§3.7)** — done. Edge-type ablation table included in supplementary (`ablation_results.tsv`). A collision bug in the adjacency-construction code was found and fixed on 2026-07-16 (see guide §7); the table numbers were regenerated and the qualitative conclusion re-verified as unchanged. A separate cross-cohort transfer sub-claim that had rested on the same bug proved seed-unstable after the fix and was removed from the manuscript rather than replaced with a new number — the ablation section now presents only the (robust) embedding-coupling result.
+- [x] ✅ All headline stats re-verified against result tables (2026-07-12; ablation table re-verified again 2026-07-16 after the bug fix above).
 
 ## D. Front matter & declarations
 - [x] ✅ Authors + affiliations; corresponding authors (L. Gu, A. Zhou).
 - [x] ✅ Author Contributions (CRediT), Funding, Competing Interests, Data Availability, Ethics — all present.
 - [x] ✅ Code availability: repo + reproduction commands + synthetic mode + MIT LICENSE.
-- [ ] ⬜ ORCID iDs — 7 authors each fill their 16-digit iD (placeholders in text).
-- [ ] ⚠️ Verify grant numbers / CRediT roles against source documents.
+- [x] ✅ ORCID iDs — by author decision, not included in the manuscript text (placeholders removed 2026-07-17); each author will enter their iD directly in Oxford ScholarOne at submission instead.
+- [x] ✅ Grant numbers / CRediT roles verified against `作者信息和基金.txt` (2026-07-16) — see guide §4 item 4.
 
 ## E. References & formatting
-- [x] ✅ References [1]–[48], Vancouver numbered; refs 46–48 (T17 literature) integrated in both `.tex` and `.md`.
-- [x] ✅ Figures vector + ≥300-dpi, self-contained legends.
-- [x] ✅ Supplementary tables (18) + `SUPPLEMENTARY_INDEX.md`.
-- [ ] ⬜ Add short **Supplementary Methods** prose (pointer in the index).
+- [x] ✅ References [1]–[50], Vancouver numbered; refs [49]–[50] (TREE, GRAFT — added 2026-07-16 to position the graph design against recent multi-network driver-gene-discovery work) integrated in both `.tex` and `.md`; bibitem count and highest in-text citation number both verified at 50 in each file.
+- [x] ✅ Figures vector + ≥300-dpi, self-contained legends; verified 2026-07-16 that none of fig0–4 depend on the retracted cross-cohort transfer claim. Separately, Figure 4 was regenerated (2026-07-16) to fix a real gap: it previously plotted only 7 of Table 3's 9 methods (missing the SST-module-signature and NK-marker-signature baselines), so the caption's "significantly above the NK-marker signature" claim wasn't visually supported by the figure. All 9 methods now shown, matching Table 3.
+- [x] ✅ Supplementary tables (46, per `03_supplementary/tables/`) + `SUPPLEMENTARY_INDEX.md`, verified in sync by filename diff (2026-07-16): 46 files present, 46 referenced, zero dangling or missing entries.
+- [x] ✅ Supplementary Methods prose present (S.M.1–S.M.4 in `SUPPLEMENTARY_INDEX.md`).
 
 ## F. Reproducibility (BiB values this)
 - [x] ✅ 120/120 unit tests pass.
@@ -42,18 +45,19 @@
 ## G. Submission-system items
 - [x] ✅ Cover letter finalized (dated 2026-07-12; 3 suggested reviewers w/ emails).
 - [x] ✅ Keywords ≤ 6.
-- [ ] ⚠️ **Recompile `main.pdf`** from current `main.tex` (repo PDF is stale; no LaTeX here). Two `pdflatex` passes; expect ~15 pp, 0 undefined refs.
-- [ ] ⬜ **Push repo** — local is 2 commits ahead of GitHub; make sure public repo matches submitted version.
+- [x] ✅ **`main.pdf` recompiled** (2026-07-16, MiKTeX, two `pdflatex` passes): exit 0, 0 undefined references/citations, 22 pages. Re-run this after any further edit to `main.tex`.
+- [ ] ⬜ **Push repo** — commit and push before submission so the public code-availability link matches the submitted version (see guide §8 for the branch-cleanup question first).
 - [ ] ⬜ Register corresponding authors in Oxford ScholarOne; confirm no dual submission; all authors approve.
 - [ ] ⬜ Graphical abstract / highlights only if the editorial office requests.
 
 ---
 
 ### The only things between you and "submit"
-1. Recompile PDF (§G).
-2. Push the 2 pending commits to GitHub (§G).
-3. Fill ORCID iDs + confirm grants/CRediT (§D).
-4. Add Supplementary Methods prose (§E).
+1. Push the repo to GitHub so the code-availability link matches what's submitted (§G) — resolve the branch-cleanup question in guide §8 first.
+2. Fill ORCID iDs for all 7 authors (§D) — deferred by author choice; not blocking.
+3. Register in Oxford ScholarOne; confirm no dual submission; all authors approve (§G).
+4. One last skim of BiB's live *Instructions to Authors* in case anything changed since 2026-07-12 (title length, abstract structure, figure DPI).
 
 Everything else (analysis, figures, tables, cover letter, declarations,
-reproducibility) is complete and verified.
+reproducibility, PDF compilation, reference list, supplementary-table sync)
+is complete and verified as of 2026-07-16.

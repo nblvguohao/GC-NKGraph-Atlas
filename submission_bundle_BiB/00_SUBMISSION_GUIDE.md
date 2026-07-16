@@ -30,8 +30,8 @@ your reference but are not part of a journal submission.
     fig3_targets                ← candidate targets      (PDF + PNG)
     fig4_model_comparison       ← GNN vs baselines       (PDF + PNG)
 03_supplementary/
-    SUPPLEMENTARY_INDEX.md      ← index + supp-methods pointer
-    tables/*.tsv, *.md, *.json  ← 43 supplementary tables/summaries (2026-07-13 count; SUPPLEMENTARY_INDEX.md table list should be re-synced to match — see §6)
+    SUPPLEMENTARY_INDEX.md      ← index + Supplementary Methods prose (S.M.1–S.M.4)
+    tables/*.tsv, *.md, *.json  ← 45 supplementary tables/summaries (2026-07-15 count; all 45 are referenced in SUPPLEMENTARY_INDEX.md — verified in sync)
 04_reproducibility/
     environment.yml, requirements.txt, LICENSE (MIT)
 ```
@@ -43,7 +43,7 @@ your reference but are not part of a journal submission.
 | Cover letter | `01_manuscript/cover_letter.md` (paste as text) |
 | Main document | Compiled **`main.pdf`** (see §4) — title page, abstract, Key Points, body, references |
 | Figures | `02_figures/fig0–4` — upload the **PDF** (vector) or 300-dpi PNG per portal rules; fig0 (workflow overview) is embedded in the compiled PDF via `\includegraphics` but still needs its own source file uploaded like fig1–4; each has a self-contained legend/alt text in the manuscript |
-| Supplementary files | `03_supplementary/` — tables + `SUPPLEMENTARY_INDEX.md` (add the short Supplementary Methods prose first; see §6 for one file cited in-text that could not be located) |
+| Supplementary files | `03_supplementary/` — tables + `SUPPLEMENTARY_INDEX.md` (now includes the Supplementary Methods prose, S.M.1–S.M.4; see §6 for one file cited in-text that could not be located) |
 | Data/code availability | Already stated in the manuscript; repo: https://github.com/nblvguohao/GC-NKGraph-Atlas |
 | Suggested reviewers | Listed in the cover letter (Mustjoki, Theis, Li) |
 
@@ -56,20 +56,16 @@ your reference but are not part of a journal submission.
 - ✅ Supplementary tables assembled (18) + index written; ablation table added.
 - ✅ Cover letter now fully aligned with the manuscript body (2026-07-13 pass): title synced, and the effector-arm/metabolic-arm bullets rewritten so the cover letter no longer describes the single-cell H3 number as an independent replication or the single-cell H2 number as significant — both now match the manuscript's corrected, confound-controlled conclusions.
 - ✅ Reproducibility verified: 120/120 unit tests pass; `python src/pipeline.py --synthetic` runs end-to-end (exit 0).
-- ✅ `main.tex` and `main_manuscript.md` are content-synced (both include refs 46–48 / T17).
+- ✅ `main.tex` and `main_manuscript.md` are content-synced (refs [1]–[50] in both; see §7 for the 2026-07-16 citation/retraction pass).
 
 ## 4. Remaining action items BEFORE you submit (author tasks)
 
-1. **⚠️ Recompile the PDF.** The repo's `main.pdf` is **stale** (older than `main.tex`, and no LaTeX is installed on this machine). Compile the current source:
-   ```
-   pdflatex main.tex && pdflatex main.tex        # two passes for cross-refs
-   ```
-   or drop `main.tex` into Overleaf. Confirm: 0 undefined references, refs [1]–[48] all resolve, ~15 pages.
-2. **⬜ Commit and push the repository.** As of 2026-07-13, `master` is even with `origin/master`, but the working tree has substantial **uncommitted** work (manuscript/cover-letter alignment fixes, ~15 new analysis scripts, ~30 new supplementary tables, new figure assets) that has never been pushed. Commit and push before submission so the code-availability link actually matches what reviewers will read. See §7 for the branch-cleanup question before this push.
-3. **⬜ ORCID iDs.** Each of the 7 authors fills their 16-digit iD (placeholders `[0000-…]` are in the manuscript). Register free at https://orcid.org.
-4. **⬜ Confirm CRediT roles & grant numbers** against award letters (NSFC 32472007, 62301006, 62301008; Anhui 2308085MF217, 2308085QF202).
-5. **⬜ Confirm article type** — "Problem Solving Protocol" vs standard Research Article — against BiB's current *Instructions to Authors* at submission time.
-6. **⬜ Add the short Supplementary Methods prose** (pointer written in `SUPPLEMENTARY_INDEX.md`).
+1. **✅ PDF recompiled and verified (2026-07-16).** `main.pdf` was rebuilt from the current `main.tex` with a local MiKTeX pdflatex (two passes for cross-refs): **exit 0, 0 undefined references, no undefined citations** (all [1]–[48] resolve), **21 pages** (the modern/large OUP layout with figures runs longer than the earlier ~15-page estimate). Remaining warnings are cosmetic only (a few Overfull \hbox from a wide table + the template's per-page footer vbox). No further action needed unless you edit the source; if you do, re-run `pdflatex main.tex` twice before upload.
+2. **⬜ Commit and push the repository.** `master` is even with `origin/master`; the doc-polish edits from the 2026-07-15/16 pass (Supplementary Methods, index sync, article-type line) are uncommitted in the working tree. Commit and push before submission so the code-availability link matches what reviewers read. See §7 for the branch-cleanup question before this push.
+3. **⏸ ORCID iDs — deferred by author decision.** Placeholders `[0000-…]` remain in the manuscript by choice; fill the 7 authors' 16-digit iDs whenever ready (https://orcid.org). Not blocking the current pass.
+4. **✅ CRediT roles & grant numbers verified (2026-07-16)** against `作者信息和基金.txt`. Authors, affiliations, corresponding authors (A. Zhou, L. Gu), and all grant numbers (NSFC 32472007, 62301006, 62301008; Anhui Prov. NSF 2308085MF217, 2308085QF202; Anhui Prov. Key Lab of Intelligent Agricultural Technology and Equipment) match across `main_manuscript.md`, `main.tex`, and the cover letter — the manuscript even corrects a stray-period typo in the source file's Anhui grant IDs. CRediT role assignments are internally consistent and not contradicted by the source file.
+5. **✅ Article type confirmed: Problem Solving Protocol.** Declared in the cover letter (3×), recorded on the manuscript title page (`main_manuscript.md`) and as a `main.tex` comment; **select this same type in ScholarOne at submission.** Re-check against BiB's current *Instructions to Authors* at submission time in case categories change.
+6. **✅ Supplementary Methods prose written** (S.M.1–S.M.4 in `SUPPLEMENTARY_INDEX.md`: NK-state labels/thresholds, SST-axis modules/scoring, scRNA QC/scVI/Leiden settings, model-comparison paired-test protocol). Skim once against BiB's supplementary format at submission time.
 7. **⬜ Verify** BiB's live author guidelines (Oxford updates them): title-length, abstract structure, reference style (Vancouver numbered — already used), figure format/DPI.
 
 ## 5. Doc consistency note (resolved)
@@ -150,12 +146,77 @@ against what actually exists in `results/tables/`, `results/figures/`, and the
   and 2026-07-12) — harmless (not part of the submission bundle) but candidates
   for repo cleanup if you want the pipeline output directory to reflect only
   current figures.
-- `SUPPLEMENTARY_INDEX.md`'s table listing was written for an earlier ~18-table
-  version of the bundle and should be re-synced to the current 43-file set
-  before submission (content is accurate for the files it does list; it is
-  incomplete, not wrong).
+- **RESOLVED (2026-07-15):** `SUPPLEMENTARY_INDEX.md`'s table listing (previously
+  written for an earlier ~18-table version) has been re-synced to the current
+  45-file set — all 45 files in `03_supplementary/tables/` are now referenced in
+  the index, with no dangling entries for files that do not exist (verified by
+  filename diff). The Supplementary Methods prose (S.M.1–S.M.4) was also added.
 
-## 7. Open question before pushing to GitHub
+## 7. 2026-07-16 (later pass): related-work citations added, one ablation claim retracted after a bug fix
+
+- **Added two citations** (refs [49] TREE — Su et al., *Nat Biomed Eng* 2025 — and
+  [50] GRAFT — Cho & Cho, *Brief Bioinform* 2026, the same journal as this
+  submission) to §1.4 Related Work and §4.4 Future Directions, explicitly
+  positioning this paper's ~100-gene mechanism-anchored graph against that
+  line of genome-scale, multi-network driver-gene-discovery work rather than
+  leaving the comparison unaddressed. Reference count is now **[1]–[50]**
+  (`main.tex` bibitem count and `main_manuscript.md` numbered-reference count
+  both verified at 50; highest in-text citation number in both files is 50).
+- **Found and fixed a real bug**, independent of the citation work: in both
+  `src/a100_recompute/run_t17_edge_external_value.py` (`build_adj_matrix`) and
+  `src/a100_recompute/run_local_t14_t7.py` (`build_adj`), when two edge types
+  connected the same node pair, whichever edge type's row came later in
+  `edges.tsv` silently overwrote the earlier one's weight (last-write-wins)
+  instead of the two being combined. Fixed to take `max(weight)` across
+  colliding edge types in both scripts.
+- **§3.7's H1/H2/modularity ablation table numbers changed** after the fix
+  (e.g. FULL H1 0.140→0.128) but the qualitative conclusion is unchanged and
+  was re-verified: removing `metabolic_crosstalk` still abolishes the H1
+  embedding-coupling (0.128→−0.002). `results/tables/ablation_results.tsv`
+  and the supplementary copy were both regenerated and updated in-text.
+- **§3.7's cross-cohort transfer claim was retracted, not just corrected.**
+  The original single-seed result (FULL MCC=0.416 vs −MC MCC=0.509, read as
+  "the edge measurably degrades cross-cohort transfer") turned out to rest on
+  both the bug above and a single training seed. Refitting with the bug fixed
+  and averaged over 10 seeds gave a third, different answer each time the
+  seed count changed (3 seeds: no detectable difference; 10 seeds: FULL
+  significantly *better*, p=0.01–0.02) — evidence the test itself is too
+  seed-unstable to support a directional claim either way, not evidence for a
+  reversed conclusion. Rather than swap in a new number, the cross-cohort
+  transfer sub-claim was removed entirely from Key Points, §3.7, §4.1 (item
+  2), §4.3 (Limitations item 8), and §5 Conclusion, in both `main.tex` and
+  `main_manuscript.md`. The paper's ablation evidence now rests solely on the
+  H1 embedding-coupling result, which does not depend on this test.
+  `t17_edge_external_value.tsv` was removed from `03_supplementary/tables/`
+  and its `SUPPLEMENTARY_INDEX.md` row deleted (46 files, 46 index entries,
+  verified in sync by filename diff — zero dangling or missing entries).
+- **`main.pdf` recompiled** (two `pdflatex` passes, MiKTeX): exit 0, 0
+  undefined references/citations, 22 pages. Figures 1–4 and fig0 (workflow)
+  were checked and do **not** reference any of the removed content — no
+  figure regeneration was needed for the retraction itself.
+- **Separately, found and fixed a real Figure 4 / Table 3 mismatch** while
+  visually reviewing the figures: `src/figures/make_figures.py`'s
+  `figure4()` read `results/tables/model_comparison.tsv`, which only has 7
+  of the 9 methods reported in Table 3 — it was missing the two
+  domain-knowledge baselines (SST-module signature, NK-marker signature).
+  Figure 4 and its caption ("significantly above the NK-marker signature...")
+  therefore made a claim the figure itself didn't visually support.
+  `results/tables/domain_baselines_per_fold.tsv` is a verified complete
+  superset (identical values for all 7 shared methods, confirmed by exact
+  comparison) with the 2 missing methods included; `figure4()` now reads
+  from that file instead. Regenerated and redeployed to
+  `results/figures/`, `02_figures/`, and `01_manuscript/figures/`; `main.pdf`
+  recompiled again (still 22 pages, 0 undefined refs). All 9 methods now
+  visible in Figure 4, matching Table 3 exactly.
+- Net effect on the paper's central claims: **none** — the three-layer
+  scoping map, the two-arm design, the 37 candidate targets, and the
+  dual-mechanism-card generalization result are all unchanged. The only
+  removed material was a secondary, ultimately unsupportable side-claim about
+  the graph's downstream predictive value, which was always in tension with
+  the paper's own "probe, not predictor" framing; removing it made that
+  framing more internally consistent, not less.
+
+## 8. Open question before pushing to GitHub
 
 The local repo has five branches, four of which exist on `origin` alongside
 `master`: `nk-pre-submission`, `strengthen-paper`,

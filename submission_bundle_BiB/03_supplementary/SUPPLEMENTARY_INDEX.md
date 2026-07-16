@@ -7,13 +7,72 @@ All supplementary tables are tab-separated (`.tsv`) unless noted. Column meaning
 follow the manuscript Methods (§2). Values are the final results reported in the
 main text and figures.
 
-## Supplementary Methods (to add as prose before submission)
-A short Supplementary Methods note should accompany these tables, covering: (i)
-NK-state label definition and thresholds (see `label_definition.md`,
-`nk_state_thresholds.json`); (ii) SST-axis module gene lists and scoring
-(configs/mechanism_cards/zheng_nk_sm_topology.yaml); (iii) scRNA QC thresholds and
-scVI/Leiden settings (§2.4); (iv) the paired-test protocol for model comparison
-(§2.7). These are fully specified in the repository; the note simply points to them.
+## Supplementary Methods
+
+These notes expand the main-text Methods (§2) for the parameters most relevant to
+reproduction. All settings are fixed in the repository
+(`nblvguohao/GC-NKGraph-Atlas`); the pointers below identify the exact files.
+
+**S.M.1 NK immune-state label definition and thresholds** (main text §2.5;
+`label_definition.md`, `nk_state_thresholds.json`). Each sample receives four
+transcriptional scores computed as the mean z-score of a literature-derived gene
+set: an NK-infiltration score (NCAM1, NCR1, KLRD1, KLRK1, KLRF1, NKG7, GNLY, GZMB,
+PRF1, FCGR3A, XCL1, XCL2, CCL5, IFNG, TYROBP), an NK-cytotoxicity score (NKG7,
+GNLY, GZMB, PRF1, IFNG, XCL1, XCL2, CCL5), a dysfunction score (mean-z of the
+dysfunction set minus the cytotoxicity set), and an exclusion score (mean-z of a
+CAF/ECM set minus the infiltration score). Samples are assigned to one of four
+states — NK-hot-cytotoxic, NK-hot-dysfunctional, NK-cold/excluded, or
+NK-intermediate — by thresholding these scores. Thresholds are the **median values
+of the primary training cohort (TCGA-STAD)** (`nk_state_thresholds.json`:
+infiltration 0.0388, cytotoxicity 0.00032, dysfunction 0.0425, exclusion 0.0214);
+external cohorts are labeled with these same saved training thresholds, never
+re-fit per cohort. These signatures are transcriptional proxies, not functional
+measurements, and the gene sets are starting points (see main-text Limitations).
+
+**S.M.2 SST-axis modules and scoring** (main text §2.3;
+`configs/mechanism_cards/zheng_nk_sm_topology.yaml`). The
+serine–sphingomyelin–topology axis is operationalized as seven gene modules
+(~100 genes total) derived from the anchor paper and its follow-up: tumor serine
+capacity (10 genes), NK SM synthesis (2), NK SM catabolism (4), NK de-novo
+sphingolipid (9), NK protrusion machinery (24), NK synapse/cytotoxicity outcome
+(11), and a checkpoint link (HAVCR2). Per-cell (or per-sample) module scores are
+the mean z-score of the module's constituent genes. Three derived composites are
+defined: `nk_sm_balance` = mean-z(SM synthesis) − mean-z(SM catabolism);
+`nk_topology_permissive`, combining SM balance and protrusion machinery; and
+`sst_axis_score`, integrating tumor serine capacity (sign calibrated on the liver
+control), topology-permissive score, and cytotoxicity outcome. Per the manuscript's
+honesty rule, these quantify a *transcriptional program associated with* the
+topology phenotype and are never interpreted as predicting physical membrane
+topology or SM metabolite content.
+
+**S.M.3 scRNA-seq QC, integration, and clustering** (main text §2.4;
+`src/scrna_analysis/run_scrna_v2.py`). Single-cell data (GSE246662) comprise nine
+samples across healthy liver, gastric cancer, and gastric-cancer liver metastasis
+(166,829 cells). Per-sample matrices are orientation-auto-detected and concatenated
+on the gene intersection (inner join). Per-cell QC metrics (detected genes,
+mitochondrial fraction) are computed but **no hard per-cell threshold or
+doublet-based exclusion is applied**; all 166,829 cells proceed to normalization.
+Technical variance (library size, detected-gene count) is instead handled
+downstream by the count-depth residualization diagnostics (§3.2). Counts are
+library-size-normalized to 10⁴ and log1p-transformed; 3,000 highly variable genes
+are selected (Seurat v3 flavor, variance-based fallback). Batch effects across the
+nine samples are corrected with **scVI** (`sample_id` as batch key, 30 latent
+dimensions, 2 layers, up to 200 epochs with early stopping). Neighbors, UMAP, and
+**Leiden clustering (resolution 1.0)** are computed on the scVI latent space
+(SCANPY). NK cells are separated from T cells by a marker-threshold rule (NK score
+high, T score low), yielding **8,310 NK cells** for the axis analyses
+(per-sample counts in `gc_scrna_dataset_summary.tsv`).
+
+**S.M.4 Model-comparison paired-test protocol** (main text §2.6–§3.4;
+`model_comparison.tsv`, `model_comparison_stats.tsv`). The GNN and all six tabular
+baselines are trained and evaluated on the **same 5-fold stratified
+cross-validation splits**. For each pairwise contrast (GNN vs each baseline) the
+per-fold metric vectors (MCC, AUROC) are compared with both a paired *t*-test and a
+Wilcoxon signed-rank test across the five folds; both statistics are reported so
+that the conclusion does not rest on the parametric assumption. The NK-state
+classifier hyperparameters (learning rate 1.7×10⁻³, weight decay 5.6×10⁻⁶, dropout
+0.6) were selected by a 100-trial Bayesian (TPE) search maximizing MCC
+(`gc_nkgraph_bayesian_trials.tsv`, `gc_nkgraph_best_hyperparams.tsv`).
 
 ## Supplementary Tables
 
@@ -32,7 +91,6 @@ scVI/Leiden settings (§2.4); (iv) the paired-test protocol for model comparison
 | `model_comparison_summary.tsv` | Table 3 | Mean ± SD summary across folds. |
 | `model_comparison_stats.tsv` | §3.4 | Paired significance tests (GNN vs each baseline; t-test + Wilcoxon). |
 | `ablation_results.tsv` | Table (§3.7) | Graph ablation on the enriched real graph (FULL / −MC / −SST): edge counts, embedding-coupling H1/H2, and modularity. |
-| `t17_edge_external_value.tsv` | §3.7 | Cross-tissue transfer test (train STAD → test LIHC) of the `metabolic_crosstalk` edge: FULL vs −MC held-out MCC/AUROC with bootstrap CI. |
 | `tumor_intrinsic_candidates.tsv` | Table 4 / Fig 3 | De-circularized tumor-intrinsic candidate list (n=37): rank, gene, category, score, tumor-specificity, druggability stage, recommended assay. |
 | `candidate_evidence_matrix.tsv` | Fig 3 | Multi-dimensional evidence matrix underlying candidate scoring (DepMap / DrugBank / Open Targets). |
 | `label_definition.md` | §2.5 | NK-state label definitions. |
@@ -45,6 +103,8 @@ scVI/Leiden settings (§2.4); (iv) the paired-test protocol for model comparison
 | `sst_axis_pseudoreplication_corrected.tsv` | §2.9 / Table 2 | Naive per-cell values retained for transparency alongside the corrected meta-analytic values reported in-text. |
 | `mc_edge_sign_calibration_audit.tsv` | §2.5 | Audit distinguishing the fixed `metabolic_crosstalk` edge weight (uncalibrated) from the separately-calibrated `sst_axis_score` sign term. |
 | `mechanism_card_comparison.tsv` / `mechanism_card_gene_overlap.tsv` | §4.2 | Cross-card comparison and pairwise gene-set Jaccard overlap for the four registered mechanism cards. |
+| `bulk_h3_purity_control.tsv` | §3.2 / §4.3 (Limitations item 17) | Bulk effector-arm (protrusion~cytotoxicity) correlation before vs after partialling out a clean NK-lineage fraction proxy, across TCGA-LIHC / GSE62254 / GSE84437 (zero-order r, partial r, 95% CI, attenuation %). Shows the bulk coupling is ~50% NK-abundance-driven and does not survive in GSE84437. |
+| `mechanism_card_tgfb_recovery.tsv` | §4.1 / §4.2 | Second mechanism card (TGFβ→SMAD→NK exclusion) run end-to-end on the gastric cohorts: pre-registered hypotheses H2–H5, zero-order and NK-fraction-controlled H3, per cohort. Demonstrates the transcriptional-reach boundary generalizes across two mechanisms. |
 | `domain_baselines_per_fold.tsv` / `domain_baselines_summary.tsv` / `domain_baselines_tests.tsv` | §3.4 | NK-marker-signature and SST-module-signature baselines (per-fold results, summary, and paired significance tests against the GNN). |
 | `target_validation_depmap.tsv` / `target_validation_nk_state_de.tsv` / `target_validation_v2_merged.tsv` | §3.5 / Table 4 | DepMap 26Q1 CERES essentiality, NK-state DE results, and the merged evidence table underlying the evidence-tiered candidate list. |
 | `nk_state_de_external_replication.tsv` / `nk_state_de_external_concordance.tsv` / `nk_state_de_external_replication_summary.md` | §3.5 | External replication of the NK-state DE test in GSE62254/GSE84437 and directional concordance with TCGA-STAD. |

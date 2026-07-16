@@ -2,9 +2,9 @@
 
 **Target Journal:** *Briefings in Bioinformatics* (Oxford University Press)
 
-**Authors:** Guohao Lyu<sup>1,2</sup> [0000-0000-0000-0000], Yingchun Xia<sup>1,2</sup> [0000-0000-0000-0000], Huichao Liu<sup>1,2</sup> [0000-0000-0000-0000], Xiaolei Zhu<sup>1,2</sup> [0000-0000-0000-0000], Shuai Yang<sup>1,2</sup> [0000-0000-0000-0000], Ailian Zhou<sup>3,4,\*</sup> [0000-0000-0000-0000], Lichuan Gu<sup>1,2,\*</sup> [0000-0000-0000-0000]
+**Article type:** Problem Solving Protocol
 
-*(ORCID iDs: fill in each author's ORCID before submission. Register free at https://orcid.org.)*
+**Authors:** Guohao Lyu<sup>1,2</sup>, Yingchun Xia<sup>1,2</sup>, Huichao Liu<sup>1,2</sup>, Xiaolei Zhu<sup>1,2</sup>, Shuai Yang<sup>1,2</sup>, Ailian Zhou<sup>3,4,\*</sup>, Lichuan Gu<sup>1,2,\*</sup>
 
 **Affiliations:**
 1. School of Artificial Intelligence, Anhui Agricultural University, Hefei 230036, China
@@ -40,7 +40,7 @@
 
 **Motivation:** A landmark wet-lab study (Zheng et al., *Nat Immunol* 2023) established that tumors evade natural killer (NK) cell cytotoxicity by dysregulating serine metabolism, which depletes sphingomyelin (SM) in NK membranes, collapses membrane protrusions, and abolishes lytic immune synapse formation. However, this mechanism was demonstrated in a small number of liver cancer patients using specialized single-cell mass spectrometry and super-resolution imaging — methods that cannot scale to cohort-level analyses or be readily tested in other cancer types.
 
-**Results:** We present GC-NKGraph-Atlas, a computational framework that asks **how much** of the serine→sphingomyelin→membrane-topology→cytotoxicity axis is transcriptionally recoverable from public tumor transcriptomes. The framework employs: (i) a *mechanism-card* abstraction that encodes the wet-lab mechanism as a machine-readable recipe; (ii) a single-cell-informed, NK-aware heterogeneous graph that integrates protein–protein interactions, ligand–receptor pairs, transcription factor targets, and a mechanism-grounded `metabolic_crosstalk` edge type; and (iii) a graph neural network that learns gene embeddings from this multi-relational graph to predict NK immune states. A two-arm design (Arm A: liver/HCC positive control; Arm B: gastric cancer extension) yields a **scoping result** with three layers: **First**, the *effector arm* of the axis reproduces robustly in bulk transcriptomes — protrusion-machinery coupled to cytotoxicity output in TCGA-LIHC (r=0.55, p=5×10⁻³⁵) — and intratumoral NK cells show the expected loss of cytotoxic output (Δ=−0.14, p=6×10⁻⁵²). At single-cell resolution the same coupling is nominally significant after pseudoreplication correction (8,310 NK cells from 9 samples, corrected r=0.31, p=3.9×10⁻⁸), but we found this single-cell number does not survive further, necessary technical-confound controls: it collapses under residualization against library size and the dominant transcriptional (scVI latent) structure (r=0.04–0.09 depending on scoring method) and does not exceed the correlation expected from randomly drawn gene modules of the same sizes in this dataset (permutation P=0.97 with an expression-matched scoring method). It is not explained by generic NK activation alone (activation-partialled r=0.25; activation-matched subset r=0.24), which rules out simple co-activation but not the broader technical/structural confound. We therefore treat the single-cell effector-arm number as not distinguishable from technical background and anchor the effector-arm claim on the bulk result and its gastric replication, rather than on the single-cell number. **Second**, *transcription does not proxy the physical topology phenotype*: intratumoral NK cells show *higher*, not lower, protrusion-machinery transcript levels (Δ=+0.14, p=3×10⁻⁹¹) — the opposite direction to the physical membrane collapse — establishing a fundamental disconnect between the transcriptional and physical layers of this mechanism. **Third**, the *upstream metabolic arm* is not transcriptionally recoverable: the SM-balance→protrusion coupling is undetectable in bulk (r=−0.02, p=0.72) and not significant after cell-type resolution and pseudoreplication correction (single-cell NK corrected r=0.029, p=0.20), consistent with serine→SM crosstalk operating at the metabolite rather than transcript level. The recovered effector coupling replicates in two independent gastric microarray cohorts (GSE62254 r=0.42; GSE84437 r=0.62; both p≪10⁻¹³) — both bulk, and therefore not subject to the single-cell confound above. The framework then prioritizes **37 putative tumor-intrinsic candidate targets** (led by the druggable serine/sphingomyelin enzymes PHGDH, SGMS2, PSAT1, PSPH, SMPD3/1), each with a recommended wet-lab validation assay; we note that their malignant-cell fold-changes are near-zero and ~46% are annotated to NK-side modules, so this list is a mechanism-intersecting shortlist for hypothesis generation rather than a set of tumor-exclusive targets.
+**Results:** We present GC-NKGraph-Atlas, a computational framework that asks **how much** of the serine→sphingomyelin→membrane-topology→cytotoxicity axis is transcriptionally recoverable from public tumor transcriptomes. The framework employs: (i) a *mechanism-card* abstraction that encodes the wet-lab mechanism as a machine-readable recipe; (ii) a single-cell-informed, NK-aware heterogeneous graph that integrates protein–protein interactions, ligand–receptor pairs, transcription factor targets, and a mechanism-grounded `metabolic_crosstalk` edge type; and (iii) a graph neural network that learns gene embeddings from this multi-relational graph to predict NK immune states. A two-arm design (Arm A: liver/HCC positive control; Arm B: gastric cancer extension) yields a **scoping result** with three layers: **First**, the *effector arm* of the axis is recoverable in bulk transcriptomes — protrusion-machinery coupled to cytotoxicity output in TCGA-LIHC (r=0.55, p=5×10⁻³⁵) — and intratumoral NK cells show the expected loss of cytotoxic output (Δ=−0.14, p=6×10⁻⁵²); however, ~50% of this bulk coupling is NK-cell-abundance covariation (after adjusting for an NK-fraction proxy, partial r=0.25 in TCGA-LIHC, and it survives in two of three bulk cohorts but not the third), so the effector arm is *partially recoverable and substantially infiltration-driven*, not robustly recovered. At single-cell resolution the same coupling is nominally significant after pseudoreplication correction (8,310 NK cells from 9 samples, corrected r=0.31, p=3.9×10⁻⁸), but we found this single-cell number does not survive further, necessary technical-confound controls: it collapses under residualization against library size and the dominant transcriptional (scVI latent) structure (r=0.04–0.09 depending on scoring method) and does not exceed the correlation expected from randomly drawn gene modules of the same sizes in this dataset (permutation P=0.97 with an expression-matched scoring method). It is not explained by generic NK activation alone (activation-partialled r=0.25; activation-matched subset r=0.24), which rules out simple co-activation but not the broader technical/structural confound. We therefore treat the single-cell effector-arm number as not distinguishable from technical background and anchor the effector-arm claim on the bulk result and its gastric replication, rather than on the single-cell number. **Second**, *transcription does not proxy the physical topology phenotype*: intratumoral NK cells show *higher*, not lower, protrusion-machinery transcript levels (Δ=+0.14, p=3×10⁻⁹¹) — the opposite direction to the physical membrane collapse — establishing a fundamental disconnect between the transcriptional and physical layers of this mechanism. **Third**, the *upstream metabolic arm* is not transcriptionally recoverable: the SM-balance→protrusion coupling is undetectable in bulk (r=−0.02, p=0.72) and not significant after cell-type resolution and pseudoreplication correction (single-cell NK corrected r=0.029, p=0.20), consistent with serine→SM crosstalk operating at the metabolite rather than transcript level. The effector coupling reproduces at the zero-order level in two independent gastric microarray cohorts (GSE62254 r=0.42; GSE84437 r=0.62; both p≪10⁻¹³), but these bulk replications are themselves substantially NK-abundance-driven (§3.2). Running a *second, independently authored mechanism card* (TGFβ→SMAD→NK exclusion) end-to-end on the same cohorts reproduces the boundary: its effector co-variation recovers while its mechanism-specific causal predictions fail in bulk — establishing that "bulk transcriptomes recover NK effector state but not mechanism-specific upstream coupling" generalizes across two distinct immune-evasion mechanisms. The framework then prioritizes **37 putative tumor-intrinsic candidate targets** (led by the druggable serine/sphingomyelin enzymes PHGDH, SGMS2, PSAT1, PSPH, SMPD3/1), each with a recommended wet-lab validation assay; we note that their malignant-cell fold-changes are near-zero and ~46% are annotated to NK-side modules, so this list is a mechanism-intersecting shortlist for hypothesis generation rather than a set of tumor-exclusive targets.
 
 **Availability:** All code, configuration, and synthetic test data are available at https://github.com/nblvguohao/GC-NKGraph-Atlas. The mechanism-card template enables application to additional published mechanisms without modifying the pipeline core.
 
@@ -52,10 +52,11 @@
 
 ## Key Points
 
-- A **mechanism-card** formalism converts published wet-lab immune-evasion mechanisms into scalable transcriptome-based target-discovery runs (demonstrated on one card; multi-card reuse is a design aspiration).
-- A **two-arm design** (liver positive control + gastric extension) produces a **scoping result**: the *effector arm* (protrusion→cytotoxicity) is robustly recoverable in bulk transcriptomes and generalizes to gastric cancer in three independent bulk cohorts; at single-cell resolution the same coupling is pseudoreplication-corrected but does not survive count-depth/latent-structure residualization or a module-permutation baseline, so we anchor the effector-arm claim on the bulk evidence. The *metabolic arm* (SM-balance→protrusion) is not statistically significant after correction (p=0.20).
+- A **mechanism-card** formalism converts published wet-lab immune-evasion mechanisms into scalable transcriptome-based analysis runs, demonstrated **end-to-end on two independent cards** (serine–SM and TGFβ→SMAD) that reveal a consistent transcriptional-reach boundary.
+- A **two-arm design** (liver positive control + gastric extension) produces a **scoping result**: the *effector arm* (protrusion→cytotoxicity) is recoverable in bulk transcriptomes, but **~50% of the bulk coupling is NK-cell-abundance covariation** — after adjusting for an NK-fraction proxy it attenuates from r≈0.55 to r≈0.25 and remains significant in two of three bulk cohorts (TCGA-LIHC, GSE62254) but not the third (GSE84437, partial r≈0, n.s.). At single-cell resolution the same coupling does not survive count-depth/latent-structure residualization. The *metabolic arm* (SM-balance→protrusion) is not significant after correction (p=0.20). The effector arm is therefore *partially recoverable and substantially infiltration-driven*, not robustly recovered.
+- **The reach boundary generalizes across mechanisms:** running a second, independently authored card (TGFβ→SMAD→NK exclusion) end-to-end reproduces the pattern — generic NK-effector co-variation is recoverable, but the mechanism-specific upstream causal predictions (TGFβ-signaling→receptor suppression, CAF-ECM→exclusion) fail in bulk. Across two distinct mechanisms, bulk transcriptomes recover NK effector state but not mechanism-specific causal coupling, and NK-fraction control is required to see this.
 - **Transcription does not proxy the physical topology phenotype:** intratumoral NK cells exhibit *higher* protrusion-machinery transcript levels while their physical membrane protrusions are collapsed — a fundamental disconnect that defines the natural boundary of transcriptome-based reconstruction for membrane-lipid mechanisms.
-- The heterogeneous graph is used as a **probe, not a predictor**: encoding the mechanism's metabolic coupling as a `metabolic_crosstalk` edge and ablating it gives an independent, architecture-based confirmation that this coupling is transcriptionally absent — the edge imposes the coupling on the embedding yet yields no cross-cohort predictive value, converging with the null correlation result.
+- The heterogeneous graph is used as a **probe, not a predictor**: encoding the mechanism's metabolic coupling as a `metabolic_crosstalk` edge and ablating it gives an independent, architecture-based confirmation that this coupling is transcriptionally absent — removing the edge abolishes the corresponding embedding coupling, converging with the null correlation result.
 - The framework outputs a **de-circularized, putative tumor-intrinsic candidate target list** (37 genes, led by druggable serine/SM enzymes) kept strictly separate from the NK-side axis readout, each with a recommended wet-lab validation assay — presented as a hypothesis-generation shortlist for experimental follow-up.
 
 ---
@@ -132,8 +133,20 @@ our candidate prioritization currently inherits this surface/metabolic-gene bias
 **Graph learning in cancer genomics.** Graph neural networks [28-30] have been applied to
 multi-omics integration (e.g. MOGONET [31]) and to molecular-interaction networks
 for outcome prediction, and heterogeneous graph transformers [32] provide
-type-specific message passing over multi-relational graphs. Existing applications
-typically treat the graph as a generic prior (a PPI or co-expression network) and
+type-specific message passing over multi-relational graphs. Most directly relevant
+are recent transformer-based multi-network fusion models built specifically for
+cancer driver-gene discovery, such as TREE [49], which learns cancer-gene
+embeddings via co-attention over PPI, miRNA, and transcription-factor networks
+spanning up to ~20,000 genes and 2.7 million edges, and GRAFT [50], which fuses
+PPI, GO-similarity, and pathway-co-occurrence networks through a learnable
+attention mechanism and an edge-attention-biased transformer. Both target
+genome-scale, cancer-type-agnostic driver-gene discovery from generic interaction
+networks; our graph instead spans a ~100-gene mechanism-anchored panel and asks a
+narrower, mechanism-specific question — not "which genes drive this cancer" but
+"how far does one specific published immune-evasion mechanism's transcriptional
+signal reach" — so scale, labels, and objective are deliberately incommensurate
+with this line of work rather than a smaller instance of the same task. Existing
+applications typically treat the graph as a generic prior (a PPI or co-expression network) and
 report a predictive gain. Our use of the graph is different in intent: on top of
 standard priors (STRING protein–protein interactions, CellChatDB ligand–receptor
 pairs) we add one edge type derived directly from the mechanism under study, and
@@ -406,9 +419,9 @@ is consistent and interpretable rather than a uniform pass:
   serine→SM crosstalk operates at the metabolite level — enzyme abundance
   (transcription) is not flux — and provides an empirical null baseline for the
   axis hierarchy.
-- **The effector arm reproduces robustly in bulk; the single-cell number is
-  pseudoreplication-corrected but does not survive further technical-confound
-  controls (H3).** Protrusion-machinery transcript score couples to the
+- **The effector arm reproduces in bulk (though see the purity control below);
+  the single-cell number is pseudoreplication-corrected but does not survive
+  further technical-confound controls (H3).** Protrusion-machinery transcript score couples to the
   cytotoxicity-output score in bulk TCGA-LIHC (r=0.551, *P*=5.5×10⁻³⁵) and,
   at face value, across 8,310 single NK cells. After correcting for
   within-sample dependence (per-sample r → Fisher z → DerSimonian-Laird
@@ -459,12 +472,34 @@ is consistent and interpretable rather than a uniform pass:
   generic co-activation alone, is not distinguishable from the technical and
   global-transcriptional-structure background of this dataset, and should not
   be reported as an independent replication of the effector arm.** The bulk
-  TCGA-LIHC result is unaffected by this diagnostic (bulk samples do not carry
-  the extreme per-cell library-size range that drives the single-cell
-  artifact) and, together with the three independent bulk replications in
-  gastric cancer (§3.3), is the primary evidence for the effector-arm claim.
+  TCGA-LIHC result is unaffected by this *single-cell* diagnostic (bulk samples
+  do not carry the extreme per-cell library-size range that drives the
+  single-cell artifact), but it carries a separate, bulk-specific confound that
+  we address next.
   We retain the single-cell pseudoreplication-corrected number in Table 2 for
   transparency but flag it as not surviving technical-confound control.
+- **About half of the bulk effector coupling is NK-cell-abundance covariation
+  (bulk purity control).** In bulk tumor transcriptomes, both the
+  protrusion-machinery and cytotoxicity-output module scores rise and fall with
+  the NK-cell fraction of the sample, so a positive protrusion~cytotoxicity
+  correlation is expected in part from co-varying NK abundance rather than a
+  within-NK coupling. We tested this directly
+  (`src/topology/bulk_h3_purity_control.py`) by partialling out a clean
+  NK-lineage abundance proxy — the mean-z of seven NK lineage/receptor markers
+  (FCGR3A, KLRD1, KLRF1, KLRK1, NCAM1, NCR1, TYROBP) that appear in *neither*
+  module, avoiding the over-control that would result from using the full NK
+  signature (whose genes overlap the cytotoxicity module). In TCGA-LIHC the
+  coupling attenuates by 55%, from zero-order r=0.55 to a partial r=0.25
+  (*P*=1.8×10⁻⁶, 95% CI [0.15, 0.34]) — reduced but still significant. Applying
+  the same control to the two external gastric cohorts roughly halves it in
+  GSE62254 (partial r=0.23, *P*=4.6×10⁻⁵, still significant) and **abolishes it
+  in GSE84437** (partial r=−0.07, *P*=0.11, 95% CI crossing zero), the cohort
+  with the strongest zero-order coupling (r=0.62). The effector-arm coupling is
+  therefore real but **substantially infiltration-driven**: after NK-fraction
+  adjustment it holds at roughly half strength in two of three bulk cohorts and
+  does not survive in the third (`results/tables/bulk_h3_purity_control.tsv`).
+  We accordingly report the effector arm as *partially recoverable in bulk and
+  substantially NK-abundance-driven*, not as a robust three-cohort replication.
 - **The upstream metabolic coupling is not statistically significant after pseudoreplication correction
   (H2).** The SM-balance→protrusion coupling is undetectable in
   bulk (r=−0.017, *P*=0.72). After NK-cell
@@ -602,8 +637,14 @@ liver control (Table 5). Notably, the SM-balance→protrusion coupling that was
 undetectable in bulk *liver* is weakly but significantly positive in both bulk
 *gastric* cohorts (r=0.18, p=1.3×10⁻³; r=0.11, p=0.02), consistent with the
 effect being real but small and easier to detect where NK signal is stronger.
-The effector layer of the axis is therefore independently reproduced in three
-gastric datasets (one scRNA, two bulk microarray).
+The effector layer of the axis is therefore reproduced in three gastric datasets
+(one scRNA, two bulk microarray) at the zero-order level. However, as shown by
+the bulk purity control (§3.2), these bulk replications are substantially
+NK-abundance-driven: after partialling out NK-cell fraction, the coupling is
+roughly halved but remains significant in GSE62254 and does not survive in
+GSE84437. The gastric extension should therefore be read as a *partially
+recoverable, infiltration-driven* effector signal rather than a robust
+independent replication.
 
 **External validation of the axis (independent gastric cohorts).**
 
@@ -902,47 +943,35 @@ co-expression):
 
 | Variant | Edges | Modularity | H1 embedding-coupling (serine↔SM) | H2 embedding-coupling (SM↔protrusion) |
 |---------|-------|------------|------------------------------------|----------------------------------------|
-| FULL (all edges) | 1,612 | 0.362 | 0.140 | 0.245 |
-| −MC (without `metabolic_crosstalk`) | 1,312 | 0.354 | −0.001 | 0.202 |
+| FULL (all edges) | 1,612 | 0.279 | 0.128 | 0.183 |
+| −MC (without `metabolic_crosstalk`) | 1,312 | 0.288 | −0.002 | 0.146 |
 | −SST (mechanism edges removed; generic priors only) | 492 | 0.287 | −0.002 | −0.000 |
 
-Two observations, both pointing the same way.
-
-**First, the edge does exactly what it is designed to do — and that is the
+**The edge does exactly what it is designed to do — and that is the
 problem.** Removing `metabolic_crosstalk` abolishes the tumor-serine↔NK-SM
-coupling in the embedding (H1 embedding-coupling 0.140→−0.001), confirming that
+coupling in the embedding (H1 embedding-coupling 0.128→−0.002), confirming that
 this single edge is what imposes the hypothesized upstream coupling on the
 geometry. But that coupling is one the transcriptome itself does not exhibit: the
 corresponding H1 correlation is null at both bulk and single-cell resolution
 (§3.2). The edge faithfully encodes the mechanism; the data simply do not
-corroborate it. (We do not lean on the modularity column: because it is measured
-on the mechanism's own gene modules, adding mechanism edges necessarily raises it,
-so the mechanism edges' collective lift over generic priors alone — 0.287→0.362,
-carried mainly by the within-axis `sm_topology_axis` edges — is expected rather
-than independent evidence.)
-
-**Second, hard-coding this non-transcriptional coupling does not help — and
-modestly hurts — generalization.** In a cross-tissue transfer test (train
-TCGA-STAD gastric → test TCGA-LIHC liver), the FULL graph including
-`metabolic_crosstalk` gave a held-out MCC of 0.416 versus 0.509 for the −MC graph
-(Δ=−0.093, 1,000-sample bootstrap 95% CI [−0.153, −0.043]). This is a single
-transfer direction and the absolute effect is modest, so we read it conservatively
-as *the edge provides no cross-cohort predictive value and if anything degrades
-it* — precisely the behavior expected of a structural prior that asserts a
-relationship absent from the transcriptome.
+corroborate it. (We do not lean on the modularity column: it is sensitive to
+exactly which edge types happen to connect the same node pairs and does not move
+consistently with mechanism-edge content across variants, so it is not treated as
+independent evidence.)
 
 Together, the ablation is a third, methodologically independent line of evidence
 for the paper's central boundary: the **effector layer** of the axis is
 transcriptionally present (the within-axis `sm_topology_axis` edges organize the
 embedding; the bulk effector correlations recover, §3.2–3.3), whereas the
 **upstream metabolic coupling** is not — it is null as a correlation (H1/H2,
-§3.2), inert-to-detrimental as an imposed graph edge (here), and, per the anchor
-study, resolvable only by single-cell mass spectrometry. The graph does not fail
-as a predictor so much as succeed as a probe, returning the same answer as every
-other instrument in this study. The utility of typed, mechanism-grounded edges as
-interpretable structure — as opposed to a predictive gain — is consistent with
-single-cell work in which ligand–receptor interaction analysis, rather than
-expression alone, explained how one cell subset regulates another [21].
+§3.2) and absent as an imposed graph edge once that edge is removed (here), and,
+per the anchor study, resolvable only by single-cell mass spectrometry. The graph
+does not fail as a predictor so much as succeed as a probe, returning the same
+answer as every other instrument in this study. The utility of typed,
+mechanism-grounded edges as interpretable structure — as opposed to a predictive
+gain — is consistent with single-cell work in which ligand–receptor interaction
+analysis, rather than expression alone, explained how one cell subset regulates
+another [21].
 
 ---
 
@@ -975,12 +1004,12 @@ blanket claim of recovery. Three findings anchor it:
    resolutions (§3.2). Crucially, a methodologically distinct test converges on
    the same conclusion: when the same metabolic coupling is hard-coded as the
    `metabolic_crosstalk` graph edge, it faithfully imposes a tumor-serine↔NK-SM
-   structure on the embedding (H1 embedding-coupling 0.14→0 on removal) yet
-   provides no cross-cohort predictive value and modestly degrades transfer
-   (§3.7). Correlation analysis and graph ablation — two methods with different
-   assumptions — thus agree that this coupling is real biology that operates at
-   the metabolite level, not the transcript level, consistent with the anchor
-   paper's requirement for single-cell mass spectrometry. This is precisely the
+   structure on the embedding, and removing the edge abolishes that structure
+   (H1 embedding-coupling 0.13→0 on removal; §3.7). Correlation analysis and
+   graph ablation — two methods with different assumptions — thus agree that
+   this coupling is real biology that operates at the metabolite level, not the
+   transcript level, consistent with the anchor paper's requirement for
+   single-cell mass spectrometry. This is precisely the
    kind of boundary the mechanism card's "gated physical ground-truth" section
    was designed to mark: the card encodes the coupling as a hypothesis, and the
    transcriptome — whether interrogated by correlation or by graph structure —
@@ -997,6 +1026,24 @@ blanket claim of recovery. Three findings anchor it:
    post-transcriptional membrane-recruitment layer as the critical gap for
    future experimental work; a companion wet-lab validation program targeting
    this gap is in preparation.
+4. **The transcriptional-reach boundary generalizes across mechanisms.**
+   Applying the framework's second mechanism card (TGFβ→SMAD→NK exclusion; Gao
+   et al. 2023) end-to-end on the same gastric cohorts reproduces the Zheng-card
+   pattern rather than a card-specific artifact (§4.2). The effector/outcome
+   co-variation is recoverable — and, being built from the NK activation program
+   itself, is expectedly strong — but the two *mechanism-specific causal
+   predictions*, that TGFβ signaling suppresses activating receptors (H2) and
+   that CAF-ECM programs exclude cytotoxic NK (H4), both fail in bulk, running
+   positive where the mechanism predicts negative. This mirrors the failure of
+   the Zheng card's upstream metabolic coupling, and the shared cause is visible
+   once NK-cell fraction is controlled (§3.2): bulk immune-module correlations
+   are dominated by shared infiltration, and only generic NK-effector
+   co-regulation survives that control. The consistent result across two
+   independently authored cards is the paper's most generalizable claim — the
+   framework behaves as a *discriminating instrument* that recovers
+   transcriptionally-encoded effector state while correctly declining to
+   corroborate causal steps operating at the metabolite, signaling, or physical
+   level.
 
 Together these delineate which layers a transcriptome can and cannot reach — a
 result of direct use to any lab extending a physical immune-evasion mechanism to
@@ -1068,15 +1115,24 @@ cleavage). All four cards share the same YAML schema and are consumed by the
 same pipeline without modification. Pairwise gene overlap is low (Jaccard
 0.07–0.19), confirming the cards encode mechanistically distinct biology
 rather than overlapping gene sets (`results/tables/mechanism_card_comparison.tsv`,
-`mechanism_card_gene_overlap.tsv`). While only the Zheng 2023 card has been
-run end-to-end with real data, the structural generality of the schema —
-combined with synthetic-mode scoring confirming the pipeline ingests all
-four cards identically — provides supporting evidence that the formalism
-generalizes beyond a single mechanism. Full end-to-end validation of the
-adenosine, TGFβ, and MICA/B cards with real expression data remains future
-work. In our
-experience, this discipline is precisely what makes a partial-recovery finding
-credible to a mechanistic wet lab, and it generalizes to any attempt to
+`mechanism_card_gene_overlap.tsv`). **Two of the four cards have now been run
+end-to-end on real data.** Beyond the Zheng serine–SM card, the
+TGFβ→SMAD→NK-exclusion card (Gao et al. 2023) was scored on TCGA-STAD and both
+external gastric cohorts and its pre-registered hypotheses tested identically
+(`src/interpretation/run_tgfb_card_recovery.py`,
+`results/tables/mechanism_card_tgfb_recovery.tsv`). Rather than a card-specific
+artifact, it reproduces the same transcriptional-reach boundary reported for the
+Zheng card (§4.1): the NK-effector/outcome co-variation is recoverable, but the
+two mechanism-specific causal predictions — that TGFβ signaling suppresses NK
+activating receptors (H2) and that CAF-ECM programs exclude cytotoxic NK (H4) —
+both fail in bulk, running positive where the mechanism predicts negative, just
+as the Zheng card's upstream metabolic coupling failed. The adenosine and MICA/B
+cards remain structurally validated (schema compliance, synthetic-mode ingestion,
+low inter-card Jaccard) but not yet run end-to-end on real data. Reusability is
+therefore no longer only a design aspiration: the same formalism has produced a
+consistent, cross-mechanism empirical result on two independently authored cards.
+In our experience, this discipline is precisely what makes a partial-recovery
+finding credible to a mechanistic wet lab, and it generalizes to any attempt to
 operationalize a physical mechanism from an indirect molecular readout.
 
 ### 4.3 Limitations
@@ -1088,15 +1144,16 @@ operationalize a physical mechanism from an indirect molecular readout.
 5. **Single-cell pseudoreplication.** The 8,310 NK cells derive from 9 biological samples. We correct for this via per-sample meta-analysis (§2.9), but between-sample heterogeneity is substantial (I² up to 96% for H3), indicating that sample-level factors beyond the SST axis influence the correlations. Results should be interpreted at the sample level, not the cell level. A leave-one-sample-out sensitivity analysis (`results/tables/h3_leave_one_sample_out.tsv`) shows the H3 pooled estimate itself is stable to removing any single sample (pooled r range 0.275–0.350 across the 9 leave-one-out re-analyses, all 95% CIs excluding 0) — so the pseudoreplication correction is not an artifact of one outlier sample. This is a separate question from whether the correlation is technically confounded (item 6 below), which it is.
 6. **Single-cell module-score correlations require count-depth and module-permutation controls beyond pseudoreplication correction.** Re-running the count-depth control (P0-2) and module-membership permutation test (P0-3) on the real scRNA data (8,310 NK cells; previously validated on synthetic data only) revealed that pseudoreplication correction alone is not sufficient for the H3 single-cell number: 47.4% of the protrusion-machinery module score's variance is explained by library size (`total_counts`, which varies 236-fold across cells), residualizing against library size and the real scVI latent space collapses r from 0.32 to 0.09, and a permutation test using an expression-matched scoring method shows the observed coupling does not exceed a randomly-drawn, size-matched gene-module baseline (empirical *P*=0.97). We therefore no longer treat the single-cell H3 number as an independent replication (§3.2, §4.1); the effector-arm claim rests on the bulk result and its gastric replications. The count-depth diagnostics for H2 and H4 did not change those hypotheses' already-null verdicts.
 7. **NK subtype resolution.** scRNA-based NK annotation depends on the quality of the reference atlas. Populations that are rare or absent in the reference may be misclassified.
-8. **The graph model does not outperform top tabular or signature baselines on accuracy, and is not intended to.** On the binary NK-state task the GNN is statistically indistinguishable from LightGBM/XGBoost and from an SST-module signature baseline that uses the mechanism card's gene modules without a graph (§3.4). We do not position the graph as a predictor: its role is diagnostic — an ablatable, mechanism-structured embedding whose behavior on removing the metabolic-coupling edge independently probes transcriptional reach (§3.7). The cross-cohort transfer result there is a single train→test direction (STAD→LIHC) with a modest effect size, and a broader multi-direction or multi-class evaluation would test the probe more stringently.
+8. **The graph model does not outperform top tabular or signature baselines on accuracy, and is not intended to.** On the binary NK-state task the GNN is statistically indistinguishable from LightGBM/XGBoost and from an SST-module signature baseline that uses the mechanism card's gene modules without a graph (§3.4). We do not position the graph as a predictor: its role is diagnostic — an ablatable, mechanism-structured embedding whose behavior on removing the metabolic-coupling edge independently probes transcriptional reach (§3.7). We do not additionally report a downstream cross-cohort transfer-performance test of this edge: an exploratory version of that test proved highly sensitive to training-seed variance and to how overlapping edge types are merged into a single adjacency matrix, and we were unable to obtain a stable directional estimate we would trust in a submission-facing result; the embedding-coupling evidence above does not depend on that test and stands on its own.
 9. **Residual NK bias in the tumor-intrinsic candidate pool.** The `tumor_specificity_log2>0` gate is permissive: 17 of 37 candidates are annotated to NK-side mechanism-card modules, including RAC1 and WASL. The pool should be interpreted as "genes with a non-zero malignant-cell transcript signal that mechanistically intersect the SST axis," not as a clean set of tumor-exclusive targets. The trivial baseline comparison (§3.5) confirms that the five-dimension scoring adds discriminative value over anchor-paper membership alone (Spearman rho=0.54), but the delta is moderate. A stricter filter (e.g. tumor_specificity_log2>0.5 or a module-level penalty) would reduce NK-side contamination at the cost of losing borderline tumor-intrinsic candidates.
 10. **Candidate atlas omits intracellular/TF-level regulators.** The prioritization scores surface and metabolic-enzyme genes; transcription-factor and intracellular negative regulators of NK function (e.g. the CREM/PKA–CREB axis [27]) fall outside the current candidate space and are a natural extension of the mechanism-card modules.
 11. **No clinical-outcome anchor.** NK states are linked to scRNA-defined labels, not to patient survival or therapy response. Single-cell atlases that tie a functional state to durable clinical outcome [21] indicate a clear next step: anchoring the NK-state readout to outcome in a cohort with follow-up.
-12. **Multi-card validation is synthetic-only.** The adenosine, TGFβ, and MICA/B cards have been validated structurally (schema compliance, synthetic-mode pipeline ingestion, low inter-card Jaccard) but have not been run end-to-end with real expression data. Their full biological validation remains future work.
+12. **Multi-card validation covers two of four cards end-to-end.** The TGFβ→SMAD→NK-exclusion card has now been run end-to-end on real data alongside the Zheng serine–SM card (§4.2; `results/tables/mechanism_card_tgfb_recovery.tsv`), and the two converge on the same transcriptional-reach boundary. The adenosine and MICA/B cards remain validated only structurally (schema compliance, synthetic-mode ingestion, low inter-card Jaccard) and have not been run end-to-end with real expression data; their full biological validation remains future work. We also note that the TGFβ card's strong effector-arm coupling (H3) partly reflects that its "activating receptor" module is itself part of the NK activation program and therefore co-regulated with the cytotoxicity outcome — so the informative cross-card signal is the consistent *failure* of the mechanism-specific causal predictions (H2, H4), not the magnitude of H3.
 13. **DepMap essentiality now uses the real, current 26Q1 release.** CERES scores in Table 4 are from a real query of **DepMap Public 26Q1** `CRISPRGeneEffect.csv` and `Model.csv` (35 real gastric/stomach-subtype cell lines), obtained directly from the DepMap portal — newer than the 25Q2 release originally named in Methods, and superseding an earlier pass of this analysis that used the 24Q2 figshare snapshot (the DepMap portal's own interactive download is gated by a Cloudflare bot-verification challenge that cannot be scripted non-interactively; 24Q2 was the most recent release with non-interactive public access at that time). Under the 26Q1 data, NT5E is genuinely non-essential (CERES=+0.005, revised from "weakly essential" under 24Q2); SGMS2, SMPD1, and SMPD3 remain "weakly essential" (CERES −0.02 to −0.16) — still well clear of the pan-essential range (RAC1, MTHFD1; CERES<−0.5) but not strictly non-essential; PSAT1 moved from "weakly essential" to "moderately essential" (CERES=−0.27). Table 4 and §3.5 reflect these real 26Q1 values.
 14. **NK-state DE is underpowered for the dysfunctional group, and external replication gives mixed results.** TCGA-STAD has only n=20 NK-hot-dysfunctional samples vs n=134 NK-hot-cytotoxic. We replicated the directional test in two independent external gastric cohorts (GSE62254, GSE84437; `results/tables/nk_state_de_external_replication_summary.md`), each with an independently-derived NK-state label: 14/16 gene-cohort comparisons (88%) are directionally concordant with TCGA-STAD, including external confirmation that the five downgraded serine-pathway genes and RAC1 are down in dysfunctional tumors (strengthening their exclusion). However, **SGMS2's "up in dysfunctional" TCGA-STAD signal is discordant in both external cohorts** and should not be weighted as independent evidence for its Tier-1 status (§3.5, Table 4); NT5E's concordance is real but remains subject to the label-circularity caveat (item 15 below) in every cohort tested. Replication in a larger cohort with paired scRNA would still strengthen these conclusions.
 15. **The NK-state classification target partly overlaps the classifier's own input features.** A gene-set separation audit (`results/tables/geneset_separation_audit_summary.md`) found that the NK-hot-cytotoxic/dysfunctional label (§2.4) is a thresholding rule on marker genes (NKG7, GNLY, GZMB, PRF1, IFNG among others) that are also present, unmodified, in the full expression vector used as input to every model in §3.4, including the GNN. This is a known property of marker-defined phenotype labels rather than a coding error, but it means the high accuracy of all models (including simple baselines such as the 8-gene NK-marker signature, AUROC=0.849) partly reflects recovering a label from the same genes that define it, and §3.4 should be read accordingly. The same audit found that the SST-axis modules used for the H1–H5 mechanism tests do not reference the NK-state label at all (those tests operate directly on module scores, not on the label), so this concern is confined to §3.4's classification numbers. It also found that NT5E, one of the 37 tumor-intrinsic candidates, is itself part of the label-defining `NK_DYSFUNCTION_GENES` set (§3.5, Table 4).
 16. **No hard per-cell QC threshold was applied to the real scRNA-seq data.** Per-cell QC metrics (detected genes, mitochondrial fraction) were computed but not used to exclude cells (§2.4); all 166,829 concatenated cells were retained into normalization and integration, and doublet-based exclusion was not applied. Technical, quality-related variance is instead addressed downstream through the count-depth residualization diagnostics (item 6 above), which show that library size and detected-gene count explain a substantial share of module-score variance and must be accounted for statistically. A dataset with explicit per-cell hard-threshold filtering applied upstream would provide an additional, independent check on the results in §3.2.
+17. **The bulk effector coupling is substantially NK-abundance-driven.** In bulk transcriptomes both the protrusion-machinery and cytotoxicity-output module scores scale with NK-cell fraction, so the zero-order protrusion~cytotoxicity correlation is inflated by co-varying NK abundance. Partialling out a clean NK-lineage fraction proxy (§3.2; `results/tables/bulk_h3_purity_control.tsv`) attenuates the coupling by ~50% (TCGA-LIHC r=0.55→0.25, still significant), roughly halves it in GSE62254 (still significant), and abolishes it in GSE84437 (partial r≈0, n.s.). The NK-lineage proxy is a coarse, transcriptome-derived abundance estimate rather than a deconvolution or cell-sorted NK fraction, and partialling it out may itself be conservative if NK abundance genuinely co-occurs with effector-program intensity; a deconvolution-based NK fraction (CIBERSORTx/quanTIseq) or a within-NK single-cell analysis free of the count-depth confound (item 6) would refine the adjusted estimate. The effector-arm claim is reported accordingly as partially recoverable and infiltration-driven, not as a robust replication.
 
 ### 4.4 Future directions
 
@@ -1104,7 +1161,7 @@ operationalize a physical mechanism from an indirect molecular readout.
 - **Additional mechanisms.** The mechanism-card registry (`configs/mechanism_cards/registry.yaml`) is designed to hold multiple cards. Cards for adenosine-mediated NK suppression, TGFβ-driven NK exclusion, stress-ligand shedding (MICA/B-ADAM17), and other NK checkpoint axes (TIGIT/CD96 [47,48]; the CLEC12B–lipoprotein-lipase axis recently shown to restrain tumor NK cells and to synergize with PD-1 blockade [46]) are natural next additions.
 - **Physical topology integration.** When membrane protrusion / microvilli imaging data become available (even for a subset of samples), Layer 14R-B of the SST-axis module can be activated to provide direct phenotype-transcriptome correlation.
 - **Prospective validation cohort.** A dedicated gastric cancer cohort with paired bulk RNA-seq, scRNA-seq, and functional NK assays would provide the strongest validation of the prioritized targets.
-- **Learnable graph encoder.** All embeddings in this study use a spectral (SVD-based) encoder (§2.6); a `torch_geometric`-based heterogeneous graph transformer (HGT) [32] with learnable, type-specific message passing was not implemented for this study and is a natural architectural extension, particularly for tasks where relational structure is more decisive than the binary NK-state classification benchmarked here (§4.3, item 8).
+- **Learnable graph encoder.** All embeddings in this study use a spectral (SVD-based) encoder (§2.6); a `torch_geometric`-based heterogeneous graph transformer (HGT) [32] with learnable, type-specific message passing was not implemented for this study and is a natural architectural extension, particularly for tasks where relational structure is more decisive than the binary NK-state classification benchmarked here (§4.3, item 8). TREE [49] and GRAFT [50] offer a concrete template for this extension at genome scale — per-network encoders fused by a learnable attention weight rather than a single merged adjacency matrix — though at our panel's ~100-node scale a lightweight version (per-edge-type spectral embeddings plus a learned fusion weight, rather than a full multi-layer GCN per view) is more appropriate than a direct port of either architecture.
 
 ---
 
@@ -1114,18 +1171,21 @@ GC-NKGraph-Atlas demonstrates *how far* a specific, published immune-evasion
 mechanism — the serine–sphingomyelin–membrane-topology axis of NK dysfunction —
 can be surveyed at cohort scale from public transcriptomes. Using a
 single-cell-informed heterogeneous graph framework and a two-arm design, we establish
-a three-layer scoping map: (i) the effector arm recovers robustly in bulk
-transcriptomes and generalizes from liver to gastric cancer; the same coupling
-is pseudoreplication-corrected at single-cell resolution (corrected r=0.31,
-*P*=3.9×10⁻⁸), but does not survive residualization against library size and
-the dominant transcriptional structure, nor exceed a random-module permutation
-baseline, so we do not count it as an independent single-cell replication and
-anchor this arm on the bulk evidence; (ii) the upstream metabolic
+a three-layer scoping map: (i) the effector arm is recoverable in bulk
+transcriptomes from liver to gastric cancer, but ~50% of the bulk coupling is
+NK-cell-abundance covariation — after adjusting for NK fraction it holds at
+roughly half strength in two of three bulk cohorts and does not survive in the
+third, and at single-cell resolution it does not survive count-depth/latent-
+structure residualization, so we report it as partially recoverable and
+substantially infiltration-driven rather than robustly recovered; this same
+boundary reproduces on a second, independently authored mechanism card
+(TGFβ→SMAD→NK exclusion), whose mechanism-specific causal predictions likewise
+fail in bulk; (ii) the upstream metabolic
 coupling is **not** transcriptionally detectable after correction (*P*=0.20),
 consistent with metabolite-level regulation — a conclusion reached
 independently by correlation analysis and by ablating the mechanism-encoding
-graph edge, which imposes the coupling on the embedding yet yields no
-cross-cohort predictive value (§3.7); and (iii) the physical topology
+graph edge, which imposes the coupling on the embedding and loses it entirely
+once the edge is removed (§3.7); and (iii) the physical topology
 phenotype is fundamentally disconnected from machinery transcription
 (transcript levels run opposite to the physical collapse) — a finding, not a
 failure, that benchmarks the natural limit of transcriptome-based reconstruction
@@ -1139,11 +1199,12 @@ We show that this discipline is load-bearing: it is precisely the card's
 separation of computable-from-physical that lets us report the topology
 disconnection as a structured result rather than a hidden failure, and it is the
 pre-registered recovery definition that forces the H2 non-significance to be
-reported plainly. Applying the framework to additional mechanisms (e.g.,
-adenosine-mediated NK suppression, TGFβ-driven exclusion, MICA/B shedding) is a
-natural next step; the card registry and template are designed for this, but
-multi-card reuse remains a design aspiration to be established as further cards
-are authored and validated.
+reported plainly. The framework has now been run end-to-end on two independently
+authored cards (serine–SM and TGFβ→SMAD→NK exclusion), which converge on the same
+transcriptional-reach boundary; extending it to the remaining registered cards
+(adenosine-mediated NK suppression, MICA/B shedding) is a natural next step, so
+multi-card reuse is an established capability to be broadened as further cards are
+run end-to-end rather than only a design aspiration.
 
 ---
 
@@ -1319,3 +1380,7 @@ This work was supported by grants from the National Natural Science Foundation o
 47. Barry KC, Hsu J, Broz ML, et al. A natural killer–dendritic cell axis defines checkpoint therapy–responsive tumor microenvironments. *Nat Med* 2018;24:1178–91.
 
 48. Zhang Q, Bi J, Zheng X, et al. Blockade of the checkpoint receptor TIGIT prevents NK cell exhaustion and elicits potent anti-tumor immunity. *Nat Immunol* 2018;19:723–32.
+
+49. Su X, Hu P, Li D, et al. Interpretable identification of cancer genes across biological networks via transformer-powered graph representation learning. *Nat Biomed Eng* 2025;9:371–89.
+
+50. Cho SP, Cho YR. GRAFT: a graph-aware fusion transformer for cancer driver gene prediction. *Brief Bioinform* 2026;27:bbaf706.
