@@ -161,7 +161,7 @@ def extract_module_comparison(cards: Dict[str, Dict]) -> pd.DataFrame:
 def run_module_score_demo(
     card: Dict,
     card_id: str,
-    synthetic: bool = True,
+    synthetic: bool = False,
 ) -> Dict:
     """Demonstrate module scoring for a single card using synthetic or real data.
 
@@ -176,6 +176,7 @@ def run_module_score_demo(
     modules = proxy.get("modules", [])
 
     if synthetic:
+        raise ValueError("synthetic scoring is not permitted for formal analysis")
         # Generate synthetic expression for 100 NK cells × all card genes
         rng = np.random.RandomState(42)
         all_genes: List[str] = []
@@ -233,7 +234,7 @@ def compute_multicard_evidence(
     cards: Dict[str, Dict],
     cards_dir: str,
     out_dir: str,
-    synthetic: bool = True,
+    synthetic: bool = False,
 ) -> str:
     """Run the full multi-card analysis and produce output tables.
 
