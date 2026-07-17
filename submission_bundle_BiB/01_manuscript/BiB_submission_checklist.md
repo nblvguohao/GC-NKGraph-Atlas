@@ -53,11 +53,11 @@
 ---
 
 ### The only things between you and "submit"
-1. Push the repo to GitHub so the code-availability link matches what's submitted (§G) — resolve the branch-cleanup question in guide §8 first.
-2. Fill ORCID iDs for all 7 authors (§D) — deferred by author choice; not blocking.
+1. ~~Push the repo to GitHub~~ — done 2026-07-17; `master` is even with `origin/master` (commit `523130a`). The three stale branches flagged in guide §8 were resolved: `nk-pre-submission` and two fully-merged local branches deleted, `origin/merged-paper` (fully superseded) deleted from the remote; `origin/gh-pages` left untouched (serves the web playground).
+2. ~~ORCID~~ — resolved by author decision: removed from the manuscript entirely (2026-07-17); each author enters their iD directly in Oxford ScholarOne at submission instead.
 3. Register in Oxford ScholarOne; confirm no dual submission; all authors approve (§G).
-4. One last skim of BiB's live *Instructions to Authors* in case anything changed since 2026-07-12 (title length, abstract structure, figure DPI).
+4. One last skim of BiB's live *Instructions to Authors* immediately before submission — a same-day web check (2026-07-17) could not confirm current word-limit/article-type figures reliably (see chat record); cross-check directly on academic.oup.com/bib/pages/msprep_submission at submission time, and note the manuscript body (~13,100 words, Intro-Conclusion) may be well over a "2,000-5,000 word" Problem Solving Protocol figure if that number is still current -- weigh against the fact that recently published BiB Problem Solving Protocols (e.g. GRAFT, bbaf706, 2026) are of comparable length to this manuscript.
 
 Everything else (analysis, figures, tables, cover letter, declarations,
-reproducibility, PDF compilation, reference list, supplementary-table sync)
-is complete and verified as of 2026-07-16.
+reproducibility, PDF compilation, reference list, supplementary-table sync,
+mechanism-card registry) is complete and verified as of 2026-07-17.
