@@ -61,3 +61,47 @@ assets:
     sample_count: 10
     local_path: data/external/recoverability/GSE251950/GSE251950_RAW.tar
     status: pending_download
+  gse251950_gsm7990474:
+    accession: GSE251950_GSM7990474
+    source_url: https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM7990nnn/GSM7990474/suppl/GSM7990474_21_00731_LI_SING.tar.gz
+    modality: visium_spatial_transcriptomics
+    species: Homo sapiens
+    sample_count: 1
+    local_path: data/external/recoverability/GSE251950/per_gsm/GSM7990474_21_00731_LI_SING.tar.gz
+    sha256: 449d36fafed541c48f91e18148201b5a0b40f41f5f739312d2c4e8abcf4294cd
+    content_length_bytes: 99492794
+    analysis_scope: exploratory_four_verified_per_gsm_subset
+    status: available
+  gse251950_gsm7990476:
+    accession: GSE251950_GSM7990476
+    source_url: https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM7990nnn/GSM7990476/suppl/GSM7990476_21_00733_LI_SING.tar.gz
+    modality: visium_spatial_transcriptomics
+    species: Homo sapiens
+    sample_count: 1
+    local_path: data/external/recoverability/GSE251950/per_gsm/GSM7990476_21_00733_LI_SING.tar.gz
+    sha256: 21f34c1c8ef5f454071c9d243a8b1b05985413b66bb5ac8fd68b1cbfd66303f6
+    content_length_bytes: 117303692
+    analysis_scope: exploratory_four_verified_per_gsm_subset
+    status: available
+  gse251950_gsm7990479:
+    accession: GSE251950_GSM7990479
+    source_url: https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM7990nnn/GSM7990479/suppl/GSM7990479_21_01252_LI_SING.tar.gz
+    modality: visium_spatial_transcriptomics
+    species: Homo sapiens
+    sample_count: 1
+    local_path: data/external/recoverability/GSE251950/per_gsm/GSM7990479_21_01252_LI_SING.tar.gz
+    sha256: cf2df49f33766709a4d5c96995dfe31e3e57fab5a998e7235dafde33a1f51291
+    content_length_bytes: 30694361
+    analysis_scope: exploratory_four_verified_per_gsm_subset
+    status: available
+  gse251950_gsm7990481:
+    accession: GSE251950_GSM7990481
+    source_url: https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM7990nnn/GSM7990481/suppl/GSM7990481_21_01254_LI_SING.tar.gz
+    modality: visium_spatial_transcriptomics
+    species: Homo sapiens
+    sample_count: 1
+    local_path: data/external/recoverability/GSE251950/per_gsm/GSM7990481_21_01254_LI_SING.tar.gz
+    sha256: 7614be8a3fb94d465e5bd0adb6d5cd45ef1efeb170db10a02294f3f7b4ada78b
+    content_length_bytes: 40179023
+    analysis_scope: exploratory_four_verified_per_gsm_subset
+    status: available

@@ -10,6 +10,7 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from src.interpretation.recoverability_modalities import (
+    DEFAULT_REAL_DATA_MANIFEST,
     not_measured,
     run_visium_spot_module_adjacency,
 )
@@ -24,6 +25,7 @@ def write_direct_modality_table(
     archive_dir: Path = ROOT / "data/external/recoverability/GSE251950/per_gsm",
     n_permutations: int = 1000,
     seed: int = 20260717,
+    manifest_path: Path = DEFAULT_REAL_DATA_MANIFEST,
 ) -> pd.DataFrame:
     """Write direct evidence, preserving real spatial rows and explicit missingness."""
     rows = [
@@ -35,6 +37,7 @@ def write_direct_modality_table(
         sorted(Path(archive_dir).glob("GSM*.tar.gz")),
         n_permutations=n_permutations,
         seed=seed,
+        manifest_path=manifest_path,
     )
     table = pd.concat([pd.DataFrame(rows), spatial], ignore_index=True, sort=False)
     # A submission TSV must expose non-applicability explicitly rather than hide
@@ -52,10 +55,12 @@ def main() -> None:
     parser.add_argument("--spatial-archive-dir", default=ROOT / "data/external/recoverability/GSE251950/per_gsm")
     parser.add_argument("--n-permutations", type=int, default=1000)
     parser.add_argument("--seed", type=int, default=20260717)
+    parser.add_argument("--manifest", default=DEFAULT_REAL_DATA_MANIFEST)
     args = parser.parse_args()
     table = write_direct_modality_table(
         Path(args.output), archive_dir=Path(args.spatial_archive_dir),
         n_permutations=args.n_permutations, seed=args.seed,
+        manifest_path=Path(args.manifest),
     )
     print(f"wrote {args.output} ({len(table)} direct-evidence rows)")
 

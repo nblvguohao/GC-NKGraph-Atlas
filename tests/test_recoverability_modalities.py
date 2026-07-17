@@ -5,8 +5,10 @@ import pandas as pd
 
 from src.interpretation.recoverability_modalities import (
     REQUIRED_GSE251950_GSMS,
+    _strict_first_order_hex_grid_edges,
     not_measured,
     run_visium_spot_module_adjacency,
+    validate_visium_identifiers,
 )
 
 
@@ -27,11 +29,14 @@ def test_real_gse251950_archives_produce_four_spot_adjacency_rows():
 
     assert result["gsm"].tolist() == sorted(REQUIRED_GSE251950_GSMS)
     assert set(result["status"]) == {"measured"}
-    assert set(result["scope"]) == {"four_verified_per_gsm_subset"}
+    assert set(result["scope"]) == {"exploratory_four_verified_per_gsm_subset"}
     assert (result["coordinate_label_permutation_pvalue"].between(0, 1)).all()
     assert (result["caf_ecm_feature_coverage"] > 0).all()
     assert (result["nk_cytolytic_feature_coverage"] > 0).all()
     assert (result["spot_grid_edge_count"] > 0).all()
+    assert result["coordinate_label_permutation_null_mean"].notna().all()
+    assert result["coordinate_label_permutation_null_sd"].notna().all()
+    assert result["coordinate_label_permutation_bh_fdr"].between(0, 1).all()
 
 
 def test_real_spatial_analysis_refuses_an_incomplete_verified_subset():
@@ -57,5 +62,29 @@ def test_direct_modality_writer_preserves_four_real_spatial_rows(tmp_path):
     spatial = table.loc[table["modality"] == "spatial_transcriptomics"]
     assert len(spatial) == 4
     assert spatial["gsm"].notna().all()
-    assert set(spatial["scope"]) == {"four_verified_per_gsm_subset"}
+    assert set(spatial["scope"]) == {"exploratory_four_verified_per_gsm_subset"}
     assert not table.isna().any().any()
+
+
+def test_strict_hex_grid_does_not_bridge_a_spatial_hole():
+    coordinates = pd.DataFrame({
+        "array_row": [0, 0, 1, 1, 0],
+        "array_col": [0, 2, -1, 1, 8],
+    })
+
+    edges = _strict_first_order_hex_grid_edges(coordinates)
+
+    assert {tuple(edge) for edge in edges} == {(0, 1), (0, 2), (0, 3), (1, 3), (2, 3)}
+    assert not any(4 in edge for edge in edges)
+
+
+def test_duplicate_visium_barcodes_are_rejected():
+    coordinates = pd.DataFrame({"barcode": ["A", "B"], "array_row": [0, 0], "array_col": [0, 2]})
+    with pytest.raises(ValueError, match="duplicate expression barcodes"):
+        validate_visium_identifiers(["A", "A"], coordinates)
+
+
+def test_duplicate_visium_grid_positions_are_rejected():
+    coordinates = pd.DataFrame({"barcode": ["A", "B"], "array_row": [0, 0], "array_col": [2, 2]})
+    with pytest.raises(ValueError, match="duplicate in-tissue spatial grid coordinates"):
+        validate_visium_identifiers(["A", "B"], coordinates)
