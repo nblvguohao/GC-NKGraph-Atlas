@@ -20,7 +20,7 @@
 
 ## C. Results completeness
 - [x] ✅ Table 1 datasets; Table 2 positive-control recovery; Table 3 GNN + baselines (paired tests); Table 4 candidates (n=37); Table 5 external validation (0.42/0.62).
-- [x] ✅ Figures 1–4 (vector PDF + 300-dpi PNG); numbers read from result tables.
+- [x] ✅ Figures 1–4 + S1 (label-masked multi-view audit) + S2 (real-data recoverability atlas) (vector PDF + 300-dpi PNG); numbers read from result tables. S1/S2 added 2026-07-17 via merge from `codex/multiview-strengthening` (see guide §8).
 - [x] ✅ **Ablation (§3.7)** — done. Edge-type ablation table included in supplementary (`ablation_results.tsv`). A collision bug in the adjacency-construction code was found and fixed on 2026-07-16 (see guide §7); the table numbers were regenerated and the qualitative conclusion re-verified as unchanged. A separate cross-cohort transfer sub-claim that had rested on the same bug proved seed-unstable after the fix and was removed from the manuscript rather than replaced with a new number — the ablation section now presents only the (robust) embedding-coupling result.
 - [x] ✅ All headline stats re-verified against result tables (2026-07-12; ablation table re-verified again 2026-07-16 after the bug fix above).
 
@@ -34,7 +34,7 @@
 ## E. References & formatting
 - [x] ✅ References [1]–[50], Vancouver numbered; refs [49]–[50] (TREE, GRAFT — added 2026-07-16 to position the graph design against recent multi-network driver-gene-discovery work) integrated in both `.tex` and `.md`; bibitem count and highest in-text citation number both verified at 50 in each file.
 - [x] ✅ Figures vector + ≥300-dpi, self-contained legends; verified 2026-07-16 that none of fig0–4 depend on the retracted cross-cohort transfer claim. Separately, Figure 4 was regenerated (2026-07-16) to fix a real gap: it previously plotted only 7 of Table 3's 9 methods (missing the SST-module-signature and NK-marker-signature baselines), so the caption's "significantly above the NK-marker signature" claim wasn't visually supported by the figure. All 9 methods now shown, matching Table 3.
-- [x] ✅ Supplementary tables (46, per `03_supplementary/tables/`) + `SUPPLEMENTARY_INDEX.md`, verified in sync by filename diff (2026-07-16): 46 files present, 46 referenced, zero dangling or missing entries.
+- [x] ✅ Supplementary tables (63, per `03_supplementary/tables/`) + `SUPPLEMENTARY_INDEX.md`, verified in sync by filename diff (2026-07-17, re-verified after the multiview/recoverability merge): 63 files present, 63 referenced, zero dangling or missing entries.
 - [x] ✅ Supplementary Methods prose present (S.M.1–S.M.4 in `SUPPLEMENTARY_INDEX.md`).
 
 ## F. Reproducibility (BiB values this)

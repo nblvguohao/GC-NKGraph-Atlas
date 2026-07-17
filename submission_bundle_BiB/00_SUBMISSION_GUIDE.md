@@ -216,7 +216,54 @@ against what actually exists in `results/tables/`, `results/figures/`, and the
   the paper's own "probe, not predictor" framing; removing it made that
   framing more internally consistent, not less.
 
-## 8. Open question before pushing to GitHub
+## 8. 2026-07-17: merged a concurrent branch adding real multi-modal evidence (S3.7/S3.8, Fig. S1/S2)
+
+A separate concurrent agent session (`codex/multiview-strengthening`, forked
+from this repo's `705bf48`) independently built two substantive, real-data
+additions and asked to have them merged into `master`:
+
+1. **Label-masked multi-view external audit** (extends S2.6/S3.7, adds Fig.
+   S1). Properly redoes this session's own earlier exploratory multi-view-
+   fusion idea (informally "T19"): masks every label-defining gene out of
+   both expression and graph projections, uses 10 fixed seeds with STAD
+   80:20 train/early-stop and LIHC held out entirely from tuning. Finding:
+   learned multi-view fusion is significantly *worse* than no graph once
+   label overlap is controlled -- this session's own earlier, unmasked T19
+   result was optimistic due to exactly that circularity, and was correctly
+   never added to the manuscript at the time.
+2. **Real-data comparative recoverability atlas** (new S3.8, Fig. S2). Tests
+   all four registered mechanism cards across the four bulk cohorts plus
+   three additional real orthogonal-modality sources (GSE122401 protein,
+   MTBLS3303 metabolomics, GSE251950 Visium spatial). Verdict:
+   `comparative_atlas_only` (pre-registered gate not met) -- protein/
+   metabolomics correctly reported `not_measured` rather than faked; spatial
+   evidence scoped to an explicitly exploratory 4-of-9/10-section subset
+   after the full archive failed an integrity check and was excluded.
+
+**Verification before merging:** ran the new test suite (43 passed, 3 skipped
+for the still-pending metabolomics download) plus the full existing suite
+(163 passed total, no regressions); cross-checked one headline number
+(learned-fusion-vs-no-graph AUROC/AUPRC deltas) against its underlying TSV
+and got an exact match; confirmed the no-synthetic-data guarantees are
+enforced in code (`src/common/real_data.py` rejects `synthetic`/`mock`/`demo`
+paths), not just documented.
+
+**Merge conflicts resolved by hand:** Limitations item 8 (git's auto-merge
+picked one side and silently dropped this session's T17
+cross-cohort-transfer-instability clause -- manually recombined both
+cautions); `main.pdf` (binary conflict, resolved by recompiling from the
+merged `.tex`, 23 pages, 0 undefined refs); `SUPPLEMENTARY_INDEX.md` (merged
+cleanly, then audited and fixed 7 table entries the source branch had
+created but never indexed). The "Additional mechanisms" Future Directions
+paragraph auto-merged correctly in favor of this session's newer 8-card text
+(the other branch's version was stale, predating the mechanism-card commit).
+
+Supplementary table count is now **63** (was 46); figure count is now **7**
+(fig0-4 plus S1, S2). `data/external/` (1.1GB of real downloaded
+GSE122401/GSE251950 data backing the new work) added to `.gitignore`, same
+policy as `data/26Q1/`.
+
+## 9. Open question before pushing to GitHub
 
 The local repo has five branches, four of which exist on `origin` alongside
 `master`: `nk-pre-submission`, `strengthen-paper`,
