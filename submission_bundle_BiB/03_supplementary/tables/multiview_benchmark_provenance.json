@@ -1,0 +1,63 @@
+{
+  "timestamp_utc": "2026-07-16T18:34:08.216854+00:00",
+  "config": {
+    "graph_dir": "C:\\CC\\NK\\temp_clone\\data\\processed\\graph_ablation\\multiview",
+    "labels_path": "C:\\CC\\NK\\temp_clone\\results\\tables\\nk_state_labels.tsv",
+    "expression_dir": "C:\\CC\\NK\\temp_clone\\data\\processed\\bulk",
+    "output_dir": "results\\tables",
+    "seeds": [
+      1234,
+      2345,
+      3456,
+      4567,
+      5678,
+      6789,
+      7890,
+      8901,
+      9012,
+      1357
+    ],
+    "feature_modes": [
+      "masked",
+      "full"
+    ],
+    "embedding_dim": 64,
+    "max_epochs": 300,
+    "patience": 20,
+    "batch_size": 32,
+    "learning_rate": 0.001,
+    "weight_decay": 1e-05,
+    "n_bootstrap": 2000,
+    "validation_fraction": 0.2,
+    "coexpression_edges_path": "C:\\CC\\NK\\temp_clone\\data\\processed\\graph\\coexpression_edges.tsv"
+  },
+  "input_sha256": {
+    "nodes": "dd214f34cae844b58dfa3ebaf6af0d9eefe2cca7a1ad746c4beed78ae3adb40f",
+    "edges": "f9bf0d1569787056dbbc36681f46c3714a353b000ef48f416516272550f27f83",
+    "labels": "9d3b8c51b4103cad647ccc06f1c52332eaa30f19e687d6aecb2389ce5dcde6ec",
+    "stad_expression": "095dcffbe484a4a26c21eaa9494ec51c4ce11ac77a42f1af5fac8b6fe23f3cda",
+    "lihc_expression": "5ab19e86a6661374bde98bdf57d590c0125b52702d892454c987160af4f8056e"
+  },
+  "view_spec": {
+    "generic_interaction": [
+      "ppi",
+      "coexpression"
+    ],
+    "ligand_receptor": [
+      "ligand_receptor"
+    ],
+    "metabolic_crosstalk": [
+      "metabolic_crosstalk"
+    ],
+    "sm_topology_axis": [
+      "sm_topology_axis"
+    ],
+    "go_prior": [
+      "go_prior"
+    ],
+    "msigdb_prior": [
+      "msigdb_prior"
+    ]
+  },
+  "verdict": "no_stable_external_gain"
+}
