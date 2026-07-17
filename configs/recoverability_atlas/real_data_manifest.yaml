@@ -42,7 +42,9 @@ assets:
     species: Homo sapiens
     sample_count: 160
     local_path: data/external/recoverability/GSE122401/GSE122401_RAW.tar
-    status: pending_download
+    status: available
+    sha256: 6b09856c1e3679d47875cf670eca8dca331523a5df312037af77d72a99b50639
+    retrieved_at: '2026-07-17T00:29:30+00:00'
   mtbls3303:
     accession: MTBLS3303
     source_url: https://www.ebi.ac.uk/metabolights/ws/studies/MTBLS3303/download
