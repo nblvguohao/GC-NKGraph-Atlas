@@ -1,0 +1,9 @@
+comparisons:
+  - {card_id: zheng_nk_sm_topology, comparison_id: sm_synthesis_to_protrusion, layer: downstream_effector, left_module: nk_sm_synthesis, right_module: nk_protrusion_machinery, expected_sign: positive}
+  - {card_id: zheng_nk_sm_topology, comparison_id: protrusion_to_cytotoxicity, layer: downstream_effector, left_module: nk_protrusion_machinery, right_module: nk_synapse_cytotoxicity_outcome, expected_sign: positive}
+  - {card_id: adenosine_nk_suppression, comparison_id: adenosine_receptor_to_cytotoxicity, layer: receptor_signaling, left_module: nk_adenosine_receptors, right_module: nk_cytolytic_machinery, expected_sign: negative}
+  - {card_id: adenosine_nk_suppression, comparison_id: inhibitory_to_cytotoxicity, layer: receptor_signaling, left_module: nk_inhibitory_receptors, right_module: nk_cytolytic_machinery, expected_sign: negative}
+  - {card_id: tgfb_nk_exclusion, comparison_id: caf_ecm_to_cytotoxicity, layer: upstream_driver, left_module: caf_ecm_program, right_module: nk_cytolytic_machinery, expected_sign: negative}
+  - {card_id: tgfb_nk_exclusion, comparison_id: tgfb_signaling_to_activation, layer: receptor_signaling, left_module: nk_tgfb_signaling, right_module: nk_activating_receptors, expected_sign: negative}
+  - {card_id: nkg2d_micab_shedding, comparison_id: shedding_to_cytotoxicity, layer: upstream_driver, left_module: tumor_shedding_machinery, right_module: nk_cytotoxicity_readout, expected_sign: negative}
+  - {card_id: nkg2d_micab_shedding, comparison_id: recognition_to_cytotoxicity, layer: receptor_signaling, left_module: nk_recognition_receptor, right_module: nk_cytotoxicity_readout, expected_sign: positive}
