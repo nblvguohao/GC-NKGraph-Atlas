@@ -326,6 +326,24 @@ The model employs a two-stage architecture:
 
 Training uses 5-fold stratified cross-validation with early stopping (patience=30 epochs). The optimizer is Adam with CrossEntropy loss; learning rate (1.7×10⁻³), weight decay (5.6×10⁻⁶), and dropout (0.6) were selected via a 100-trial Bayesian (TPE) hyperparameter search maximizing MCC (`results/tables/gc_nkgraph_bayesian_trials.tsv`).
 
+**Multi-view audit.** Inspired by the separation of biological networks in TREE
+[49] and GRAFT [50], we additionally encoded six views independently by SVD:
+generic interactions (PPI plus scRNA co-expression), ligand–receptor,
+`metabolic_crosstalk`, `sm_topology_axis`, GO-process co-membership, and MSigDB
+C2 co-membership. A global softmax weight fused the six sample-level graph
+projections; this is a lightweight audit, not a Transformer implementation. The
+**label-masked primary analysis** removed the union of every gene used to define
+NK infiltration, cytotoxicity, dysfunction, or CAF/ECM exclusion from both raw
+expression and graph projections; the unmasked analysis was retained only as a
+sensitivity check. For each of ten fixed random seeds, TCGA-STAD was split 80:20
+for training/early stopping (maximum 300 epochs; patience 20), and TCGA-LIHC was
+never used for standardization, early stopping, threshold selection, or model
+selection. No-graph, merged-SVD, single-view, uniform-fusion, learned-fusion, and
+leave-one-view-out models shared each split. External AUROC/AUPRC differences
+were computed from seed-ensemble probabilities with a 2,000 paired stratified
+bootstrap over LIHC samples; seed SD quantifies algorithmic instability rather
+than biological replication.
+
 ### 2.7 Baseline methods
 
 Six baselines are evaluated on the same data splits: XGBoost [42], LightGBM [43], Random Forest, ElasticNet logistic regression, RBF SVM, and a 2-layer MLP. All baselines use the full gene expression matrix without graph structure. The comparison isolates the contribution of graph-informed features.
@@ -959,6 +977,26 @@ exactly which edge types happen to connect the same node pairs and does not move
 consistently with mechanism-edge content across variants, so it is not treated as
 independent evidence.)
 
+The multi-view audit makes this distinction stricter. After removing all
+label-defining genes, the external LIHC ensemble AUROC/AUPRC was 0.922/0.846 for
+the no-graph expression model, 0.906/0.822 for merged SVD, 0.914/0.832 for
+uniform fusion, and 0.912/0.826 for learned fusion (Fig. S1). Learned fusion was
+worse than no graph for both AUROC (Δ=−0.0097, 95% bootstrap CI
+−0.0185 to −0.0024) and AUPRC (Δ=−0.0205, −0.0381 to −0.0063), and was
+indistinguishable from uniform fusion. In the unmasked sensitivity analysis the
+same learned model reached 0.971/0.936, showing why the label-overlap control is
+load-bearing rather than optional. No view was top-ranked in at least 8/10 seeds
+(MSigDB was highest in 7/10), and every leave-one-view-out contrast failed the
+pre-registered joint weight/CI contribution gate. Thus, **view separation
+improves structural auditability but does not establish a predictive advantage**.
+
+As a topology-specific calibration, we permuted the gene labels of each
+mechanism view 1,000 times while fixing the other five views. Both authored
+views imposed their intended geometry (observed vs null mean coupling:
+`metabolic_crosstalk` 0.225 vs 0.031; `sm_topology_axis` 0.169 vs 0.079; both
+empirical *P*=0.001). This verifies that the typed edges act at the intended
+module boundary; it is explicitly not biological or predictive validation.
+
 Together, the ablation is a third, methodologically independent line of evidence
 for the paper's central boundary: the **effector layer** of the axis is
 transcriptionally present (the within-axis `sm_topology_axis` edges organize the
@@ -972,6 +1010,10 @@ mechanism-grounded edges as interpretable structure — as opposed to a predicti
 gain — is consistent with single-cell work in which ligand–receptor interaction
 analysis, rather than expression alone, explained how one cell subset regulates
 another [21].
+
+### 3.8 Real-data comparative recoverability atlas
+
+We applied the same pre-specified module comparisons to all four registered cards in four verified human bulk cohorts (TCGA-STAD, TCGA-LIHC, GSE62254 and GSE84437; Fig. S2). The two SM-topology downstream comparisons were directionally concordant with BH-FDR <0.05 in all cohorts. The NKG2D recognition-to-cytotoxicity comparison likewise recovered, whereas its tumor-shedding comparison did not. Neither pre-specified adenosine nor TGF-beta inhibitory comparison recovered in the expected direction. This is a comparative evidence map, not a universal law: the direct metabolomics, spatial and sample-level protein matrices required for the corresponding non-transcriptomic endpoints were unavailable in the public inputs and are explicitly recorded as `not_measured`. The pre-registered three-card/two-cohort/direct-modality gate therefore returns `comparative_atlas_only`.
 
 ---
 
@@ -1144,7 +1186,7 @@ operationalize a physical mechanism from an indirect molecular readout.
 5. **Single-cell pseudoreplication.** The 8,310 NK cells derive from 9 biological samples. We correct for this via per-sample meta-analysis (§2.9), but between-sample heterogeneity is substantial (I² up to 96% for H3), indicating that sample-level factors beyond the SST axis influence the correlations. Results should be interpreted at the sample level, not the cell level. A leave-one-sample-out sensitivity analysis (`results/tables/h3_leave_one_sample_out.tsv`) shows the H3 pooled estimate itself is stable to removing any single sample (pooled r range 0.275–0.350 across the 9 leave-one-out re-analyses, all 95% CIs excluding 0) — so the pseudoreplication correction is not an artifact of one outlier sample. This is a separate question from whether the correlation is technically confounded (item 6 below), which it is.
 6. **Single-cell module-score correlations require count-depth and module-permutation controls beyond pseudoreplication correction.** Re-running the count-depth control (P0-2) and module-membership permutation test (P0-3) on the real scRNA data (8,310 NK cells; previously validated on synthetic data only) revealed that pseudoreplication correction alone is not sufficient for the H3 single-cell number: 47.4% of the protrusion-machinery module score's variance is explained by library size (`total_counts`, which varies 236-fold across cells), residualizing against library size and the real scVI latent space collapses r from 0.32 to 0.09, and a permutation test using an expression-matched scoring method shows the observed coupling does not exceed a randomly-drawn, size-matched gene-module baseline (empirical *P*=0.97). We therefore no longer treat the single-cell H3 number as an independent replication (§3.2, §4.1); the effector-arm claim rests on the bulk result and its gastric replications. The count-depth diagnostics for H2 and H4 did not change those hypotheses' already-null verdicts.
 7. **NK subtype resolution.** scRNA-based NK annotation depends on the quality of the reference atlas. Populations that are rare or absent in the reference may be misclassified.
-8. **The graph model does not outperform top tabular or signature baselines on accuracy, and is not intended to.** On the binary NK-state task the GNN is statistically indistinguishable from LightGBM/XGBoost and from an SST-module signature baseline that uses the mechanism card's gene modules without a graph (§3.4). We do not position the graph as a predictor: its role is diagnostic — an ablatable, mechanism-structured embedding whose behavior on removing the metabolic-coupling edge independently probes transcriptional reach (§3.7). We do not additionally report a downstream cross-cohort transfer-performance test of this edge: an exploratory version of that test proved highly sensitive to training-seed variance and to how overlapping edge types are merged into a single adjacency matrix, and we were unable to obtain a stable directional estimate we would trust in a submission-facing result; the embedding-coupling evidence above does not depend on that test and stands on its own.
+8. **The graph model does not outperform top tabular or signature baselines on accuracy, and the stricter external audit confirms that boundary.** On the binary NK-state task the GNN is statistically indistinguishable from LightGBM/XGBoost and from an SST-module signature baseline (§3.4). In the label-masked STAD→LIHC audit, learned multi-view fusion was significantly worse than no graph for AUROC and AUPRC and no individual view passed the joint stability/ablation gate (§3.7). The better unmasked result is a sensitivity analysis of label overlap, not evidence of graph value. We therefore position typed views as an auditable representation of authored structure, not as a predictor; their node-label-permutation calibration verifies where structure is imposed but cannot validate the underlying biology.
 9. **Residual NK bias in the tumor-intrinsic candidate pool.** The `tumor_specificity_log2>0` gate is permissive: 17 of 37 candidates are annotated to NK-side mechanism-card modules, including RAC1 and WASL. The pool should be interpreted as "genes with a non-zero malignant-cell transcript signal that mechanistically intersect the SST axis," not as a clean set of tumor-exclusive targets. The trivial baseline comparison (§3.5) confirms that the five-dimension scoring adds discriminative value over anchor-paper membership alone (Spearman rho=0.54), but the delta is moderate. A stricter filter (e.g. tumor_specificity_log2>0.5 or a module-level penalty) would reduce NK-side contamination at the cost of losing borderline tumor-intrinsic candidates.
 10. **Candidate atlas omits intracellular/TF-level regulators.** The prioritization scores surface and metabolic-enzyme genes; transcription-factor and intracellular negative regulators of NK function (e.g. the CREM/PKA–CREB axis [27]) fall outside the current candidate space and are a natural extension of the mechanism-card modules.
 11. **No clinical-outcome anchor.** NK states are linked to scRNA-defined labels, not to patient survival or therapy response. Single-cell atlases that tie a functional state to durable clinical outcome [21] indicate a clear next step: anchoring the NK-state readout to outcome in a cohort with follow-up.
@@ -1161,7 +1203,7 @@ operationalize a physical mechanism from an indirect molecular readout.
 - **Additional mechanisms.** The mechanism-card registry (`configs/mechanism_cards/registry.yaml`) is designed to hold multiple cards. Cards for adenosine-mediated NK suppression, TGFβ-driven NK exclusion, stress-ligand shedding (MICA/B-ADAM17), and other NK checkpoint axes (TIGIT/CD96 [47,48]; the CLEC12B–lipoprotein-lipase axis recently shown to restrain tumor NK cells and to synergize with PD-1 blockade [46]) are natural next additions.
 - **Physical topology integration.** When membrane protrusion / microvilli imaging data become available (even for a subset of samples), Layer 14R-B of the SST-axis module can be activated to provide direct phenotype-transcriptome correlation.
 - **Prospective validation cohort.** A dedicated gastric cancer cohort with paired bulk RNA-seq, scRNA-seq, and functional NK assays would provide the strongest validation of the prioritized targets.
-- **Learnable graph encoder.** All embeddings in this study use a spectral (SVD-based) encoder (§2.6); a `torch_geometric`-based heterogeneous graph transformer (HGT) [32] with learnable, type-specific message passing was not implemented for this study and is a natural architectural extension, particularly for tasks where relational structure is more decisive than the binary NK-state classification benchmarked here (§4.3, item 8). TREE [49] and GRAFT [50] offer a concrete template for this extension at genome scale — per-network encoders fused by a learnable attention weight rather than a single merged adjacency matrix — though at our panel's ~100-node scale a lightweight version (per-edge-type spectral embeddings plus a learned fusion weight, rather than a full multi-layer GCN per view) is more appropriate than a direct port of either architecture.
+- **Genome-scale learnable encoder.** The present audit already separates edge types and learns a global fusion weight over per-view spectral embeddings (§2.6); it does not implement the per-node GCN/Transformer encoders of TREE [49] or GRAFT [50]. Such an architecture should be reserved for a genome-scale panel, a label independent of its input genes, and an independently powered endpoint where model capacity can be evaluated without the circularity and small-panel overfitting exposed here.
 
 ---
 

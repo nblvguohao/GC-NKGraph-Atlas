@@ -74,6 +74,19 @@ classifier hyperparameters (learning rate 1.7×10⁻³, weight decay 5.6×10⁻�
 0.6) were selected by a 100-trial Bayesian (TPE) search maximizing MCC
 (`gc_nkgraph_bayesian_trials.tsv`, `gc_nkgraph_best_hyperparams.tsv`).
 
+**S.M.5 Label-masked multi-view external audit** (main text §2.6 and §3.7;
+`multiview_benchmark_provenance.json`). Six edge views are independently encoded
+by spectral SVD and combined either uniformly or by one learned global softmax
+weight. The primary analysis removes every gene used to construct the NK-state
+label from both raw expression and graph projections. Ten matched STAD
+train/validation splits are evaluated once on LIHC; LIHC is not used for
+standardization, early stopping, threshold selection, or model selection.
+Uncertainty in model differences is a 2,000-draw paired stratified bootstrap over
+external samples; seed SD is reported separately as algorithmic instability.
+Mechanism-view node-label permutations preserve the weighted topology and degree
+sequence while keeping all other views fixed; this is a structural calibration,
+not biological validation.
+
 ## Supplementary Tables
 
 | File | Maps to | Content |
@@ -111,6 +124,19 @@ classifier hyperparameters (learning rate 1.7×10⁻³, weight decay 5.6×10⁻�
 | `trivial_baseline_comparison.tsv` / `trivial_baseline_overlap.tsv` / `trivial_baseline_summary.md` | §3.5 | Comparison of the five-dimension target-scoring against a mechanism-card-membership-only trivial baseline. |
 | `geneset_separation_audit.tsv` / `geneset_separation_audit_summary.md` | §4.3 (Limitations item 15) | Gene-set overlap audit between the NK-state classification label, the SST-axis modules, and the 37-gene candidate list (label-leakage / circularity check). |
 | `gc_nkgraph_bayesian_trials.tsv` / `gc_nkgraph_best_hyperparams.tsv` | §2.6 | 100-trial Bayesian (TPE) hyperparameter search log and selected configuration (learning rate, weight decay, dropout, edge weights) for the NK-state classifier. |
+| `multiview_benchmark_summary.tsv` / `multiview_benchmark_per_seed.tsv` | §2.6 / §3.7 / Fig. S1 | Label-masked primary and full-feature sensitivity results for no-graph, merged-SVD, single-view, uniform/learned fusion, and leave-one-view-out models across ten fixed seeds. |
+| `multiview_bootstrap_comparisons.tsv` | §3.7 | Pre-registered paired external-sample bootstrap contrasts of learned fusion against no graph, merged SVD, and uniform fusion, including the submission verdict. |
+| `multiview_weight_stability.tsv` / `multiview_fusion_weights.tsv` | §3.7 / Fig. S1 | Learned global view weights and the ≥8/10-seed stable-preference gate. |
+| `multiview_leave_one_out_bootstrap.tsv` | §3.7 | Leave-one-view-out AUROC/AUPRC contrasts with paired bootstrap CIs and the joint weight/ablation contribution verdict. |
+| `multiview_mechanism_randomization_summary.tsv` / `multiview_mechanism_randomization_null.tsv` | §3.7 | Degree-sequence-preserving node-label permutation calibration for the two authored mechanism views while other views remain fixed. |
+| `multiview_external_predictions_ensemble.tsv` | §3.7 | Seed-ensemble LIHC probabilities underlying all paired bootstrap comparisons. |
+
+## Supplementary Figures
+
+- **Fig. S2 (`figS2_recoverability_atlas.pdf` / `.png`)**: categorical recovery status by mechanism card and biological layer using verified real cohorts; unavailable direct modalities are shown only as `not_measured` in the associated tables.
+
+- **Fig. S1 (`figS1_multiview.pdf` / `.png`)**: label-masked external AUROC/AUPRC
+  with seed SD and learned view-weight stability across ten seeds.
 
 *Note:* the interactive web playground (`web/index.html`, also hosted via GitHub
 Pages) lets reviewers browse the mechanism cards and the candidate list with the
