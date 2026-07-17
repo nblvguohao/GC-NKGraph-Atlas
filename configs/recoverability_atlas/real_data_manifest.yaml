@@ -60,7 +60,10 @@ assets:
     species: Homo sapiens
     sample_count: 10
     local_path: data/external/recoverability/GSE251950/GSE251950_RAW.tar
-    status: pending_download
+    sha256: d411d5aa3163a5c97a408800516a358113c3ca6b7a2c00849dbc111dd71ccd8e
+    content_length_bytes: 668221440
+    status: failed_integrity
+    integrity_reason: outer TAR has complete byte size but damaged or truncated nested GSM archives; never use as analysis input
   gse251950_gsm7990474:
     accession: GSE251950_GSM7990474
     source_url: https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM7990nnn/GSM7990474/suppl/GSM7990474_21_00731_LI_SING.tar.gz

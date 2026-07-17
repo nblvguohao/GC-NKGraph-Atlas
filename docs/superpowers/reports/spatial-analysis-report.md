@@ -102,3 +102,9 @@ the pending outer GSE251950 archive alongside the four `available` per-GSM
 assets. Targeted tests passed (13 total), and the updated TeX manuscript was
 compiled twice; the rendered section 3.8 continuation was visually checked in
 the resulting 23-page PDF.
+
+The complete-size outer GSE251950 TAR is now explicitly registered as
+`failed_integrity` with its observed SHA-256, server content length, and nested
+archive failure reason. The real-data guard accepts that metadata for audit but
+requires `available` status before any formal read; only the four independently
+verified per-GSM archives are eligible spatial inputs.

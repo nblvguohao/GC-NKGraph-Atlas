@@ -12,6 +12,7 @@ import yaml
 
 _FORBIDDEN_PATH_TOKENS = ("synthetic", "mock", "demo")
 _REQUIRED_FIELDS = ("accession", "source_url", "modality", "species", "sample_count", "local_path")
+_ALLOWED_STATUSES = ("available", "pending_download", "failed_integrity")
 
 
 @dataclass(frozen=True)
@@ -36,6 +37,8 @@ def _validate_asset(name: str, payload: dict[str, Any]) -> RealDataAsset:
     if int(payload["sample_count"]) < 1:
         raise ValueError(f"asset '{name}' requires a positive sample_count")
     status = payload.get("status", "available")
+    if status not in _ALLOWED_STATUSES:
+        raise ValueError(f"asset '{name}' has unsupported status: {status}")
     digest = payload.get("sha256")
     if status != "pending_download" and (not isinstance(digest, str) or len(digest) != 64):
         raise ValueError(f"asset '{name}' requires sha256 after retrieval")
@@ -73,8 +76,8 @@ def assert_real_asset(asset: RealDataAsset, path: str | Path) -> None:
     input_path = Path(path)
     if any(token in str(input_path).lower() for token in _FORBIDDEN_PATH_TOKENS):
         raise ValueError("non-real input path is forbidden")
-    if asset.species != "Homo sapiens" or asset.status == "pending_download":
-        raise ValueError("asset does not satisfy real-data contract")
+    if asset.species != "Homo sapiens" or asset.status != "available":
+        raise ValueError("asset status must be available for formal analysis")
     if not input_path.is_file() or input_path.stat().st_size == 0:
         raise FileNotFoundError(f"real data file is absent or empty: {input_path}")
     if not asset.sha256 or file_sha256(input_path) != asset.sha256:

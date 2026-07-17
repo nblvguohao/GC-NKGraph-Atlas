@@ -25,7 +25,8 @@ def test_source_manifest_includes_outer_pending_and_four_available_gsm_assets(tm
     table = write_source_manifest(manifest, output)
 
     outer = table.loc[table["asset"] == "gse251950"].iloc[0]
-    assert outer["status"] == "pending_download"
+    assert outer["status"] == "failed_integrity"
+    assert "nested GSM archives" in outer["integrity_reason"]
     per_gsm = table.loc[table["asset"].str.startswith("gse251950_gsm")]
     assert len(per_gsm) == 4
     assert set(per_gsm["status"]) == {"available"}

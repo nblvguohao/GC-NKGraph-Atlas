@@ -47,3 +47,27 @@ def test_manifest_allows_pending_download_hash_only_before_retrieval(tmp_path):
     asset = load_real_data_manifest(path)["x"]
     assert asset.status == "pending_download"
     assert asset.sha256 is None
+
+
+def test_manifest_allows_failed_integrity_metadata_but_guard_rejects_it(tmp_path):
+    path = tmp_path / "manifest.yaml"
+    path.write_text(
+        """assets:
+  failed_outer:
+    accession: GSE251950
+    source_url: https://example.org/GSE251950_RAW.tar
+    modality: visium_spatial_transcriptomics
+    species: Homo sapiens
+    sample_count: 10
+    sha256: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+    local_path: data/external/recoverability/GSE251950/GSE251950_RAW.tar
+    status: failed_integrity
+    integrity_reason: nested archives are damaged
+""",
+        encoding="utf-8",
+    )
+    asset = load_real_data_manifest(path)["failed_outer"]
+    assert asset.status == "failed_integrity"
+
+    with pytest.raises(ValueError, match="available"):
+        assert_real_asset(asset, path)

@@ -22,7 +22,8 @@ def write_source_manifest(manifest_path: Path, output_path: Path) -> pd.DataFram
         raise ValueError("real-data manifest requires an assets mapping")
     fields = (
         "asset", "accession", "source_url", "modality", "species", "sample_count",
-        "sha256", "local_path", "content_length_bytes", "analysis_scope", "status", "retrieved_at",
+        "sha256", "local_path", "content_length_bytes", "analysis_scope", "status",
+        "integrity_reason", "retrieved_at",
     )
     rows = [{"asset": name, **{field: payload.get(field, "") for field in fields if field != "asset"}}
             for name, payload in assets.items()]
