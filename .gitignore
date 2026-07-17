@@ -16,6 +16,9 @@ data/processed/
 # multi-GB, redistribution not ours to grant) -- data/<release-name>/, not
 # just data/raw|interim|processed/.
 data/26Q1/
+# Real external data for the recoverability atlas (GSE122401, GSE251950, etc.
+# -- multi-GB; reproducible from configs/recoverability_atlas/real_data_manifest.yaml).
+data/external/
 *.h5ad
 *.h5
 *.parquet

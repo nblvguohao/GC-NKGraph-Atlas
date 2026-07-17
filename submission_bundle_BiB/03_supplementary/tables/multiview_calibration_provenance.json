@@ -1,0 +1,8 @@
+{
+  "timestamp_utc": "2026-07-16T18:26:06.567002+00:00",
+  "graph_dir": "C:\\CC\\NK\\temp_clone\\data\\processed\\graph_ablation\\multiview",
+  "embedding_dim": 64,
+  "n_randomizations": 1000,
+  "seed": 42,
+  "interpretation_boundary": "Topology-specific calibration only; this is not biological or predictive validation."
+}

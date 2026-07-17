@@ -1,0 +1,110 @@
+assets:
+  tcga_stad_expression:
+    accession: TCGA-STAD
+    source_url: https://portal.gdc.cancer.gov/projects/TCGA-STAD
+    modality: bulk_RNA_seq
+    species: Homo sapiens
+    sample_count: 375
+    local_path: C:/CC/NK/temp_clone/data/processed/bulk/tcga_stad_expression.tsv
+    sha256: 095dcffbe484a4a26c21eaa9494ec51c4ce11ac77a42f1af5fac8b6fe23f3cda
+    status: available
+  tcga_lihc_expression:
+    accession: TCGA-LIHC
+    source_url: https://portal.gdc.cancer.gov/projects/TCGA-LIHC
+    modality: bulk_RNA_seq
+    species: Homo sapiens
+    sample_count: 374
+    local_path: C:/CC/NK/temp_clone/data/processed/bulk/tcga_lihc_expression.tsv
+    sha256: 5ab19e86a6661374bde98bdf57d590c0125b52702d892454c987160af4f8056e
+    status: available
+  gse62254_expression:
+    accession: GSE62254
+    source_url: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE62254
+    modality: bulk_expression_microarray
+    species: Homo sapiens
+    sample_count: 300
+    local_path: C:/CC/NK/temp_clone/data/processed/bulk/gse62254_expression.tsv
+    sha256: 414692dc3e7f96c31a6d37e53a2e05fecc5a12462303f55c7de13825ef1c5d9b
+    status: available
+  gse84437_expression:
+    accession: GSE84437
+    source_url: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE84437
+    modality: bulk_expression_microarray
+    species: Homo sapiens
+    sample_count: 433
+    local_path: C:/CC/NK/temp_clone/data/processed/bulk/gse84437_expression.tsv
+    sha256: 560c6df00aa3924b1ba14fb1daa49917542b09c174cba07d11635636deb2e67d
+    status: available
+  gse122401:
+    accession: GSE122401
+    source_url: https://ftp.ncbi.nlm.nih.gov/geo/series/GSE122nnn/GSE122401/suppl/GSE122401_RAW.tar
+    modality: matched_transcriptome_proteome
+    species: Homo sapiens
+    sample_count: 160
+    local_path: data/external/recoverability/GSE122401/GSE122401_RAW.tar
+    status: available
+    sha256: 6b09856c1e3679d47875cf670eca8dca331523a5df312037af77d72a99b50639
+    retrieved_at: '2026-07-17T00:29:30+00:00'
+  mtbls3303:
+    accession: MTBLS3303
+    source_url: https://www.ebi.ac.uk/metabolights/ws/studies/MTBLS3303/download
+    modality: tissue_metabolomics
+    species: Homo sapiens
+    sample_count: 56
+    local_path: data/external/recoverability/MTBLS3303/MTBLS3303.zip
+    status: pending_download
+  gse251950:
+    accession: GSE251950
+    source_url: https://ftp.ncbi.nlm.nih.gov/geo/series/GSE251nnn/GSE251950/suppl/GSE251950_RAW.tar
+    modality: visium_spatial_transcriptomics
+    species: Homo sapiens
+    sample_count: 10
+    local_path: data/external/recoverability/GSE251950/GSE251950_RAW.tar
+    sha256: d411d5aa3163a5c97a408800516a358113c3ca6b7a2c00849dbc111dd71ccd8e
+    content_length_bytes: 668221440
+    status: failed_integrity
+    integrity_reason: outer TAR has complete byte size but damaged or truncated nested GSM archives; never use as analysis input
+  gse251950_gsm7990474:
+    accession: GSE251950_GSM7990474
+    source_url: https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM7990nnn/GSM7990474/suppl/GSM7990474_21_00731_LI_SING.tar.gz
+    modality: visium_spatial_transcriptomics
+    species: Homo sapiens
+    sample_count: 1
+    local_path: data/external/recoverability/GSE251950/per_gsm/GSM7990474_21_00731_LI_SING.tar.gz
+    sha256: 449d36fafed541c48f91e18148201b5a0b40f41f5f739312d2c4e8abcf4294cd
+    content_length_bytes: 99492794
+    analysis_scope: exploratory_four_verified_per_gsm_subset
+    status: available
+  gse251950_gsm7990476:
+    accession: GSE251950_GSM7990476
+    source_url: https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM7990nnn/GSM7990476/suppl/GSM7990476_21_00733_LI_SING.tar.gz
+    modality: visium_spatial_transcriptomics
+    species: Homo sapiens
+    sample_count: 1
+    local_path: data/external/recoverability/GSE251950/per_gsm/GSM7990476_21_00733_LI_SING.tar.gz
+    sha256: 21f34c1c8ef5f454071c9d243a8b1b05985413b66bb5ac8fd68b1cbfd66303f6
+    content_length_bytes: 117303692
+    analysis_scope: exploratory_four_verified_per_gsm_subset
+    status: available
+  gse251950_gsm7990479:
+    accession: GSE251950_GSM7990479
+    source_url: https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM7990nnn/GSM7990479/suppl/GSM7990479_21_01252_LI_SING.tar.gz
+    modality: visium_spatial_transcriptomics
+    species: Homo sapiens
+    sample_count: 1
+    local_path: data/external/recoverability/GSE251950/per_gsm/GSM7990479_21_01252_LI_SING.tar.gz
+    sha256: cf2df49f33766709a4d5c96995dfe31e3e57fab5a998e7235dafde33a1f51291
+    content_length_bytes: 30694361
+    analysis_scope: exploratory_four_verified_per_gsm_subset
+    status: available
+  gse251950_gsm7990481:
+    accession: GSE251950_GSM7990481
+    source_url: https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM7990nnn/GSM7990481/suppl/GSM7990481_21_01254_LI_SING.tar.gz
+    modality: visium_spatial_transcriptomics
+    species: Homo sapiens
+    sample_count: 1
+    local_path: data/external/recoverability/GSE251950/per_gsm/GSM7990481_21_01254_LI_SING.tar.gz
+    sha256: 7614be8a3fb94d465e5bd0adb6d5cd45ef1efeb170db10a02294f3f7b4ada78b
+    content_length_bytes: 40179023
+    analysis_scope: exploratory_four_verified_per_gsm_subset
+    status: available
