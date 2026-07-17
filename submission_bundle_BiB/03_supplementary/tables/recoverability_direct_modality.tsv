@@ -1,0 +1,5 @@
+card_id	modality	direct_endpoint	status	not_measured_reason	accession
+zheng_nk_sm_topology	metabolomics	serine/sphingomyelin abundance	not_measured	MTBLS3303 public archive not retrieved	MTBLS3303
+adenosine_nk_suppression	metabolomics	adenosine abundance	not_measured	MTBLS3303 public archive not retrieved	MTBLS3303
+tgfb_nk_exclusion	spatial_transcriptomics	CAF--NK spot-module adjacency	not_measured	GSE251950 archive not retrieved	GSE251950
+nkg2d_micab_shedding	protein	MICA/B abundance	not_measured	GSE122401 public archive contains RNA matrices but no sample-level protein matrix	GSE122401
