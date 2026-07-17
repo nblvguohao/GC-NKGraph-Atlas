@@ -7,6 +7,14 @@ All supplementary tables are tab-separated (`.tsv`) unless noted. Column meaning
 follow the manuscript Methods (§2). Values are the final results reported in the
 main text and figures.
 
+**Supplementary Results.** The main text was condensed to meet BiB's word-count
+limit for a Problem Solving Protocol (2,000–5,000 words); the full step-by-step
+statistical narrative behind the headline confound-control results (§3.2 H2/H3/H4
+diagnostics, §3.4 domain-baseline comparison, §3.5 orthogonal target validation,
+§4.3 the complete 17-item limitations list) is preserved verbatim in
+`SUPPLEMENTARY_RESULTS.md`. No number, verdict, or conclusion differs between the
+main text and that document — it restores derivation detail only.
+
 ## Supplementary Methods
 
 These notes expand the main-text Methods (§2) for the parameters most relevant to
@@ -91,21 +99,21 @@ not biological validation.
 
 | File | Maps to | Content |
 |------|---------|---------|
-| `sst_axis_positive_control_recovery.tsv` | Table 2 / Fig 1 | Arm A per-hypothesis (H1–H5) outcomes at bulk and single-cell resolution (r, p, expected sign, recovery verdict). |
+| `sst_axis_positive_control_recovery.tsv` | Table 3 / Fig 2 | Arm A per-hypothesis (H1–H5) outcomes at bulk and single-cell resolution (r, p, expected sign, recovery verdict). |
 | `axis_confirmation_panel.tsv` | §3.2 | Consolidated axis-confirmation statistics across resolutions. |
-| `sst_axis_condition_comparison.tsv` | Table / Fig 2 | SST-module scores: healthy-liver vs gastric-cancer NK, per module, with p-values. |
+| `sst_axis_condition_comparison.tsv` | Fig 3 | SST-module scores: healthy-liver vs gastric-cancer NK, per module, with p-values. |
 | `sst_axis_gc_vs_hl.tsv` | §3.3 | Gastric-cancer vs healthy-liver NK contrasts (Arm B). |
 | `sst_axis_scrna_by_tissue.tsv` | §3.2–3.3 | Single-cell SST-module scores by tissue (intratumoral / normal / metastatic). |
-| `external_validation_results.tsv` | Table 5 / Fig 2 | Effector- and metabolic-arm replication in GSE62254 and GSE84437 (r, p, NK-marker coverage). |
-| `gc_scrna_dataset_summary.tsv` | Table 1 | scRNA dataset composition (cells, NK cells, clusters, tissues). |
-| `baseline_internal_results.tsv` | Table 3 | Six tabular baselines, 5-fold CV metrics. |
-| `gc_nkgraph_internal_results.tsv` | Table 3 | GC-NKGraph-Atlas (GNN) 5-fold CV metrics. |
-| `model_comparison.tsv` | Table 3 / Fig 4 | Per-fold metrics for all methods (GNN + baselines). |
-| `model_comparison_summary.tsv` | Table 3 | Mean ± SD summary across folds. |
+| `external_validation_results.tsv` | Table 4 / Fig 3 | Effector- and metabolic-arm replication in GSE62254 and GSE84437 (r, p, NK-marker coverage). |
+| `gc_scrna_dataset_summary.tsv` | Table 2 | scRNA dataset composition (cells, NK cells, clusters, tissues). |
+| `baseline_internal_results.tsv` | Table 5 | Six tabular baselines, 5-fold CV metrics. |
+| `gc_nkgraph_internal_results.tsv` | Table 5 | GC-NKGraph-Atlas (GNN) 5-fold CV metrics. |
+| `model_comparison.tsv` | Table 5 / Fig 4 | Per-fold metrics for all methods (GNN + baselines). |
+| `model_comparison_summary.tsv` | Table 5 | Mean ± SD summary across folds. |
 | `model_comparison_stats.tsv` | §3.4 | Paired significance tests (GNN vs each baseline; t-test + Wilcoxon). |
 | `ablation_results.tsv` | Table (§3.7) | Graph ablation on the enriched real graph (FULL / −MC / −SST): edge counts, embedding-coupling H1/H2, and modularity. |
-| `tumor_intrinsic_candidates.tsv` | Table 4 / Fig 3 | De-circularized tumor-intrinsic candidate list (n=37): rank, gene, category, score, tumor-specificity, druggability stage, recommended assay. |
-| `candidate_evidence_matrix.tsv` | Fig 3 | Multi-dimensional evidence matrix underlying candidate scoring (DepMap / DrugBank / Open Targets). |
+| `tumor_intrinsic_candidates.tsv` | Table 6 / Fig 5 | De-circularized tumor-intrinsic candidate list (n=37): rank, gene, category, score, tumor-specificity, druggability stage, recommended assay. |
+| `candidate_evidence_matrix.tsv` | Fig 5 | Multi-dimensional evidence matrix underlying candidate scoring (DepMap / DrugBank / Open Targets). |
 | `label_definition.md` | §2.5 | NK-state label definitions. |
 | `nk_state_thresholds.json` | §2.5 | Numeric thresholds used to assign NK states. |
 | `h3_scoring_method_diagnostic.tsv` / `h3_scoring_method_diagnostic_summary.md` | §3.2 | H3 count-depth/scVI-latent residualization and expression-matched permutation-null diagnostics (the "does the single-cell H3 number survive confound control" analysis). |
@@ -113,13 +121,13 @@ not biological validation.
 | `h3_module_permutation_test.tsv` | §3.2 | 10,000-draw random-gene-module permutation null for H3 (naive mean-zscore version). |
 | `h3_leave_one_sample_out.tsv` | §4.3 (Limitations item 5) | Leave-one-sample-out sensitivity analysis for the pooled H3 meta-analytic estimate. |
 | `sst_axis_count_depth_control.tsv` | §3.2 | Per-cell library-size / detected-gene-count covariates underlying the count-depth residualization. |
-| `sst_axis_pseudoreplication_corrected.tsv` | §2.9 / Table 2 | Naive per-cell values retained for transparency alongside the corrected meta-analytic values reported in-text. |
+| `sst_axis_pseudoreplication_corrected.tsv` | §2.9 / Table 3 | Naive per-cell values retained for transparency alongside the corrected meta-analytic values reported in-text. |
 | `mc_edge_sign_calibration_audit.tsv` | §2.5 | Audit distinguishing the fixed `metabolic_crosstalk` edge weight (uncalibrated) from the separately-calibrated `sst_axis_score` sign term. |
 | `mechanism_card_comparison.tsv` / `mechanism_card_gene_overlap.tsv` | §4.2 | Cross-card comparison and pairwise gene-set Jaccard overlap for the four registered mechanism cards. |
 | `bulk_h3_purity_control.tsv` | §3.2 / §4.3 (Limitations item 17) | Bulk effector-arm (protrusion~cytotoxicity) correlation before vs after partialling out a clean NK-lineage fraction proxy, across TCGA-LIHC / GSE62254 / GSE84437 (zero-order r, partial r, 95% CI, attenuation %). Shows the bulk coupling is ~50% NK-abundance-driven and does not survive in GSE84437. |
 | `mechanism_card_tgfb_recovery.tsv` | §4.1 / §4.2 | Second mechanism card (TGFβ→SMAD→NK exclusion) run end-to-end on the gastric cohorts: pre-registered hypotheses H2–H5, zero-order and NK-fraction-controlled H3, per cohort. Demonstrates the transcriptional-reach boundary generalizes across two mechanisms. |
 | `domain_baselines_per_fold.tsv` / `domain_baselines_summary.tsv` / `domain_baselines_tests.tsv` | §3.4 | NK-marker-signature and SST-module-signature baselines (per-fold results, summary, and paired significance tests against the GNN). |
-| `target_validation_depmap.tsv` / `target_validation_nk_state_de.tsv` / `target_validation_v2_merged.tsv` | §3.5 / Table 4 | DepMap 26Q1 CERES essentiality, NK-state DE results, and the merged evidence table underlying the evidence-tiered candidate list. |
+| `target_validation_depmap.tsv` / `target_validation_nk_state_de.tsv` / `target_validation_v2_merged.tsv` | §3.5 / Table 6 | DepMap 26Q1 CERES essentiality, NK-state DE results, and the merged evidence table underlying the evidence-tiered candidate list. |
 | `nk_state_de_external_replication.tsv` / `nk_state_de_external_concordance.tsv` / `nk_state_de_external_replication_summary.md` | §3.5 | External replication of the NK-state DE test in GSE62254/GSE84437 and directional concordance with TCGA-STAD. |
 | `trivial_baseline_comparison.tsv` / `trivial_baseline_overlap.tsv` / `trivial_baseline_summary.md` | §3.5 | Comparison of the five-dimension target-scoring against a mechanism-card-membership-only trivial baseline. |
 | `geneset_separation_audit.tsv` / `geneset_separation_audit_summary.md` | §4.3 (Limitations item 15) | Gene-set overlap audit between the NK-state classification label, the SST-axis modules, and the 37-gene candidate list (label-leakage / circularity check). |
@@ -131,11 +139,11 @@ not biological validation.
 | `multiview_mechanism_randomization_summary.tsv` / `multiview_mechanism_randomization_null.tsv` | §3.7 | Degree-sequence-preserving node-label permutation calibration for the two authored mechanism views while other views remain fixed. |
 | `multiview_external_predictions_ensemble.tsv` | §3.7 | Seed-ensemble LIHC probabilities underlying all paired bootstrap comparisons. |
 | `multiview_calibration_provenance.json` | §3.7 | Run metadata (timestamp, graph source, embedding dim, seed, randomization count) for the mechanism-view permutation calibration; explicitly notes this calibration is topology-specific, not biological or predictive validation. |
-| `recoverability_atlas.tsv` | §3.8 / Fig. S2 | Card x layer x cohort recovery status (recovered / partially_recovered / not_recovered / not_measured) for all four registered mechanism cards across the four verified bulk cohorts. |
-| `recoverability_direct_modality.tsv` | §3.8 / Fig. S2 | Per-card direct-modality results and `not_measured` reasons for protein (GSE122401), metabolomics (MTBLS3303), and spatial (GSE251950 Visium, exploratory 4-GSM subset) evidence, including the CAF-NK spot-module adjacency permutation statistics. |
-| `recoverability_source_manifest.tsv` | §3.8 | Flattened view of `configs/recoverability_atlas/real_data_manifest.yaml`: accession, source URL, modality, sample count, SHA-256, and retrieval/failure status for every real data asset used or attempted. |
-| `recoverability_transcriptome_per_cohort.tsv` | §3.8 | Per-cohort, per-card-layer transcriptomic comparison statistics (direction, effect size, nominal P, BH-FDR) underlying `recoverability_atlas.tsv`. |
-| `recoverability_cross_mechanism_verdict.json` | §3.8 | The pre-registered cross-mechanism gate verdict (`comparative_atlas_only`) and the rule that was evaluated against it (3 cards + 2 cohorts + direct modality support). |
+| `recoverability_atlas.tsv` | S3.8 (Supplementary Results) / Fig. S2 | Card x layer x cohort recovery status (recovered / partially_recovered / not_recovered / not_measured) for all four registered mechanism cards across the four verified bulk cohorts. |
+| `recoverability_direct_modality.tsv` | S3.8 (Supplementary Results) / Fig. S2 | Per-card direct-modality results and `not_measured` reasons for protein (GSE122401), metabolomics (MTBLS3303), and spatial (GSE251950 Visium, exploratory 4-GSM subset) evidence, including the CAF-NK spot-module adjacency permutation statistics. |
+| `recoverability_source_manifest.tsv` | S3.8 (Supplementary Results) | Flattened view of `configs/recoverability_atlas/real_data_manifest.yaml`: accession, source URL, modality, sample count, SHA-256, and retrieval/failure status for every real data asset used or attempted. |
+| `recoverability_transcriptome_per_cohort.tsv` | S3.8 (Supplementary Results) | Per-cohort, per-card-layer transcriptomic comparison statistics (direction, effect size, nominal P, BH-FDR) underlying `recoverability_atlas.tsv`. |
+| `recoverability_cross_mechanism_verdict.json` | S3.8 (Supplementary Results) | The pre-registered cross-mechanism gate verdict (`comparative_atlas_only`) and the rule that was evaluated against it (3 cards + 2 cohorts + direct modality support). |
 
 ## Supplementary Figures
 
