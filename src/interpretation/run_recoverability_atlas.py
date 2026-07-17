@@ -7,9 +7,30 @@ import json
 from pathlib import Path
 
 import pandas as pd
+import yaml
 
 
 ROOT = Path(__file__).resolve().parents[2]
+
+
+def write_source_manifest(manifest_path: Path, output_path: Path) -> pd.DataFrame:
+    """Materialize all registered real-data assets, including pending outer archives."""
+    with Path(manifest_path).open(encoding="utf-8") as handle:
+        document = yaml.safe_load(handle) or {}
+    assets = document.get("assets")
+    if not isinstance(assets, dict):
+        raise ValueError("real-data manifest requires an assets mapping")
+    fields = (
+        "asset", "accession", "source_url", "modality", "species", "sample_count",
+        "sha256", "local_path", "content_length_bytes", "analysis_scope", "status", "retrieved_at",
+    )
+    rows = [{"asset": name, **{field: payload.get(field, "") for field in fields if field != "asset"}}
+            for name, payload in assets.items()]
+    table = pd.DataFrame(rows, columns=fields).replace("", "not_applicable").fillna("not_applicable")
+    output_path = Path(output_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    table.to_csv(output_path, sep="\t", index=False)
+    return table
 
 
 def cross_mechanism_verdict(evidence: pd.DataFrame) -> str:
@@ -25,6 +46,10 @@ def main() -> None:
     parser.add_argument("--verify-submission", action="store_true")
     args = parser.parse_args()
     tables = Path(args.submission_root) / "03_supplementary/tables"
+    write_source_manifest(
+        ROOT / "configs/recoverability_atlas/real_data_manifest.yaml",
+        tables / "recoverability_source_manifest.tsv",
+    )
     transcriptome = pd.read_csv(tables / "recoverability_transcriptome_per_cohort.tsv", sep="\t")
     direct = pd.read_csv(tables / "recoverability_direct_modality.tsv", sep="\t")
     summary = (transcriptome.sort_values("status")

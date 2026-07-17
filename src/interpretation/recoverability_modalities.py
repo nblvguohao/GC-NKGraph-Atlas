@@ -92,6 +92,9 @@ def validate_visium_identifiers(barcodes: list[str], coordinates: pd.DataFrame) 
         raise ValueError("duplicate expression barcodes are not permitted")
     if coordinates["barcode"].duplicated().any():
         raise ValueError("duplicate in-tissue coordinate barcodes are not permitted")
+    expression_barcodes = set(barcodes)
+    if not set(coordinates["barcode"]).issubset(expression_barcodes):
+        raise ValueError("an in-tissue coordinate lacks an expression barcode")
     if coordinates.duplicated(["array_row", "array_col"]).any():
         raise ValueError("duplicate in-tissue spatial grid coordinates are not permitted")
 

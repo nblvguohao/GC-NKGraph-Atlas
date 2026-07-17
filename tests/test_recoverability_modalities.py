@@ -88,3 +88,9 @@ def test_duplicate_visium_grid_positions_are_rejected():
     coordinates = pd.DataFrame({"barcode": ["A", "B"], "array_row": [0, 0], "array_col": [2, 2]})
     with pytest.raises(ValueError, match="duplicate in-tissue spatial grid coordinates"):
         validate_visium_identifiers(["A", "B"], coordinates)
+
+
+def test_in_tissue_coordinate_without_expression_barcode_is_rejected():
+    coordinates = pd.DataFrame({"barcode": ["A", "MISSING"], "array_row": [0, 0], "array_col": [0, 2]})
+    with pytest.raises(ValueError, match="lacks an expression barcode"):
+        validate_visium_identifiers(["A", "B"], coordinates)

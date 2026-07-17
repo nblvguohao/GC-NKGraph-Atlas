@@ -3,7 +3,7 @@ adenosine_nk_suppression	adenosine_receptor_to_cytotoxicity	receptor_signaling	n
 adenosine_nk_suppression	inhibitory_to_cytotoxicity	receptor_signaling	not_recovered	0	GSE62254;GSE84437;TCGA-LIHC;TCGA-STAD	False
 nkg2d_micab_shedding	recognition_to_cytotoxicity	receptor_signaling	recovered	4	GSE62254;GSE84437;TCGA-LIHC;TCGA-STAD	False
 nkg2d_micab_shedding	shedding_to_cytotoxicity	upstream_driver	not_recovered	0	GSE62254;GSE84437;TCGA-LIHC;TCGA-STAD	False
-tgfb_nk_exclusion	caf_ecm_to_cytotoxicity	upstream_driver	not_recovered	0	GSE62254;GSE84437;TCGA-LIHC;TCGA-STAD	False
-tgfb_nk_exclusion	tgfb_signaling_to_activation	receptor_signaling	not_recovered	0	GSE62254;GSE84437;TCGA-LIHC;TCGA-STAD	False
+tgfb_nk_exclusion	caf_ecm_to_cytotoxicity	upstream_driver	not_recovered	0	GSE62254;GSE84437;TCGA-LIHC;TCGA-STAD	True
+tgfb_nk_exclusion	tgfb_signaling_to_activation	receptor_signaling	not_recovered	0	GSE62254;GSE84437;TCGA-LIHC;TCGA-STAD	True
 zheng_nk_sm_topology	protrusion_to_cytotoxicity	downstream_effector	recovered	4	GSE62254;GSE84437;TCGA-LIHC;TCGA-STAD	False
 zheng_nk_sm_topology	sm_synthesis_to_protrusion	downstream_effector	recovered	4	GSE62254;GSE84437;TCGA-LIHC;TCGA-STAD	False

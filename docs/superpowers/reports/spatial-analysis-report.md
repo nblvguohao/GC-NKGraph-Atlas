@@ -86,3 +86,19 @@ These are exploratory subset-calibration results, not a replication-level
 claim. The three positive sections and one null section reinforce the need to
 report section-level heterogeneity rather than a universal CAF--NK spatial
 exclusion effect.
+
+## Final manuscript and atlas scope
+
+Section 3.8 of both the submission Markdown and TeX manuscript now separates
+the modalities explicitly: metabolomics and sample-level protein matrices are
+unavailable (`not_measured`); spatial evidence exists only for the exploratory
+four-verified-GSM subset above. The latter is heterogeneous spot-module
+adjacency rather than a cell-contact measurement and cannot satisfy the
+pre-registered cross-mechanism gate. The cross-mechanism verdict is therefore
+unchanged: `comparative_atlas_only`.
+
+The source manifest was regenerated from the YAML configuration and now retains
+the pending outer GSE251950 archive alongside the four `available` per-GSM
+assets. Targeted tests passed (13 total), and the updated TeX manuscript was
+compiled twice; the rendered section 3.8 continuation was visually checked in
+the resulting 23-page PDF.
