@@ -40,6 +40,13 @@ def cross_mechanism_verdict(evidence: pd.DataFrame) -> str:
     return "comparative_atlas_only"
 
 
+def eligible_direct_cards(direct: pd.DataFrame) -> set[str]:
+    """Return only measured, non-exploratory direct-modality cards for the gate."""
+    scope = direct.get("scope", pd.Series("confirmatory", index=direct.index)).astype(str)
+    eligible = direct.loc[(direct.status == "measured") & ~scope.str.startswith("exploratory_")]
+    return set(eligible.card_id)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--submission-root", default=ROOT / "submission_bundle_BiB")
@@ -56,7 +63,7 @@ def main() -> None:
                .groupby(["card_id", "comparison_id", "layer"], as_index=False)
                .agg(status=("status", lambda x: "recovered" if (x == "recovered").all() else "not_recovered"),
                     concordant_cohorts=("concordant_cohorts", "max"), accession=("accession", lambda x: ";".join(sorted(set(x))))))
-    summary["direct_modality"] = summary.card_id.isin(direct.loc[direct.status != "not_measured", "card_id"])
+    summary["direct_modality"] = summary.card_id.isin(eligible_direct_cards(direct))
     verdict = cross_mechanism_verdict(summary)
     summary.to_csv(tables / "recoverability_atlas.tsv", sep="\t", index=False)
     (tables / "recoverability_cross_mechanism_verdict.json").write_text(

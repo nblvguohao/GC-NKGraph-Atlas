@@ -4,6 +4,7 @@ from pathlib import Path
 from src.interpretation.run_recoverability_atlas import (
     ROOT,
     cross_mechanism_verdict,
+    eligible_direct_cards,
     write_source_manifest,
 )
 
@@ -30,3 +31,12 @@ def test_source_manifest_includes_outer_pending_and_four_available_gsm_assets(tm
     assert set(per_gsm["status"]) == {"available"}
     assert per_gsm["sha256"].str.len().eq(64).all()
     assert set(per_gsm["analysis_scope"]) == {"exploratory_four_verified_per_gsm_subset"}
+
+
+def test_exploratory_spatial_rows_do_not_count_as_gate_eligible_direct_evidence():
+    direct = pd.DataFrame([
+        {"card_id": "tgfb", "status": "measured", "scope": "exploratory_four_verified_per_gsm_subset"},
+        {"card_id": "nkg2d", "status": "measured", "scope": "confirmatory"},
+    ])
+
+    assert eligible_direct_cards(direct) == {"nkg2d"}
